@@ -166,13 +166,6 @@ func AskForNodeInfo(i int32, forceRunningNode bool) *SMNode {
 
 }
 
-/*func forwardCoordinator(dest *SMNode, msg *MsgCoordinator) {
-	coordinatore := msg
-	//TODO check su esistenza invalidi?
-	safeRMI("C", dest, true, nil, coordinatore, nil)
-
-}*/
-
 func HBroutine() {
 	interrupt := false
 	coordTimer := time.NewTicker(HB_TIMEOUT)
