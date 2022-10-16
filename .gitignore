@@ -1,6 +1,6 @@
-go.mod
-go.sum
+fredricksonlynch/go.mod
+fredricksonlynch/go.sum
 
-bin/
-pb/node/*.go
-pb/serviceRegistry/*.go
+fredricksonlynch/bin/
+fredricksonlynch/pb/node/*.go
+fredricksonlynch/pb/serviceRegistry/*.go
