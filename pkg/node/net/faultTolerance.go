@@ -38,10 +38,6 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 	//TODO gestione delay con parametro (separata da SM)
 	for Pause {
 	}
-	//FIXME da risolvere: scenario in cui provo a far girare i messaggi ma lo starter fallisce prima
-	// che gli ritorni
-	// esempio: se il mio successivo è lo starter e non è in piedi,
-	// faccio girare per un certo numero di volte, oppure ABORT
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	//	locCtx = ctx
 	defer cancel()
