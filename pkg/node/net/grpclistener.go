@@ -3,6 +3,7 @@ package net
 import (
 	"context"
 	. "fredricksonLynch/pkg/node/env"
+	. "fredricksonLynch/tools/formatting"
 
 	//"fredricksonLynch/pkg/node"
 	. "fredricksonLynch/tools/smlog"
@@ -15,7 +16,7 @@ import (
 )
 
 func (s *DGnode) ForwardElection(ctx context.Context, in *pb.Election) (*pb.NONE, error) {
-	smlog.Info(LOG_MSG_SENT, "\033[43m\033[1;30mRECEIVED ELECTION %v\033[0m", in)
+	smlog.Info(LOG_MSG_SENT, ColorBlkBckgrYellow+BoldBlack+"RECEIVED ELECTION %v"+ColorReset, in)
 	if !Pause {
 		ElectionChannel <- ToSMElectionMsg(in)
 	}
@@ -23,7 +24,7 @@ func (s *DGnode) ForwardElection(ctx context.Context, in *pb.Election) (*pb.NONE
 }
 
 func (s *DGnode) ForwardCoordinator(ctx context.Context, in *pb.Coordinator) (*pb.NONE, error) {
-	smlog.Info(LOG_MSG_RECV, "\033[43m\033[1;30mRECEIVED COORDINATOR %v\033[0m", in)
+	smlog.Info(LOG_MSG_RECV, ColorBlkBckgrYellow+BoldBlack+"RECEIVED COORDINATOR %v\033[0m"+ColorReset, in)
 	if !Pause {
 		CoordChannel <- ToSMCoordinatorMsg(in)
 	}

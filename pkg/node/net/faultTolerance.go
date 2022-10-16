@@ -4,6 +4,7 @@ import (
 	"context"
 	pb "fredricksonLynch/pb/node"
 	. "fredricksonLynch/pkg/node/env"
+	. "fredricksonLynch/tools/formatting"
 
 	//"fredricksonLynch/pkg/node/statemachine"
 
@@ -66,13 +67,13 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 			case MSG_ELECTION:
 				netMsg := ToNetElectionMsg(elezione)
 				//smlog.Println("\033[42m\033[1;30mSENDING ELECTION [", elezione, "] to ", prossimoAddr, "\033[0m")
-				smlog.Warn(LOG_MSG_SENT, "\033[42m\033[1;30mSENDING ELECT %v to %s \033[0m", netMsg, prossimoAddr)
+				smlog.Warn(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, prossimoAddr)
 				_, errq = csN.ForwardElection(ctx, netMsg)
 				break
 			case MSG_COORDINATOR:
 				netMsg := ToNetCoordinatorMsg(coord)
 				//smlog.Println("\033[42m\033[1;30mSENDING COORDINATOR [", coord, "] to ", prossimoAddr, "\033[0m")
-				smlog.Warn(LOG_MSG_RECV, "\033[42m\033[1;30mSENDING COORD %v to %s \033[0m", netMsg, prossimoAddr)
+				smlog.Warn(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING COORD %v to %s"+ColorReset, netMsg, prossimoAddr)
 				//	log.Printf("\033[42m\033[1;30mSENDING COORD %[1]v to %[2]s \033[0m", coord, prossimoAddr)
 				_, errq = csN.ForwardCoordinator(ctx, netMsg)
 				break

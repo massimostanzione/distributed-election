@@ -8,7 +8,7 @@ import (
 
 	. "fredricksonLynch/pkg/node/env"
 	//"fredricksonLynch/pkg/node/statemachine"
-
+	. "fredricksonLynch/tools/formatting"
 	//"fredricksonLynch/pkg/node"
 
 	"flag"
@@ -261,13 +261,13 @@ func DeclareNodeState(node *SMNode, running bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if running {
-		smlog.Info(LOG_NETWORK, "\033[41m*** dichiaro running il nodo %d ***\033[0m", node.GetId())
+		//smlog.Info(LOG_NETWORK, "\033[41m*** dichiaro running il nodo %d ***\033[0m", node.GetId())
 		_, err := cs.ReportAsRunning(ctx, ToNetNode(*node))
 		if err != nil {
 			smlog.Fatal(LOG_UNDEFINED, err.Error())
 		}
 	} else {
-		smlog.Error(LOG_NETWORK, "\033[41m*** dichiaro failed il nodo %d ***\033[0m", node.GetId())
+		smlog.Error(LOG_NETWORK, ColorRedBckgrWhite+"*** dichiaro failed il nodo %d ***"+ColorReset, node.GetId())
 		_, err := cs.ReportAsFailed(ctx, ToNetNode(*node))
 		if err != nil {
 			smlog.Fatal(LOG_UNDEFINED, err.Error())
