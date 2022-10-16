@@ -15,8 +15,6 @@ var Pause = false
 
 const SIMULATION_DELAY = 0 * time.Second
 
-// TODO diversificare tempi per ogni nodo con rand
-
 // TODO file di configurazione con i parametri
 const HB_TIMEOUT = 1000 * time.Millisecond
 const HB_TOLERANCE = HB_TIMEOUT / 2 //250 * time.Millisecond
