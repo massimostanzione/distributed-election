@@ -197,12 +197,6 @@ func HBroutine() {
 			if node.GetFullAddr() != Me.GetFullAddr() {
 				// TODO fare funzione che, dato un nodo, ritorna la connessione con esso
 
-				// TODO questa di seguito è duplicata rispetto a safeRMI?
-				connN, errN := grpc.Dial(node.GetFullAddr(), grpc.WithInsecure())
-				if errN != nil {
-					log.Printf("Error while contacting server (NODO) on %v:\n %v", node.GetFullAddr(), errN)
-				}
-				//defer connN.Close() //OSS. NOT DEFERRED!
 				nodoServer := grpc.NewServer()
 				pb.RegisterDistGrepServer(nodoServer, &DGnode{})
 				smlog.Info(LOG_HB, "Invio HB al nodo %d, presso %s", node.GetId(), node.GetFullAddr())
@@ -235,7 +229,6 @@ func HBroutine() {
 				// per evitare che le connessioni aperte lascino
 				// i riceventi in busy su connessioni che non
 				// servono più
-				connN.Close()
 
 			}
 		} // qui ho inviato gli hb a tutti i nodi
