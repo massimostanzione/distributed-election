@@ -218,14 +218,6 @@ func HBroutine() {
 				if rmiErr {
 					failedNodeExistence = true
 				}
-				//_, err = csN.SendHeartBeat(ctx, &pb.Heartbeat{Id: int32(id)})
-				//TODO quale err è questo?
-				/*if err != nil {
-					smlog.Error(LOG_UNDEFINED, "problema nel mandare l'HB: %v", err)
-					cs.ReportAsFailed(ctx, node)
-				}*/
-				//log.Printf("%d", connN.GetState())
-
 			}
 		} // qui ho inviato gli hb a tutti i nodi
 
