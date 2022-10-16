@@ -65,7 +65,6 @@ func fetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool, bool)
 	// assumo per ipotesi che l'ordinamento dei nodi nell'array
 	// coincida con l'ordinamento degli indici
 	// ossia: nodes[i] è il nodo i-esimo
-	// TODO implementare ordinamento in base al campo id?
 	for {
 		//i = (i % len(nodes)==0)?i % len(nodes):0
 		i = i % len(nodes)
