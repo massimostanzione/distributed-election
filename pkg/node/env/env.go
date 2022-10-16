@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+var Me *SMNode = &SMNode{}
 var CoordId int32 = -1
 var Pause = false
 
@@ -25,6 +26,3 @@ var Events chan (string)
 var ElectionChannel chan (*MsgElection)
 var CoordChannel chan (*MsgCoordinator)
 var Sigchan chan (os.Signal)
-
-//TODO se serve, portare a scope del pkg stateMachine
-var Me *SMNode = &SMNode{}
