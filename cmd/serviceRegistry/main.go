@@ -184,7 +184,7 @@ func (s *DGserver) GetNextRunningNode(ctx context.Context, in *pb.NodeId) (*pb.N
 	printRing()
 	return &pb.Node{Id: int32(node.id), Host: node.Host, Port: node.Port}, status.New(codes.OK, "").Err()
 }
-func ggetAllNodes(forceRunningNodeOnly bool) *pb.NodeList {
+func getAllNodesExecutive(forceRunningNodeOnly bool) *pb.NodeList {
 	var array []*pb.Node
 	for _, node := range nodes {
 		// TODO documentazione: qui è il centrale che si occupa di sapere lo stato di ciascuno,
@@ -201,37 +201,10 @@ func ggetAllNodes(forceRunningNodeOnly bool) *pb.NodeList {
 
 }
 func (s *DGserver) GetAllNodes(ctx context.Context, in *pb.NONE) (*pb.NodeList, error) {
-	/*var array []*pb.Node
-	for _, node := range nodes {
-		// TODO documentazione: qui è il centrale che si occupa di sapere lo stato di ciascuno,
-		// anche perché è lo stesso che mantiene la struttura dell'anello,
-		// quindi è anche giusto che se ne occupi lui che distribuire il tutto
-		// in modo distribuito
-		if node.reportedAsFailed == false {
-			//TODO funzione di mappatura/demappatura da grpc.Node a Node di go, locale qui
-			grpcNode := &pb.Node{Id: int32(node.id), Addr: node.addr}
-			array = append(array, grpcNode)
-		}
-	}*/
-	return ggetAllNodes(false), status.New(codes.OK, "").Err()
+	return getAllNodesExecutive(false), status.New(codes.OK, "").Err()
 }
 func (s *DGserver) GetAllRunningNodes(ctx context.Context, in *pb.NONE) (*pb.NodeList, error) {
-	// copiato dal precedente
-	/*	var array []*pb.Node
-		for _, node := range nodes {
-			// TODO documentazione: qui è il centrale che si occupa di sapere lo stato di ciascuno,
-			// anche perché è lo stesso che mantiene la struttura dell'anello,
-			// quindi è anche giusto che se ne occupi lui che distribuire il tutto
-			// in modo distribuito
-			if node.reportedAsFailed == false {
-				//TODO funzione di mappatura/demappatura da grpc.Node a Node di go, locale qui
-				grpcNode := &pb.Node{Id: int32(node.id), Addr: node.addr}
-				array = append(array, grpcNode)
-			}
-		}
-		return &pb.NodeList{List: array}, status.New(codes.OK, "").Err()*/
-
-	return ggetAllNodes(true), status.New(codes.OK, "").Err()
+	return getAllNodesExecutive(true), status.New(codes.OK, "").Err()
 }
 func getNewId() int {
 	return len(nodes) + 1
