@@ -1,11 +1,10 @@
 // Messages
 package env
 
-type msgType uint8
+type MsgType uint8
 
-//TODO applicare a safeRMI
 const (
-	MSG_UNDEFINED msgType = iota
+	MSG_UNDEFINED MsgType = iota
 	MSG_ELECTION
 	MSG_COORDINATOR
 	MSG_HEARTBEAT

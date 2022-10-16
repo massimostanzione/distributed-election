@@ -34,7 +34,7 @@ func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 	return false
 }
 
-func SafeRMI(tipo string, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, coord *MsgCoordinator, hb *pb.Heartbeat) (failedNodeExistence bool) { //opt ...interface{}) {
+func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, coord *MsgCoordinator, hb *pb.Heartbeat) (failedNodeExistence bool) { //opt ...interface{}) {
 	//TODO gestione delay con parametro (separata da SM)
 	for Pause {
 	}
@@ -67,20 +67,20 @@ func SafeRMI(tipo string, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEle
 			attempts++
 			errq := error(nil)
 			switch tipo {
-			case "E":
+			case MSG_ELECTION:
 				netMsg := ToNetElectionMsg(elezione)
 				//smlog.Println("\033[42m\033[1;30mSENDING ELECTION [", elezione, "] to ", prossimoAddr, "\033[0m")
 				smlog.Warn(LOG_MSG_SENT, "\033[42m\033[1;30mSENDING ELECT %v to %s \033[0m", netMsg, prossimoAddr)
 				_, errq = csN.ForwardElection(ctx, netMsg)
 				break
-			case "C":
+			case MSG_COORDINATOR:
 				netMsg := ToNetCoordinatorMsg(coord)
 				//smlog.Println("\033[42m\033[1;30mSENDING COORDINATOR [", coord, "] to ", prossimoAddr, "\033[0m")
 				smlog.Warn(LOG_MSG_RECV, "\033[42m\033[1;30mSENDING COORD %v to %s \033[0m", netMsg, prossimoAddr)
 				//	log.Printf("\033[42m\033[1;30mSENDING COORD %[1]v to %[2]s \033[0m", coord, prossimoAddr)
 				_, errq = csN.ForwardCoordinator(ctx, netMsg)
 				break
-			case "HB":
+			case MSG_HEARTBEAT:
 				_, errq = csN.SendHeartBeat(ctx, hb)
 				break
 			default:

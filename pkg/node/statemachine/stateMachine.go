@@ -131,7 +131,7 @@ func sendElection(msg *MsgElection, dest *SMNode) {
 		abortIfFailedCoord = true
 	}
 
-	rmiErr := SafeRMI("E", dest, !abortIfFailedCoord, msg, nil, nil)
+	rmiErr := SafeRMI(MSG_ELECTION, dest, !abortIfFailedCoord, msg, nil, nil)
 
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
 	if abortIfFailedCoord && rmiErr {
@@ -150,7 +150,7 @@ func sendCoord(msg *MsgCoordinator, dest *SMNode) {
 	if dest.GetId() == CoordId {
 		abortIfFailedCoord = true
 	}
-	rmiErr := SafeRMI("C", dest, !abortIfFailedCoord, nil, msg, nil)
+	rmiErr := SafeRMI(MSG_COORDINATOR, dest, !abortIfFailedCoord, nil, msg, nil)
 
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
 	if abortIfFailedCoord && rmiErr {

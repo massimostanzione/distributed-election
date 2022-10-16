@@ -227,7 +227,7 @@ func HBroutine() {
 				// mentre negli altri casi vado alla meglio cercando il successivo in piedi
 				// in questo caso il parametro di ritorno mi indicherà non solo la presenza generica
 				// di un nodo fallito, ma il fatto che il nodo fallito è proprio quello che ho provato
-				rmiErr := SafeRMI("HB", node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
+				rmiErr := SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
 				if rmiErr {
 					failedNodeExistence = true
 				}
