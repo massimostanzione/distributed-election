@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	pb "fredricksonLynch/pb/serviceRegistry"
+	. "fredricksonLynch/tools/formatting"
 	"log"
 	"net"
 	"os"
@@ -33,12 +34,6 @@ func (record *NodeRecord) getFullAddress() string {
 
 var nodes []NodeRecord
 var NONE = &pb.NONE{}
-
-//TODO trasferire in utils
-var colorReset = "\033[0m"
-var colorRed = "\033[31m"
-var colorGreen = "\033[32m"
-var bold = "\033[1m"
 
 func fetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 	for i := range nodes {
@@ -153,9 +148,9 @@ func printRing() {
 	for _, node := range nodes {
 		statusStr := "N.D."
 		if node.reportedAsFailed {
-			statusStr = colorRed + bold + "FAILED" + colorReset
+			statusStr = ColorRed + Bold + "FAILED" + ColorReset
 		} else {
-			statusStr = colorGreen + bold + "RUNNING" + colorReset
+			statusStr = ColorGreen + Bold + "RUNNING" + ColorReset
 		}
 		//TODO implementare anche qui un getFullAddr?
 		log.Printf("%d\t%s\t%s", node.id, node.Host+":"+fmt.Sprint(node.Port), statusStr)
