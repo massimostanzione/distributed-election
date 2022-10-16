@@ -356,46 +356,6 @@ func state_coordinator() {
 	}
 }
 
-/*
-func listenHB() {
-	stopList := false
-	nonCoordTimer = time.NewTimer(HB_TIMEOUT + HB_TOLERANCE)
-	for {
-		select {
-		case <-Heartbeat:
-			nonCoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
-			break
-		case <-nonCoordTimer.C:
-			nonCoordTimer.Stop()
-			smlog.Info(LOG_ELECTION, "\033[41m*** TODO DUPLICATO COORDINATOR FAILURE DETECTED! ***\033[0m")
-			//nonCoordTimer.Stop()
-			// TODO ho dovuto dichiararlo di nuovo, perché?
-			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-			//locCtx = ctx
-			defer cancel()
-			//nonCoordTimer.Stop()
-			// mettere mano al server, così sembra complicato
-			// gestire err
-			failedNode := AskForNodeInfo(CoordId, false) //cs.GetNode(ctx, &pb.NodeId{Id: CoordId})
-			declareFailed(failedNode)
-			// qui non posso segnalare nulla sugli altri: so solo che COORD è failed,
-			// e che io sono vivo
-			// aggiorno quindi il centrale
-			cs.ReportAsRunning(ctx, &pb.Node{Id: failedNode.GetId(),
-				Host: failedNode.GetHost(),
-				Port: failedNode.GetPort()})
-			//			startElezione(ctx)
-			stopList = true
-			//TODO go?
-			startElection()
-			break
-
-		}
-		if stopList {
-			break
-		}
-	}
-}*/
 func state_nonCoordinator() {
 	late_hb_received := 0
 	nonCoordTimer = time.NewTimer(HB_TIMEOUT + HB_TOLERANCE)
