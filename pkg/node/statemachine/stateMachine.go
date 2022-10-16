@@ -245,7 +245,6 @@ func state_election_starter() {
 				sendCoord(NewCoordinatorMsg(inp.GetStarter(), inp.GetCoordinator()), nextNode)
 			}
 			//endElection(inp, inp.GetStarter() != Me.GetId())
-			//TODO qui e altrove, implementare "se non è mio => lascio circolare"
 			break
 		case <-Heartbeat:
 			// non dovrei riceverli qui, quindi ne ignoro alcuni
