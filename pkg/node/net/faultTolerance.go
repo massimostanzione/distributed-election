@@ -92,7 +92,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 					smlog.Warn(LOG_UNDEFINED, "tentativo n. %d non andato a buon fine per %v, riprovo...", attempts, prossimoAddr)
 
 				} else {
-					DeclareFailed(nextNode)
+					DeclareNodeState(nextNode, false)
 					failedNodeExistence = true
 					smlog.Error(LOG_UNDEFINED, "impossibile chiamare RMI su %v:\n %v", prossimoAddr, errq)
 

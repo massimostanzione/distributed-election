@@ -395,13 +395,13 @@ func state_nonCoordinator() {
 			//		defer cancel()
 			//nonCoordTimer.Stop()
 			failedNode := AskForNodeInfo(CoordId, false) //cs.GetNode(ctx, &pb.NodeId{Id: CoordId})
-			DeclareFailed(failedNode)
+			DeclareNodeState(failedNode, false)
 
 			// qui non posso segnalare nulla sugli altri: so solo che COORD è failed,
 			// e che io sono vivo
 			// aggiorno quindi il centrale su di Me
 
-			DeclareRunning(Me)
+			DeclareNodeState(Me, true)
 
 			//			startElezione(ctx)
 			//stopList = true
