@@ -1,10 +1,7 @@
 // DistGrep Client interface
 syntax = "proto3";
 option go_package = "fredricksonLynch/pb/node";
-package fredricksonLynch; 
-
-// TODO uso la stessa interfaccia esposta dal server/centrale?
-// oppure mi collego alla sua direttamente?
+package fredricksonLynch;
 
 service DistGrep {
     rpc joinRing(NodeAddr) returns (Node);
