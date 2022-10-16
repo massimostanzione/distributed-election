@@ -174,9 +174,7 @@ func (s *DGserver) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error)
 func (s *DGserver) GetNextRunningNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error) {
 	log.Printf("*** REQUEST RECEIVED ***")
 	log.Printf("Serve conoscere chi è %d", in.Id)
-	//anf := false
-	// TODO oss. questo blocco esiste anche altrove
-	node, _, _ := fetchRecordbyId(int(in.Id), true) //TODO ricostruire catene di cast
+	node, _, _ := fetchRecordbyId(int(in.Id), true)
 	// TODO controllo su err
 	/*if err != nil {
 		log.Fatalf("gestire")
