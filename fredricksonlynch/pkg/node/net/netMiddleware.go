@@ -225,10 +225,6 @@ func HBroutine() {
 					cs.ReportAsFailed(ctx, node)
 				}*/
 				//log.Printf("%d", connN.GetState())
-				//TODO specificare che ho chiuso qui di proposito
-				// per evitare che le connessioni aperte lascino
-				// i riceventi in busy su connessioni che non
-				// servono più
 
 			}
 		} // qui ho inviato gli hb a tutti i nodi
