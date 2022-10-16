@@ -65,6 +65,7 @@ func fetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool, bool)
 	// assumo per ipotesi che l'ordinamento dei nodi nell'array
 	// coincida con l'ordinamento degli indici
 	// ossia: nodes[i] è il nodo i-esimo
+	// TODO implementare ordinamento in base al campo id?
 	for {
 		//i = (i % len(nodes)==0)?i % len(nodes):0
 		i = i % len(nodes)
@@ -106,7 +107,6 @@ func (s *DGserver) JoinRing(ctx context.Context, in *pb.NodeAddr) (*pb.Node, err
 	}
 	printRing()
 	//compreso map della struct locale in quella grpc-compatibile:
-	// TODO può servire? strconv.FormatUint(uint64(id), 10)
 	return &pb.Node{Id: int32(node.id), Host: node.Host, Port: node.Port}, status.New(codes.OK, "").Err()
 }
 
