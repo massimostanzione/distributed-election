@@ -293,16 +293,3 @@ func DeclareRunning(runningNode *SMNode) {
 		smlog.Fatal(LOG_UNDEFINED, err.Error())
 	}
 }
-
-/*
-cs.ReportAsRunning(ctx, &pb.Node{Id: Me.GetId(),
-				Host: Me.GetHost(),
-				Port: Me.GetPort()})
-
-*/
-
-//TODO vedere come aggiustarla
-func generateContext() (context.Context, context.CancelFunc) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	return ctx, cancel
-}
