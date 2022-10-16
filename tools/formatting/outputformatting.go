@@ -1,6 +1,5 @@
 package tools
 
-//TODO esistono stampe non parametrizzate
 var ColorReset = "\033[0m"
 var ColorRed = "\033[31m"
 var ColorRedBckgrWhite = "\033[41m"
