@@ -1,5 +1,3 @@
-// listener.go
-//TODO package net?
 //TODO ev. in nuovo file che è net ma specializzato grpc?
 package net
 
