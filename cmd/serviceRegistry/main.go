@@ -242,7 +242,6 @@ func (s *DGserver) GetAllRunningNodes(ctx context.Context, in *pb.NONE) (*pb.Nod
 	return ggetAllNodes(true), status.New(codes.OK, "").Err()
 }
 func getNewId() int {
-	//TODO la policy per fare questo
 	return len(nodes) + 1
 }
 func main() {
