@@ -10,8 +10,6 @@ import (
 )
 
 func sendElection(msg *MsgElection, dest *SMNode) {
-
-	//TODO embeddare in SafeRMI?
 	abortIfFailedCoord := false
 	if dest.GetId() == CoordId {
 		abortIfFailedCoord = true
@@ -30,8 +28,6 @@ func sendElection(msg *MsgElection, dest *SMNode) {
 }
 
 func sendCoord(msg *MsgCoordinator, dest *SMNode) {
-
-	//TODO embeddare in SafeRMI?
 	abortIfFailedCoord := false
 	if dest.GetId() == CoordId {
 		abortIfFailedCoord = true
