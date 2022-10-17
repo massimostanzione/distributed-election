@@ -18,13 +18,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// TODO list:
-// - [ok] gestione failure starter durante elezione (ma anche coordinamento)
-// - timeout elezione se rimango dopo timeout senza sapere nulla
-// - abortElection, da chiamare in vote()
-// - [se c'è tempo] pause/resume per ogni processo, handling CTRL-Z
-// --- [ok] ciò è correlato all'ascolto degli HB: se mi arrivano da chi non mi aspetto c'è problema => avvio elezione
-
+// TODO gestione sospensione con SIGTSTP
 func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 	for _, i := range electionMsg.GetVoters() {
 		if i == voter {
