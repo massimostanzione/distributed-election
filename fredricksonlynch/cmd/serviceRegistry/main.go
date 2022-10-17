@@ -146,14 +146,7 @@ func printRing() {
 func (s *DGserver) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error) {
 	log.Printf("*** REQUEST RECEIVED ***")
 	log.Printf("Serve conoscere chi è %d", in.Id)
-	//anf := false
-	// TODO i tre parametri ritornati
 	node, _ := fetchRecordbyId(int(in.Id), false)
-	// TODO controllo su err
-	/*if err != nil {
-		log.Fatalf("gestire")
-		return NONE, false
-	}*/
 	log.Printf("Ti ritorno il nodo richiesto, che è %s", node.Host+":"+fmt.Sprint(node.Port))
 	printRing()
 	return &pb.Node{Id: int32(node.id), Host: node.Host, Port: node.Port}, status.New(codes.OK, "").Err()
