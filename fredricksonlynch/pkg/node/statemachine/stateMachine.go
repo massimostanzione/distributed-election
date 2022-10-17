@@ -110,15 +110,8 @@ func run() {
 func state_joining() {
 	for Pause {
 	}
-	//	starter = false
 	Me = AskForJoining()
 	startElection()
-	//TODO di seguito togliere?
-	//if nextId != Me.GetId() {
-	//	} else {
-	//	setState(STATE_COORDINATOR)
-	//	}
-	//startElezione(ctx)
 }
 
 func state_election_starter() {
