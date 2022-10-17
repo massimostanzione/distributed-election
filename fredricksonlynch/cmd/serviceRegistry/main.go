@@ -109,8 +109,7 @@ func (s *DGserver) ReportAsFailed(ctx context.Context, in *pb.Node) (*pb.NONE, e
 			return NONE, status.New(codes.OK, "").Err()
 		}
 	}
-	//TODO ritornare un errore: non sono riuscito a trovare il nodo da marcare come fallito
-	log.Fatalf("NON SONO RIUSCITO A TROVARE IL NODO %d, da marcare come FAILED", in.GetId())
+	log.Fatalf("Cannot find node %d, to be flagged as FAILED", in.GetId())
 	return NONE, status.New(codes.OK, "").Err()
 }
 
@@ -126,8 +125,7 @@ func (s *DGserver) ReportAsRunning(ctx context.Context, in *pb.Node) (*pb.NONE, 
 			return NONE, status.New(codes.OK, "").Err()
 		}
 	}
-	//TODO ritornare un errore: non sono riuscito a trovare il nodo da marcare come funzionante
-	log.Fatalf("NON SONO RIUSCITO A TROVARE IL NODO %d, da marcare come RUNNING", in.GetId())
+	log.Fatalf("Cannot find node %d, to be flagged as RUNNING", in.GetId())
 	return NONE, status.New(codes.OK, "").Err()
 }
 func printRing() {
