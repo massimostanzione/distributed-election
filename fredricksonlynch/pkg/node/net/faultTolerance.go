@@ -18,7 +18,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// TODO gestione sospensione con SIGTSTP
 func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 	for _, i := range electionMsg.GetVoters() {
 		if i == voter {
