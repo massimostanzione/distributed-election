@@ -234,13 +234,10 @@ func state_coordinator() {
 			if inp.GetCoordinator() == Me.GetId() {
 				confirmedCoord = true
 			} else {
-				smlog.Fatal(LOG_ELECTION, "sono coord, ma mi è arrivato un altro COORD senza elezioni, ad elezioni chiuse")
+				// fault tolerance: it can actually happen,
+				// so try to handle it instead of stopping working
+				smlog.Critical(LOG_ELECTION, "sono coord, ma mi è arrivato un altro COORD senza elezioni, ad elezioni chiuse")
 				Events <- "STOP"
-				//TODO se coord resto io, posso risparmiarmelo?
-				//if inp.GetCoordinator()!=Me.GetId(){
-				//NOTA anche se sono lo stesso, chiamo endElection visto che il comportamento è lo stesso
-
-				//smlog.Println("pppppppqqqqqqq")
 				endElection(inp, inp.GetStarter() != Me.GetId())
 			}
 			break
