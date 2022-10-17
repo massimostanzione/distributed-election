@@ -37,7 +37,6 @@ const RMI_RETRY_TOLERANCE = 3
 const LATE_HB_TOLERANCE = 3
 
 func InitializeNetMW() {
-	//TODO sistemare, ev. Address etc.
 	portParam := flag.String("p", "40043", "porta")
 	flag.Parse()
 	/*	if *help {
