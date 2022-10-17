@@ -22,7 +22,6 @@ message Node {
 	bool actualNextFailed = 4;
 }
 
-//TODO fondere i due seguenti con il precedente?
 message NodeAddr {
     string host = 1;
     int32 port = 2;

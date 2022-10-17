@@ -133,8 +133,6 @@ func AskForJoining() *SMNode {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
-	//TODO ma serve ancora NodeAddr?
-	//node, err := cs.JoinRing(ctx, &pb.NodeAddr{Addr: Me.GetFullAddr()})
 	node, err := cs.JoinRing(ctx, &pb.NodeAddr{Host: Me.GetHost(), Port: Me.GetPort()})
 	if err != nil {
 		log.Fatalf("Error while executing fredricksonLynch:\n%v", err)
