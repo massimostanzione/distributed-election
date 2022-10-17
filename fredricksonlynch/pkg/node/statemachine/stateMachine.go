@@ -234,8 +234,8 @@ func state_coordinator() {
 			if inp.GetCoordinator() == Me.GetId() {
 				confirmedCoord = true
 			} else {
-				// fault tolerance: it can actually happen,
-				// so try to handle it instead of stopping working
+				// fault tolerance: it can actually happen because of
+				// network delays, so try to handle it instead of stopping working
 				smlog.Critical(LOG_ELECTION, "sono coord, ma mi è arrivato un altro COORD senza elezioni, ad elezioni chiuse")
 				Events <- "STOP"
 				endElection(inp, inp.GetStarter() != Me.GetId())
@@ -314,16 +314,16 @@ func state_nonCoordinator() {
 			nonCoordTimer.Stop()
 			//Events <- "STOP"
 			if inp.GetStarter() == Me.GetId() {
-				smlog.Fatal(LOG_ELECTION, "sono coord ma mi è arrivata elezione da Me!")
-				/*			//TODO questa proceura è ripetuta, unire
+				//TODO fault tolerance - non bloccare tutto con Fatal (left for reference, #51)
+				// fault tolerance: it can actually happen because of
+				// network delays, so try to handle it instead of stopping working
+				smlog.Critical(LOG_ELECTION, "sono coord ma è arrivata elezione da me!")
 
-							//TODO fault tolerance - non bloccare tutto con Fatal
-										smlog.Info(LOG_ELECTION, "- nomino il coord, ma da NON_COORDINATOR")
-										electedId := elect(inp.GetVoters())
-										// --------------
-										nextNode := AskForNodeInfo(Me.GetId()+1, true)
-										sendCoord(NewCoordinatorMsg(Me.GetId(), electedId), nextNode)*/
-				//sendCoord(electedId, nextAddr)
+				smlog.Info(LOG_ELECTION, "- nomino il coord, ma da NON_COORDINATOR")
+				electedId := elect(inp.GetVoters())
+				// --------------
+				nextNode := AskForNodeInfo(Me.GetId()+1, true)
+				sendCoord(NewCoordinatorMsg(Me.GetId(), electedId), nextNode)
 			} else {
 				setState(STATE_ELECTION_VOTER)
 				vote(inp)
