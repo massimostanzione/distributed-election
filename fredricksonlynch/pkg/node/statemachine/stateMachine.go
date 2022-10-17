@@ -263,13 +263,6 @@ func state_nonCoordinator() {
 			nonCoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
 		}
 		select {
-		/*case <-Heartbeat:
-		//TODO if val == "HB" reset, invece di farlo altrove?
-		//smlog.Printf("Ricevuto HB dal canale")
-		//nonCoordTimer.Stop()
-		//nonCoordTimer = time.NewTimer(HB_TIMEOUT + HB_TOLERANCE)
-		nonCoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
-		break // TODO serve?*/
 		case inp := <-Heartbeat:
 			if inp.GetId() != CoordId {
 				late_hb_received++
