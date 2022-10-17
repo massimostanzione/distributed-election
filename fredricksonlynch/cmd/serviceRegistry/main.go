@@ -139,8 +139,7 @@ func printRing() {
 		} else {
 			statusStr = ColorGreen + Bold + "RUNNING" + ColorReset
 		}
-		//TODO implementare anche qui un getFullAddr?
-		log.Printf("%d\t%s\t%s", node.id, node.Host+":"+fmt.Sprint(node.Port), statusStr)
+		log.Printf("%d\t%s\t%s", node.id, node.getFullAddress(), statusStr)
 	}
 }
 func (s *DGserver) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error) {
