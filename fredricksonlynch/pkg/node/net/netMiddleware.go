@@ -73,11 +73,14 @@ func InitializeNetMW() {
 	// il centrale espone il servizio di identificazione dei nodi
 
 	serverAddr := "localHost:40042" //TODO configurare
-	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
+	conn := ConnectToNode(serverAddr)
 	serverConn = conn
-	if err != nil {
-		log.Fatalf("Error while contacting server on %v:\n %v", serverAddr, err)
-	}
+	/*	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
+		serverConn = conn
+		if err != nil {
+			log.Fatalf("Error while contacting server on %v:\n %v", serverAddr, err)
+		}
+	*/
 	//defer conn.Close()
 	//	locCtx = ctx
 	// MI METTO IN ASCOLTO: la porta su cui ascolto è
@@ -97,6 +100,14 @@ func InitializeNetMW() {
 
 	// Defining client interface, to be used to invoke the fredricksonLynch service
 	cs = pb.NewDistGrepClient(serverConn)
+}
+
+func ConnectToNode(addr string) *grpc.ClientConn {
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Error while contacting server on %v:\n %v", addr, err)
+	}
+	return conn
 }
 func Listen() {
 	smlog.Info(LOG_NETWORK, "Listening on port %v.", Me.GetPort())
@@ -122,11 +133,8 @@ func SwitchServerState(run bool) {
 }
 func contactServiceReg() *grpc.ClientConn {
 	serverAddr := "localHost:40042" //TODO configurare
-	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Error while contacting server on %v:\n %v", serverAddr, err)
-	}
-	//defer conn.Close() TODO vedere quando chiudere, altrimenti porta problemi
+	conn := ConnectToNode(serverAddr)
+	defer conn.Close() //chiusura, se porta problemi controllare
 	return conn
 }
 func AskForJoining() *SMNode {

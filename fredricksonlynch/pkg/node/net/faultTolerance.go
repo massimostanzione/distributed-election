@@ -13,7 +13,6 @@ import (
 	//"fredricksonLynch/pkg/node/net"
 	. "fredricksonLynch/tools/smlog"
 	smlog "fredricksonLynch/tools/smlog"
-	"log"
 	"time"
 
 	"google.golang.org/grpc"
@@ -51,10 +50,8 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		//TODO funzione unica "connetti a..." con paramtero addr, qui e altrove
 		//	smlog.Printf("il nodo NON sono io, quindi provo a contattarlo")
 		// L'ALTRO NODO FUNGE DA SERVER NEI MIEI CONFRONTI
-		connN, errN := grpc.Dial(prossimoAddr, grpc.WithInsecure())
-		if errN != nil {
-			log.Fatalf("Error while contacting server (NODO) on %v:\n %v", prossimoAddr, errN)
-		}
+
+		connN := ConnectToNode(prossimoAddr)
 		//defer connN.Close()
 		// New server instance and service registering
 		nodoServer := grpc.NewServer()
