@@ -48,13 +48,12 @@ func fetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 	return NodeRecord{getNewId(), host, port, false}, false
 }
 
-// TODO per tutte le funzioni, ovunque, ritornare anche il booleano di errore
-func fetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool, bool) {
+func fetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
 	// assunzione che i nodi siano identificati a partire da 1
 	//TODO uniformare logging basato su loggo
 	log.Printf("ricevo richiesta di trovare il nodo %d", id)
 	i := id
-	anf := false
+	searchedNodeWasFailed := false
 	/*normalized := id % len(nodes)
 	if normalized == 0 {
 		//log.Printf("norm=0")
@@ -74,24 +73,15 @@ func fetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool, bool)
 		}
 
 		if (forceRunningNodeOnly && !nodes[i-1].reportedAsFailed) || !forceRunningNodeOnly {
-			// FIXME il terzo parametro?
-			return nodes[i-1], anf, true
+			return nodes[i-1], searchedNodeWasFailed
 		} else {
+			// whatever node was to be searched, the (first) search
+			// resulted in a failed node
 			i++
-			anf = true
+			searchedNodeWasFailed = true
 		}
 
 	}
-	/*
-		for _, node := range nodes {
-			if node.id == normalized {
-				return node, true
-			}
-		}*/
-
-	log.Fatalf("what? unreachable code")
-	//return fetchRecordbyId(id - 1) //TODO gestire, "ritorna se stesso" ma da generalizzare
-	return NodeRecord{-99, "wtf", -1, false}, true, false
 }
 
 func (s *DGserver) JoinRing(ctx context.Context, in *pb.NodeAddr) (*pb.Node, error) {
@@ -160,7 +150,7 @@ func (s *DGserver) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error)
 	log.Printf("Serve conoscere chi è %d", in.Id)
 	//anf := false
 	// TODO i tre parametri ritornati
-	node, _, _ := fetchRecordbyId(int(in.Id), false) //TODO ricostruire catene di cast
+	node, _ := fetchRecordbyId(int(in.Id), false)
 	// TODO controllo su err
 	/*if err != nil {
 		log.Fatalf("gestire")
@@ -174,7 +164,7 @@ func (s *DGserver) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error)
 func (s *DGserver) GetNextRunningNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error) {
 	log.Printf("*** REQUEST RECEIVED ***")
 	log.Printf("Serve conoscere chi è %d", in.Id)
-	node, _, _ := fetchRecordbyId(int(in.Id), true)
+	node, _ := fetchRecordbyId(int(in.Id), true)
 	// TODO controllo su err
 	/*if err != nil {
 		log.Fatalf("gestire")
