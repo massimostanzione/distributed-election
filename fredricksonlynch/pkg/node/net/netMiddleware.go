@@ -37,6 +37,7 @@ const RMI_RETRY_TOLERANCE = 3
 const LATE_HB_TOLERANCE = 3
 
 func InitializeNetMW() {
+	//TODO processamento parametri va nel main
 	portParam := flag.String("p", "40043", "porta")
 	flag.Parse()
 	/*	if *help {
@@ -108,6 +109,8 @@ func ConnectToNode(addr string) *grpc.ClientConn {
 	}
 	return conn
 }
+
+//TODO non è chiamata al di fuori del contesto SIGTSTP
 func Listen() {
 	smlog.Info(LOG_NETWORK, "Listening on port %v.", Me.GetPort())
 	if err := w.Serve(lis); err != nil {

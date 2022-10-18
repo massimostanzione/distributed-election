@@ -3,18 +3,19 @@ package net
 
 //var cs pb.DistGrepClient
 import (
-	pb "fredricksonLynch/pb/node"
+	pb "fredricksonLynch/pb/serviceRegistry"
 
-	. "fredricksonLynch/pkg/node/env"
-	//"fredricksonLynch/pkg/node/statemachine"
-	//"fredricksonLynch/pkg/node"
+	//	. "fredricksonLynch/pkg/serviceRegistry/env"
+	//"fredricksonLynch/pkg/serviceRegistry/statemachine"
+	//"fredricksonLynch/pkg/serviceRegistry"
 
 	"flag"
-	. "fredricksonLynch/tools/smlog"
-	smlog "fredricksonLynch/tools/smlog"
+	//. "fredricksonLynch/tools/smlog"
+	//smlog "fredricksonLynch/tools/smlog"
 	"log"
 	"net"
-	"strconv"
+
+	//	"strconv"
 
 	"google.golang.org/grpc"
 )
@@ -24,7 +25,7 @@ type DGnode struct {
 }
 
 //var NONE = &pb.NONE{}
-var cs pb.DistGrepClient
+//var cs pb.DistGrepClient
 
 var w *grpc.Server
 var lis net.Listener
@@ -34,7 +35,7 @@ const RMI_RETRY_TOLERANCE = 3
 const LATE_HB_TOLERANCE = 3
 
 func InitializeNetMW() {
-	portParam := flag.String("p", "40043", "porta")
+	//	portParam := flag.String("p", "40043", "porta")
 	flag.Parse()
 	/*	if *help {
 		flag.PrintDefaults()
@@ -42,10 +43,11 @@ func InitializeNetMW() {
 	}*/
 	//port = *portParam
 	//addr = "localHost:" + port
-	port, _ := strconv.ParseInt(*portParam, 10, 32)
-	smlog.Critical(LOG_UNDEFINED, "%d", int32(port))
-	Me.SetPort(int32(port))
-	Me.SetHost("localhost")
+	//port, _ := strconv.ParseInt(*portParam, 10, 32)
+	port := "40042"
+	//	smlog.Critical(LOG_UNDEFINED, "%d", int32(port))
+	//	Me.SetPort(int32(port))
+	//Me.SetHost("localhost")
 	//addr = "localHost:" + port
 	// Parsing input arguments
 	/*	filepath := flag.String("f", "../../ILIAD_1STBOOK_IT_ALTERED", "source file to be \"fredricksonLynchp-ed\"")
@@ -67,7 +69,7 @@ func InitializeNetMW() {
 
 	// Contacting the server
 	// il centrale espone il servizio di identificazione dei nodi
-
+	//host := "localhost"
 	serverAddr := "localHost:40042" //TODO configurare
 	conn := ConnectToNode(serverAddr)
 	serverConn = conn
@@ -84,18 +86,31 @@ func InitializeNetMW() {
 	// in quanto è quella sulla quale sarò contattato
 	// Start listening for incoming calls
 	//port := "40046"
-	liss, err := net.Listen("tcp", Me.GetFullAddr())
+	/*liss, err := net.Listen("tcp", host+":"+(string)(port))
 	lis = liss
 	if err != nil {
-		log.Fatalf("Error while trying to listen to port %v:\n%v", Me.GetPort(), err)
+		log.Fatalf("Error while trying to listen to port %v:\n%v", port, err)
+	}*/
+	/*
+		smlog.Info(LOG_NETWORK, "Listening on port %v.", port)
+		if err := w.Serve(lis); err != nil {
+			log.Fatalf("Error while trying to serve request: %v", err)
+		}
+	*/
+	liss, err := net.Listen("tcp", serverAddr)
+	lis = liss
+	if err != nil {
+		log.Fatalf("Error while trying to listen to port %v:\n%v", port, err)
 	}
+	log.Printf("--------------------------")
+
 	// New server instance and service registering
 	w = grpc.NewServer()
 	pb.RegisterDistGrepServer(w, &DGnode{})
 	// Serve incoming calls
 
 	// Defining client interface, to be used to invoke the fredricksonLynch service
-	cs = pb.NewDistGrepClient(serverConn)
+	//cs = pb.NewDistGrepClient(serverConn)
 }
 
 func ConnectToNode(addr string) *grpc.ClientConn {
@@ -105,11 +120,17 @@ func ConnectToNode(addr string) *grpc.ClientConn {
 	}
 	return conn
 }
-func Listen() {
-	smlog.Info(LOG_NETWORK, "Listening on port %v.", Me.GetPort())
-	if err := w.Serve(lis); err != nil {
+func Listen(host string, port string) {
+
+	log.Printf("Listening on port %v...", port)
+	// New server instance and service registering
+	s := grpc.NewServer()
+	pb.RegisterDistGrepServer(s, &DGserver{})
+	// Serve incoming calls
+	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Error while trying to serve request: %v", err)
 	}
+
 	//	for pause {
 	//	}
 }

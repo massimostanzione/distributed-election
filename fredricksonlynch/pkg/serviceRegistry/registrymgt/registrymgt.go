@@ -5,9 +5,18 @@ import (
 	"fmt"
 	pb "fredricksonLynch/pb/serviceRegistry"
 	. "fredricksonLynch/pkg/serviceRegistry/env"
+
+	//. "fredricksonLynch/pkg/serviceRegistry/net"
 	. "fredricksonLynch/tools/formatting"
 	"log"
 )
+
+/*
+func StartServiceRegistry() {
+	InitializeNetMW()
+	//go run()
+	Listen()
+}*/
 
 func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 	for i := range Nodes {
