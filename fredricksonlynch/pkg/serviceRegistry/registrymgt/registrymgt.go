@@ -24,7 +24,7 @@ func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 	return NodeRecord{getNewId(), host, port, false}, false
 }
 
-func fetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
+func FetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
 	// assunzione che i nodi siano identificati a partire da 1
 	//TODO uniformare logging basato su loggo
 	log.Printf("ricevo richiesta di trovare il nodo %d", id)
@@ -60,7 +60,7 @@ func fetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
 	}
 }
 
-func getAllNodesExecutive(forceRunningNodeOnly bool) *pb.NodeList {
+func GetAllNodesExecutive(forceRunningNodeOnly bool) *pb.NodeList {
 	var array []*pb.Node
 	for _, node := range Nodes {
 		// TODO documentazione: qui è il centrale che si occupa di sapere lo stato di ciascuno,

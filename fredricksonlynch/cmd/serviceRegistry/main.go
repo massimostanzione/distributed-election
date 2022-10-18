@@ -3,9 +3,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"fredricksonLynch/pkg/serviceRegistry/net"
-	. "fredricksonLynch/tools/formatting"
 	"log"
 	"net"
 	"os"

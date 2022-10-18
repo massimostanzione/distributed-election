@@ -5,7 +5,6 @@ import (
 	"fmt"
 	. "fredricksonLynch/pkg/serviceRegistry/env"
 	. "fredricksonLynch/pkg/serviceRegistry/registrymgt"
-	. "fredricksonLynch/tools/formatting"
 	"log"
 
 	"google.golang.org/grpc/codes"
