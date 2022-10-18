@@ -26,7 +26,7 @@ type DGnode struct {
 	pb.UnimplementedDistGrepServer
 }
 
-var NONE = &pb.NONE{}
+//var NONE = &pb.NONE{}
 var cs pb.DistGrepClient
 
 var w *grpc.Server
