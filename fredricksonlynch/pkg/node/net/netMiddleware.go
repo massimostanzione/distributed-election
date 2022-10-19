@@ -14,7 +14,6 @@ import (
 	"flag"
 	. "fredricksonLynch/tools/smlog"
 	smlog "fredricksonLynch/tools/smlog"
-	"log"
 	"net"
 	"strconv"
 	"time"
@@ -78,7 +77,7 @@ func InitializeNetMW() {
 	/*	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
 		serverConn = conn
 		if err != nil {
-			log.Fatalf("Error while contacting server on %v:\n %v", serverAddr, err)
+			smlog.Fatal("Error while contacting server on %v:\n %v", serverAddr, err)
 		}
 	*/
 	//defer conn.Close()
@@ -91,7 +90,7 @@ func InitializeNetMW() {
 	liss, err := net.Listen("tcp", Me.GetFullAddr())
 	lis = liss
 	if err != nil {
-		log.Fatalf("Error while trying to listen to port %v:\n%v", Me.GetPort(), err)
+		smlog.Fatal(LOG_NETWORK, "Error while trying to listen to port %v:\n%v", Me.GetPort(), err)
 	}
 	// New server instance and service registering
 	w = grpc.NewServer()
@@ -105,7 +104,7 @@ func InitializeNetMW() {
 func ConnectToNode(addr string) *grpc.ClientConn {
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Error while contacting server on %v:\n %v", addr, err)
+		smlog.Fatal(LOG_NETWORK, "Error while contacting server on %v:\n %v", addr, err)
 	}
 	return conn
 }
@@ -114,7 +113,7 @@ func ConnectToNode(addr string) *grpc.ClientConn {
 func Listen() {
 	smlog.Info(LOG_NETWORK, "Listening on port %v.", Me.GetPort())
 	if err := w.Serve(lis); err != nil {
-		log.Fatalf("Error while trying to serve request: %v", err)
+		smlog.Fatal(LOG_NETWORK, "Error while trying to serve request: %v", err)
 	}
 	//	for pause {
 	//	}
@@ -145,7 +144,7 @@ func AskForJoining() *SMNode {
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
 	node, err := cs.JoinRing(ctx, &pb.NodeAddr{Host: Me.GetHost(), Port: Me.GetPort()})
 	if err != nil {
-		log.Fatalf("Error while executing fredricksonLynch:\n%v", err)
+		smlog.Fatal(LOG_NETWORK, "Error while executing fredricksonLynch:\n%v", err)
 	}
 	return ToSMNode(node)
 }
@@ -159,14 +158,14 @@ func AskForNodeInfo(i int32, forceRunningNode bool) *SMNode {
 	if forceRunningNode {
 		ret, errr := cs.GetNextRunningNode(ctx, &pb.NodeId{Id: int32(i)})
 		if errr != nil {
-			log.Fatalf("errore in GETNODO:\n%v", errr)
+			smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
 			return nil
 		}
 		return &SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
 	} else {
 		ret, errr := cs.GetNode(ctx, &pb.NodeId{Id: int32(i)})
 		if errr != nil {
-			log.Fatalf("errore in GETNODO:\n%v", errr)
+			smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
 			return nil
 		}
 		return &SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
@@ -232,12 +231,12 @@ func HBroutine() {
 		smlog.Info(LOG_HB, "Inviati tutti gli HB, attendo timer...")
 		select {
 		case <-coordTimer.C:
-			//smlog.Printf("SCATTA IL TIMER")
+			//smlog.InfoU("SCATTA IL TIMER")
 			// semplicemente vai avanti
 			break
 		case val := <-Events:
 			if val == "STOP" {
-				log.Printf("------------------ ARRIVATO EVENTO DI \"STOP\"")
+				smlog.InfoU("------------------ ARRIVATO EVENTO DI \"STOP\"")
 			}
 			coordTimer.Stop()
 			interrupt = true

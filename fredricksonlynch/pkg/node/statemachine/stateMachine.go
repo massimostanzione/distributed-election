@@ -7,7 +7,6 @@ import (
 	smlog "fredricksonLynch/tools/smlog"
 
 	//	smlog "fredricksonLynch/smlog"
-	"fmt"
 
 	//	"log"
 	//	"os"
@@ -68,8 +67,7 @@ func StartStateMachine() {
 	Events = make(chan string, 1)
 	ElectionChannel = make(chan *MsgElection, 1)
 	CoordChannel = make(chan *MsgCoordinator, 1)
-	fmt.Println("[SM] Time     Lvl   State Event  Description")
-	fmt.Println("[SM] -------- ----- ----- ------ ---------------")
+	smlog.InitLogger(false)
 	smlog.Info(LOG_UNDEFINED, "Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
 	smlog.InfoU("Type CTRL+Z to Pause/resume")

@@ -3,10 +3,13 @@ package smlog
 import (
 	"os"
 
+	"fmt"
+
 	loggo "github.com/juju/loggo"
 )
 
 var curState = ""
+var isServReg bool
 
 func SetState(state string) {
 	curState = state
@@ -14,6 +17,17 @@ func SetState(state string) {
 
 var loggoLogger = loggo.GetLogger("")
 
+func InitLogger(isServRegExec bool) {
+	isServReg = isServRegExec
+	if isServReg {
+		fmt.Println("[ServReg] Time     Lvl   Event  Description")
+		fmt.Println("[ServReg] -------- ----- ------ ---------------")
+	} else {
+		fmt.Println("[SM] Time     Lvl   State Event  Description")
+		fmt.Println("[SM] -------- ----- ----- ------ ---------------")
+	}
+
+}
 func Trace(typee LogEvent, message string, args ...interface{}) {
 	sendToLoggo(loggo.TRACE, typee, message, args...)
 }
@@ -69,7 +83,12 @@ func Fatal(typee LogEvent, message string, args ...interface{}) {
 }
 */
 func sendToLoggo(level loggo.Level, typee LogEvent, message string, args ...interface{}) {
-	loggoLogger.Logf(level, " "+curState+" "+typee.Short()+" "+message, args...)
+
+	if isServReg {
+		loggoLogger.Logf(level, " "+curState+" "+typee.Short()+" "+message, args...)
+	} else {
+		loggoLogger.Logf(level, " "+typee.Short()+" "+message, args...)
+	}
 
 }
 func init() {
