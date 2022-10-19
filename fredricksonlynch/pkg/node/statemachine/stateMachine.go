@@ -58,7 +58,7 @@ func setState(state nodeState) {
 	//loggo.ConfigureLoggers("eeeeee")
 	//logger.SetLogLevel(loggo.TRACE)
 	//logger.Infof("new state: ", stateToLogout(currentState))
-	smlog.SetState(state.Short())
+	smlog.SetStateSMLogger(state.Short())
 	smlog.Info(LOG_STATEMACHINE, "new state: %s", currentState.Short())
 }
 

@@ -1,30 +1,37 @@
 package net
 
 import (
-	pb "fredricksonLynch/pb/node"
-	. "fredricksonLynch/pkg/node/env"
+	pb "bully/pb/node"
+	. "bully/pkg/node/env"
 )
 
 func ToNetElectionMsg(sm *MsgElection) *pb.Election {
-	return &pb.Election{Starter: sm.GetStarter(), Ids: sm.GetVoters()}
+	return &pb.Election{Starter: sm.GetStarter()}
+}
+func ToNetOkMsg(sm *MsgOk) *pb.Ok {
+	return &pb.Ok{Starter: sm.GetStarter()}
 }
 
 func ToNetCoordinatorMsg(sm *MsgCoordinator) *pb.Coordinator {
-	return &pb.Coordinator{Starter: sm.GetStarter(), Coordinator: sm.GetCoordinator()}
+	return &pb.Coordinator{Coordinator: sm.GetCoordinator()}
 }
 
 func ToSMElectionMsg(net *pb.Election) *MsgElection {
-	return &MsgElection{Starter: net.GetStarter(), Voters: net.GetIds()}
+	return &MsgElection{Starter: net.GetStarter()}
 }
 
+func ToSMOkMsg(net *pb.Ok) *MsgOk {
+	return &MsgOk{Starter: net.GetStarter()}
+}
 func ToSMCoordinatorMsg(net *pb.Coordinator) *MsgCoordinator {
-	return &MsgCoordinator{Starter: net.GetStarter(), Coordinator: net.GetCoordinator()}
+	return &MsgCoordinator{Coordinator: net.GetCoordinator()}
 }
 
+/*
 func ToSMHeartbeat(net *pb.Heartbeat) *MsgHeartbeat {
 	return &MsgHeartbeat{Id: net.GetId()}
 }
-
+*/
 func ToSMNode(net *pb.Node) *SMNode {
 	return &SMNode{Id: net.GetId(), Host: net.GetHost(), Port: net.GetPort()}
 }
