@@ -6,9 +6,12 @@ import (
 	pb "fredricksonLynch/pb/serviceRegistry"
 	. "fredricksonLynch/pkg/serviceRegistry/env"
 
+	//	. "fredricksonLynch/tools/smlog"
+	smlog "fredricksonLynch/tools/smlog"
+
 	//. "fredricksonLynch/pkg/serviceRegistry/net"
 	. "fredricksonLynch/tools/formatting"
-	"log"
+	//"log"
 )
 
 /*
@@ -36,16 +39,16 @@ func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 func FetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
 	// assunzione che i nodi siano identificati a partire da 1
 	//TODO uniformare logging basato su loggo
-	log.Printf("ricevo richiesta di trovare il nodo %d", id)
+	smlog.InfoU("ricevo richiesta di trovare il nodo %d", id)
 	i := id
 	searchedNodeWasFailed := false
 	/*normalized := id % len(Nodes)
 	if normalized == 0 {
-		//log.Printf("norm=0")
+		//smlog.InfoU("norm=0")
 		normalized = len(Nodes)
 	}
 	*/
-	//log.Printf("Node vs normalizzato: %d %d", id, normalized)
+	//smlog.InfoU("Node vs normalizzato: %d %d", id, normalized)
 	// assumo per ipotesi che l'ordinamento dei nodi nell'array
 	// coincida con l'ordinamento degli indici
 	// ossia: Nodes[i] è il nodo i-esimo
@@ -90,9 +93,9 @@ func getNewId() int {
 }
 
 func PrintRing() {
-	log.Printf("L'anello adesso è fatto così:")
-	log.Printf("id\taddr\t\tstatus")
-	log.Printf("---\t---------------\t---------")
+	smlog.InfoU("L'anello adesso è fatto così:")
+	smlog.InfoU("id\taddr\t\tstatus")
+	smlog.InfoU("---\t---------------\t---------")
 	for _, node := range Nodes {
 		statusStr := "N.D."
 		if node.ReportedAsFailed {
@@ -100,6 +103,6 @@ func PrintRing() {
 		} else {
 			statusStr = ColorGreen + Bold + "RUNNING" + ColorReset
 		}
-		log.Printf("%d\t%s\t%s", node.Id, node.GetFullAddress(), statusStr)
+		smlog.InfoU("%d\t%s\t%s", node.Id, node.GetFullAddress(), statusStr)
 	}
 }

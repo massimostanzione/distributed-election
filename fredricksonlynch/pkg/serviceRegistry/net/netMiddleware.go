@@ -4,6 +4,8 @@ package net
 //var cs pb.DistGrepClient
 import (
 	pb "fredricksonLynch/pb/serviceRegistry"
+	. "fredricksonLynch/tools/smlog"
+	smlog "fredricksonLynch/tools/smlog"
 
 	//	. "fredricksonLynch/pkg/serviceRegistry/env"
 	//"fredricksonLynch/pkg/serviceRegistry/statemachine"
@@ -12,7 +14,7 @@ import (
 	"flag"
 	//. "fredricksonLynch/tools/smlog"
 	//smlog "fredricksonLynch/tools/smlog"
-	"log"
+	//"log"
 	"net"
 
 	//	"strconv"
@@ -45,7 +47,7 @@ func InitializeNetMW() {
 	//addr = "localHost:" + port
 	//port, _ := strconv.ParseInt(*portParam, 10, 32)
 	port := "40042"
-	//	smlog.Critical(LOG_UNDEFINED, "%d", int32(port))
+	//	smsmlog.Critical(LOG_UNDEFINED, "%d", int32(port))
 	//	Me.SetPort(int32(port))
 	//Me.SetHost("localhost")
 	//addr = "localHost:" + port
@@ -76,7 +78,7 @@ func InitializeNetMW() {
 	/*	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
 		serverConn = conn
 		if err != nil {
-			log.Fatalf("Error while contacting server on %v:\n %v", serverAddr, err)
+			smlog.Fatal(LOG_UNDEFINED,"Error while contacting server on %v:\n %v", serverAddr, err)
 		}
 	*/
 	//defer conn.Close()
@@ -89,20 +91,20 @@ func InitializeNetMW() {
 	/*liss, err := net.Listen("tcp", host+":"+(string)(port))
 	lis = liss
 	if err != nil {
-		log.Fatalf("Error while trying to listen to port %v:\n%v", port, err)
+		smlog.Fatal(LOG_UNDEFINED,"Error while trying to listen to port %v:\n%v", port, err)
 	}*/
 	/*
-		smlog.Info(LOG_NETWORK, "Listening on port %v.", port)
+		smsmlog.Info(LOG_NETWORK, "Listening on port %v.", port)
 		if err := w.Serve(lis); err != nil {
-			log.Fatalf("Error while trying to serve request: %v", err)
+			smlog.Fatal(LOG_UNDEFINED,"Error while trying to serve request: %v", err)
 		}
 	*/
 	liss, err := net.Listen("tcp", serverAddr)
 	lis = liss
 	if err != nil {
-		log.Fatalf("Error while trying to listen to port %v:\n%v", port, err)
+		smlog.Fatal(LOG_UNDEFINED, "Error while trying to listen to port %v:\n%v", port, err)
 	}
-	log.Printf("--------------------------")
+	smlog.InfoU("--------------------------")
 
 	// New server instance and service registering
 	w = grpc.NewServer()
@@ -116,19 +118,19 @@ func InitializeNetMW() {
 func ConnectToNode(addr string) *grpc.ClientConn {
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Error while contacting server on %v:\n %v", addr, err)
+		smlog.Fatal(LOG_UNDEFINED, "Error while contacting server on %v:\n %v", addr, err)
 	}
 	return conn
 }
 func Listen(host string, port string) {
 
-	log.Printf("Listening on port %v...", port)
+	smlog.InfoU("Listening on port %v...", port)
 	// New server instance and service registering
 	s := grpc.NewServer()
 	pb.RegisterDistGrepServer(s, &DGserver{})
 	// Serve incoming calls
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("Error while trying to serve request: %v", err)
+		smlog.Fatal(LOG_UNDEFINED, "Error while trying to serve request: %v", err)
 	}
 
 	//	for pause {

@@ -9,7 +9,7 @@ import (
 )
 
 var curState = ""
-var isServReg bool
+var IsServReg bool
 
 func SetState(state string) {
 	curState = state
@@ -18,8 +18,8 @@ func SetState(state string) {
 var loggoLogger = loggo.GetLogger("")
 
 func InitLogger(isServRegExec bool) {
-	isServReg = isServRegExec
-	if isServReg {
+	IsServReg = isServRegExec
+	if IsServReg {
 		fmt.Println("[ServReg] Time     Lvl   Event  Description")
 		fmt.Println("[ServReg] -------- ----- ------ ---------------")
 	} else {
@@ -84,7 +84,7 @@ func Fatal(typee LogEvent, message string, args ...interface{}) {
 */
 func sendToLoggo(level loggo.Level, typee LogEvent, message string, args ...interface{}) {
 
-	if isServReg {
+	if IsServReg {
 		loggoLogger.Logf(level, " "+curState+" "+typee.Short()+" "+message, args...)
 	} else {
 		loggoLogger.Logf(level, " "+typee.Short()+" "+message, args...)
