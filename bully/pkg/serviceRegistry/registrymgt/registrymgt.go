@@ -86,8 +86,26 @@ func GetAllNodesExecutive(forceRunningNodeOnly bool) *pb.NodeList {
 		}
 	}
 	return &pb.NodeList{List: array}
-
 }
+
+//TODO gestire disaccopiamento argomento di ritorno
+func GetAllNodesWithIdGreaterThanExecutive(baseId int32) *pb.NodeList {
+	var array []*pb.Node
+	for i := (baseId + 1); i <= int32(len(Nodes)); i++ {
+		//for _, node := range Nodes {
+		// Oss. only running nodes, by default
+		//      active nodes will check if these nodes are running or not,
+		//      signalling those who are failed
+		//if (forceRunningNodeOnly && !node.ReportedAsFailed) || !forceRunningNodeOnly {
+		//TODO funzione di mappatura/demappatura da grpc.Node a Node di go, locale qui
+		grpcNode := &pb.Node{Id: int32(Nodes[i-1].Id), Host: Nodes[i-1].Host, Port: Nodes[i-1].Port}
+		array = append(array, grpcNode)
+		//}
+	}
+
+	return &pb.NodeList{List: array}
+}
+
 func getNewId() int {
 	return len(Nodes) + 1
 }

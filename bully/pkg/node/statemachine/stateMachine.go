@@ -106,15 +106,21 @@ func state_joining() {
 	for Pause {
 	}
 	Me = AskForJoining()
-	startElection()
+	setState(STATE_ELECTION)
+	//startElection()
 }
 
 func state_election() {
+	isElectionStarted := true
 	//late_hb_received := 0
-
+	//ELECTION messages alraeady sent in startElection()
 	electionTimer := time.NewTimer(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
 	for {
 		for Pause {
+		}
+		//TODO check questo approccio su FL
+		if isElectionStarted {
+			startElection()
 		}
 		select {
 		case <-electionTimer.C:
@@ -140,6 +146,7 @@ func state_election() {
 			break
 		}
 		break
+		isElectionStarted = false
 	}
 	electionTimer.Stop()
 }
@@ -148,7 +155,17 @@ func state_coordinator() {
 	//late_hb_received := 0
 	//setState(STATE_ELECTION_VOTER)
 	//confirmedCoord := false
+	isNewCoord := true
 	for {
+		if isNewCoord {
+			//invia COORD a tutti
+			//TODO in FL è implementato diversamente
+			for _, dest := range AskForAllNodes() {
+				if dest.GetId() != Me.GetId() {
+					sendCoord(NewCoordinatorMsg(Me.GetId()), dest)
+				}
+			}
+		}
 		for Pause {
 		}
 		/*if !confirmedCoord {
@@ -159,6 +176,7 @@ func state_coordinator() {
 			if Me.GetId() > inp.GetStarter() {
 				sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter(), false))
 				setState(STATE_ELECTION)
+				//startElection()
 
 			} else {
 				// I am sure that I am no more the coordinator
@@ -181,6 +199,7 @@ func state_coordinator() {
 		//if !confirmedCoord {
 		break
 		//}
+		isNewCoord = false
 	}
 }
 
@@ -200,6 +219,7 @@ func state_nonCoordinator() {
 			if Me.GetId() > inp.GetStarter() {
 				sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter(), false))
 				setState(STATE_ELECTION)
+				//startElection()
 			} // else not needed, simply ignore
 
 			break

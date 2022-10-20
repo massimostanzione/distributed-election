@@ -174,6 +174,56 @@ func AskForNodeInfo(i int32, forceRunningNode bool) *SMNode {
 
 }
 
+func AskForNodesWithGreaterIds(baseId int32, forceRunningNode bool) []*SMNode {
+	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni sui nodi con id > %d", baseId)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	//	locCtx = ctx
+	defer cancel()
+	if forceRunningNode {
+		//de facto not implemented
+		_, errr := cs.GetNextRunningNode(ctx, &pb.NodeId{Id: int32(baseId)})
+		if errr != nil {
+			smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
+			return nil
+		}
+		return nil //&SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
+	} else {
+		ret, errr := cs.GetAllNodesWithIdGreaterThan(ctx, &pb.NodeId{Id: int32(baseId)})
+		if errr != nil {
+			smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
+			return nil
+		}
+		//conversion
+		//TODO implementare anche nelle altre chiamate simili
+		var array []*SMNode
+		for _, node := range ret.GetList() {
+			array = append(array, ToSMNode(node))
+		}
+		return array //&SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
+	}
+
+}
+func AskForAllNodes() []*SMNode {
+	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni su TUTTI i nodi,")
+	smlog.Trace(LOG_SERVREG, "attivi o meno, per verificare stato di essi")
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	//	locCtx = ctx
+	defer cancel()
+
+	ret, errr := cs.GetAllNodes(ctx, NONE)
+	if errr != nil {
+		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
+		return nil
+	}
+	//conversion
+	//TODO implementare anche nelle altre chiamate simili
+	var array []*SMNode
+	for _, node := range ret.GetList() {
+		array = append(array, ToSMNode(node))
+	}
+	return array //&SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
+}
+
 /*
 func HBroutine() {
 	interrupt := false

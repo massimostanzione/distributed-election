@@ -13,6 +13,7 @@ service DistGrep {
     rpc sendHeartBeat(Heartbeat) returns (NONE);
     rpc getAllNodes(NONE) returns (NodeList);
     rpc getAllRunningNodes(NONE) returns (NodeList);
+    rpc getAllNodesWithIdGreaterThan(NodeId) returns (NodeList);
     rpc reportAsFailed(Node) returns (NONE);
     rpc reportAsRunning(Node) returns (NONE);
 } 

@@ -6,7 +6,7 @@ import (
 	. "bully/pkg/node/env"
 	. "bully/pkg/node/net"
 
-	//	. "bully/tools/smlog"
+	. "bully/tools/smlog"
 	smlog "bully/tools/smlog"
 )
 
@@ -95,15 +95,23 @@ func elect(candidates []int32) int32 {
 */
 func startElection() {
 	smlog.InfoU("aaaaaaaa") //TODO gestire quando rimane solo uno, succede anche altrove
-	nextNode := AskForNodeInfo(Me.GetId()+1, true)
-	// se sono rimasto solo io non faccio nemmeno iniziare l'elezione, è inutile
-	if nextNode.GetId() != Me.GetId() {
-		//sendEmptyMessage(Me.GetId(), MSG_ELECTION, nextNode)
+
+	//nextNode := AskForNodeInfo(Me.GetId()+1, true)
+	//Oss. secondo parametro sempre false per fault tolerance,
+	//     per rilevare eventuali nodi offline
+	nodes := AskForNodesWithGreaterIds(Me.GetId(), false)
+	for _, nextNode := range nodes {
+		smlog.Error(LOG_ELECTION, "invio a %s", nextNode.GetId())
 		sendElection(NewElectionMsg(Me.GetId()), nextNode)
+	}
+	//setState(STATE_ELECTION)
+	// se sono rimasto solo io non faccio nemmeno iniziare l'elezione, è inutile
+	/*if nextNode.GetId() != Me.GetId() {
+		//sendEmptyMessage(Me.GetId(), MSG_ELECTION, nextNode)
 		//	starter = true //TODO ricordare di resettare
 		setState(STATE_ELECTION)
 	} else {
 		smlog.InfoU("Sono rimasto solo io/2")
 		setState(STATE_COORDINATOR)
-	}
+	}*/
 }
