@@ -85,9 +85,9 @@ func Fatal(typee LogEvent, message string, args ...interface{}) {
 func sendToLoggo(level loggo.Level, typee LogEvent, message string, args ...interface{}) {
 
 	if IsServReg {
-		loggoLogger.Logf(level, " "+curState+" "+typee.Short()+" "+message, args...)
-	} else {
 		loggoLogger.Logf(level, " "+typee.Short()+" "+message, args...)
+	} else {
+		loggoLogger.Logf(level, " "+curState+" "+typee.Short()+" "+message, args...)
 	}
 
 }
