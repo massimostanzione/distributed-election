@@ -1,3 +1,10 @@
+bully/go.mod
+bully/go.sum
+
+bully/bin/
+bully/pb/node/*.go
+bully/pb/serviceRegistry/*.go
+
 fredricksonlynch/go.mod
 fredricksonlynch/go.sum
 
