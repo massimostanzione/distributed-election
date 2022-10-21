@@ -29,11 +29,9 @@ func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 
 func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, coord *MsgCoordinator, hb *pb.Heartbeat) (failedNodeExistence bool) { //opt ...interface{}) {
 	//TODO gestione delay con parametro (separata da SM)
+	//tryNextWhenFailed = true
 	for Pause {
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	//	locCtx = ctx
-	defer cancel()
 	attempts := 0
 	nextNode := dest
 	//	prossimoId := nextNode.GetId()
@@ -51,6 +49,10 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		pb.RegisterDistGrepServer(nodoServer, &DGnode{})
 		csN := pb.NewDistGrepClient(connN)
 		for {
+
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			//	locCtx = ctx
+			defer cancel()
 			attempts++
 			errq := error(nil)
 			switch tipo {
