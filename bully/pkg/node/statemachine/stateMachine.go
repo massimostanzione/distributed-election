@@ -106,10 +106,23 @@ func state_joining() {
 	for Pause {
 	}
 	Me = AskForJoining()
+	go checkNetHealtiness()
 	setState(STATE_ELECTION)
 	//startElection()
 }
+func checkNetHealtiness() {
+	CNHTimer := time.NewTimer(3 * time.Second)
+	for {
+		<-CNHTimer.C
+		for _, dest := range AskForAllNodes() {
+			if dest.GetId() != Me.GetId() {
+				//				sendCNH(TODO, dest)
+				//sendCoord(NewCoordinatorMsg(Me.GetId()), dest)
+			}
+		}
+	}
 
+}
 func state_election() {
 	isElectionStarted := true
 	//late_hb_received := 0
