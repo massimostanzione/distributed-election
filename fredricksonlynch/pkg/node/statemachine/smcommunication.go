@@ -9,37 +9,39 @@ import (
 	smlog "fredricksonLynch/tools/smlog"
 )
 
-func sendElection(msg *MsgElection, dest *SMNode) {
-	abortIfFailedCoord := false
+func sendElection(msg *MsgElection, dest *SMNode) bool {
+	/*abortIfFailedCoord := false
 	if dest.GetId() == CoordId {
 		abortIfFailedCoord = true
 	}
-
-	rmiErr := SafeRMI(MSG_ELECTION, dest, !abortIfFailedCoord, msg, nil, nil)
+	*/
+	rmiErr := SafeRMI(MSG_ELECTION, dest, false, msg, nil, nil)
 
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
-	if abortIfFailedCoord && rmiErr {
+	/*	if abortIfFailedCoord && rmiErr {
 		smlog.Critical(LOG_ELECTION, "coordinatore andato mentre ancora c'era l'elezione, ne inizio una nuova...")
 
 		startElection()
 		setState(STATE_ELECTION_STARTER)
-	}
+	}*/
+	return rmiErr
 
 }
 
 func sendCoord(msg *MsgCoordinator, dest *SMNode) {
-	abortIfFailedCoord := false
+	/*abortIfFailedCoord := false
 	if dest.GetId() == CoordId {
 		abortIfFailedCoord = true
-	}
-	rmiErr := SafeRMI(MSG_COORDINATOR, dest, !abortIfFailedCoord, nil, msg, nil)
+	}*/
+	//rmiErr := SafeRMI(MSG_COORDINATOR, dest, false, nil, msg, nil)
+	SafeRMI(MSG_COORDINATOR, dest, false, nil, msg, nil)
 
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
-	if abortIfFailedCoord && rmiErr {
+	/*if abortIfFailedCoord && rmiErr {
 		smlog.Critical(LOG_ELECTION, "coordinatore andato mentre ancora c'era l'elezione, ne inizio una nuova...")
 		startElection()
 		setState(STATE_ELECTION_STARTER)
-	}
+	}*/
 	//setState(STATE_ELECTION_STARTER)
 }
 
@@ -82,19 +84,4 @@ func elect(candidates []int32) int32 {
 	}
 	//	smlog.Println("PROCLAMO ELETTO IL NUMERO", max)
 	return max
-}
-
-func startElection() {
-	smlog.InfoU("aaaaaaaa") //TODO gestire quando rimane solo uno, succede anche altrove
-	nextNode := AskForNodeInfo(Me.GetId()+1, true)
-	// se sono rimasto solo io non faccio nemmeno iniziare l'elezione, è inutile
-	if nextNode.GetId() != Me.GetId() {
-		//sendEmptyMessage(Me.GetId(), MSG_ELECTION, nextNode)
-		sendElection(NewElectionMsg(Me.GetId()), nextNode)
-		//	starter = true //TODO ricordare di resettare
-		setState(STATE_ELECTION_STARTER)
-	} else {
-		smlog.InfoU("Sono rimasto solo io/2")
-		setState(STATE_COORDINATOR)
-	}
 }

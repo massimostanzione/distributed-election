@@ -24,3 +24,13 @@ var Events chan (string)
 var ElectionChannel chan (*MsgElection)
 var CoordChannel chan (*MsgCoordinator)
 var Sigchan chan (os.Signal)
+
+type WaitingStruct struct {
+	Name    MsgType
+	Waiting bool
+	Timer   *time.Timer
+}
+
+var WaitingMap = map[MsgType]*WaitingStruct{}
+var SendingHB = false
+var ListeningtoHb = false

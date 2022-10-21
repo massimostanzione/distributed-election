@@ -76,16 +76,17 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 			//_, errq := csN.InoltraElezione(ctx, elezione)
 			if errq != nil {
 				if attempts != RMI_RETRY_TOLERANCE {
-					smlog.Warn(LOG_UNDEFINED, "tentativo n. %d non andato a buon fine per %v, riprovo...", attempts, prossimoAddr)
+					smlog.Warn(LOG_UNDEFINED, "tentativo n. %d non andato a buon fine per %v, riprovo... %s", attempts, prossimoAddr, errq)
 
 				} else {
-					DeclareNodeState(nextNode, false)
+					//DeclareNodeState(nextNode, false)
 					failedNodeExistence = true
 					smlog.Error(LOG_UNDEFINED, "impossibile chiamare RMI su %v:\n %v", prossimoAddr, errq)
 
 					if tryNextWhenFailed {
-						smlog.Error(LOG_UNDEFINED, "provo col prossimo che risulta in piedi...")
-						nextNode = AskForNodeInfo(nextNode.GetId()+1, true)
+						smlog.Error(LOG_UNDEFINED, "provo col prossimo che [non più] risulta in piedi...")
+						//nextNode = AskForNodeInfo(nextNode.GetId()+1, true)
+						nextNode = AskForNodeInfo(nextNode.GetId()+1, false)
 						//						prossimoId = nextNode.GetId()
 						prossimoAddr = nextNode.GetFullAddr()
 					}

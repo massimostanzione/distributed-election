@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 /*
@@ -26,5 +27,18 @@ func main() {
 		SwitchServerState(Pause)
 		log.Printf("Pause = %v", Pause)
 	}()
+
+	WaitingMap = map[MsgType]*WaitingStruct{
+		MSG_ELECTION: &WaitingStruct{
+			Waiting: false,
+			Timer:   time.NewTimer(5 * time.Second),
+		},
+		MSG_COORDINATOR: &WaitingStruct{
+			Waiting: false,
+			Timer:   time.NewTimer(5 * time.Second),
+		},
+	}
+	WaitingMap[MSG_ELECTION].Timer.Stop()
+	WaitingMap[MSG_COORDINATOR].Timer.Stop()
 	StartStateMachine()
 }

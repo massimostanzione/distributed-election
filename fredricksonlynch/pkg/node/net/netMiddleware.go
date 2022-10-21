@@ -296,3 +296,73 @@ func DeclareRunning(runningNode *SMNode) {
 	}
 }
 */
+// da separare nel comportamento
+func InviaHB() {
+	interrupt := false
+	coordTimer := time.NewTicker(HB_TIMEOUT)
+	//defer coordTimer.Stop()
+	//failedNodeExistence := true
+	var allNodesList *pb.NodeList
+
+	smlog.Debug(LOG_SERVREG, "vado a chiedere tutti i nodi")
+	var errl error = error(nil)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	//TODO convertire
+	allNodesList, errl = cs.GetAllNodes(ctx, NONE)
+	if errl != nil {
+		smlog.Fatal(LOG_SERVREG, "problema in GetAllNodes: %v", errl)
+	}
+	/*
+		if len(allNodesList.GetList()) == 1 {
+			// se ci sono solo io, evito direttamente
+			smlog.Info(LOG_UNDEFINED, "Sono rimasto solo io")
+			//events <- "STOP"
+			interrupt = true // vedere
+		}*/
+	for {
+		select {
+		case <-coordTimer.C:
+
+			for _, nodenet := range allNodesList.GetList() {
+				node := ToSMNode(nodenet)
+				if node.GetFullAddr() != Me.GetFullAddr() {
+					// TODO delegare
+					nodoServer := grpc.NewServer()
+					pb.RegisterDistGrepServer(nodoServer, &DGnode{})
+					smlog.Info(LOG_HB, "Invio HB al nodo %d, presso %s", node.GetId(), node.GetFullAddr())
+
+					// mi segnalo come vivo
+					//	ctx2, cancel2 := context.WithTimeout(context.Background(), time.Second)
+					//defer cancel2()
+					/*_, erro := cs.ReportAsRunning(ctx2, &pb.Node{Id: Me.GetId()})
+					if erro != nil {
+						smlog.Error(LOG_UNDEFINED, "problema nel segnalarmi vivo mentre mando HB: %v", erro)
+					}*/
+					// TODO nota per relazione e documentazione:
+					// uso il parametro FALSE perché, a differenza degli altri casi,
+					// sto *enumerando* i nodi a cui inviare l'HB,
+					// mentre negli altri casi vado alla meglio cercando il successivo in piedi
+					// in questo caso il parametro di ritorno mi indicherà non solo la presenza generica
+					// di un nodo fallito, ma il fatto che il nodo fallito è proprio quello che ho provato
+					//rmiErr := SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
+					SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
+					/*if rmiErr {
+						failedNodeExistence = true
+					}*/
+				}
+			} // qui ho inviato gli hb a tutti i nodi
+
+			smlog.Info(LOG_HB, "Inviati tutti gli HB, attendo timer...")
+			break
+		case <-Events:
+			interrupt = true
+			break
+		}
+		if interrupt {
+			break
+		}
+	}
+	smlog.Info(LOG_HB, "Esco dalla routine di invio HB...")
+	SendingHB = false
+}
