@@ -81,6 +81,7 @@ func StartStateMachine() {
 func run() {
 	for {
 		for Pause {
+			// test
 		}
 		smlog.Info(LOG_STATEMACHINE, "Running state cycle")
 		//smlog.Println("*** RUNNING STATE: ", (msgType)(currentState))
