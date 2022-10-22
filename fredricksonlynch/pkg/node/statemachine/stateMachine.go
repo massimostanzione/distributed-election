@@ -139,7 +139,8 @@ func state_joining() {
 				setWaiting(MSG_COORDINATOR, true)
 			} else {
 				smlog.InfoU("arrivato election non mio")
-				vote(in)
+				voted := vote(in)
+				go sendElection(voted, NextNode)
 				smlog.InfoU("ho votato")
 				//è incluso in vote, da portare fuori
 				//sendElection(in, NextNode)
@@ -153,7 +154,7 @@ func state_joining() {
 			} else {
 				go sendCoord(in, NextNode)
 			}
-			CoordId = in.GetCoordinator() // duplicato?
+			CoordId = in.GetCoordinator()
 			if CoordId == Me.GetId() {
 				smlog.InfoU("sono il nuovo coord!")
 				setHbMgt(HB_SEND)
@@ -171,7 +172,6 @@ func state_joining() {
 		case <-WaitingMap[MSG_COORDINATOR].Timer.C:
 			smlog.Trace(LOG_UNDEFINED, "scaduto timer C")
 			setWaiting(MSG_COORDINATOR, false)
-			// AskForNextNode
 			sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
 			break
 
@@ -196,6 +196,6 @@ func startElection() {
 			}
 			i++
 		}*/
-	sendElection(NewElectionMsg(Me.GetId()), NextNode)
+	sendElection(NewElectionMsg(), NextNode)
 	setWaiting(MSG_ELECTION, true)
 }

@@ -45,13 +45,14 @@ func sendCoord(msg *MsgCoordinator, dest *SMNode) {
 	//setState(STATE_ELECTION_STARTER)
 }
 
-func vote(inp *MsgElection) {
+func vote(inp *MsgElection) *MsgElection {
+	var ret *MsgElection
 	if !RedudantElectionCheck(Me.GetId(), inp) {
 		smlog.Info(LOG_ELECTION, "- voting...")
-		nextNode := AskForNodeInfo(Me.GetId()+1, true)
-		inp.AddVoter(Me.GetId())
+		//nextNode := AskForNodeInfo(Me.GetId()+1, true)
+		ret = inp.AddVoter(Me.GetId())
 		//spostare fuori il seguente
-		go sendElection(inp, nextNode)
+		//go sendElection(inp, nextNode)
 		//sendCompiledMessage(Me.GetId(), MSG_ELECTION, nextNode, inp.GetStarter(), inp.GetIds())
 		//setState(STATE_ELECTION_VOTER)
 	} else {
@@ -63,8 +64,9 @@ func vote(inp *MsgElection) {
 		//     allora abortisco l'elezione, tanto se torna ha il suo timer lungo
 		// ==> DA PREFERIRSI LA N. 2,
 		//     perché ciò vale anche per COORD, e lì non ho il controllo per vedere se ho votato o meno
-		smlog.Fatal(LOG_ELECTION, "avevo già votato, TODO implementare abortElection")
+		smlog.Fatal(LOG_ELECTION, "already voted! something is wrong")
 	}
+	return ret
 }
 
 func endElection(coordinatorMsg *MsgCoordinator, forwardMsg bool) {

@@ -37,7 +37,8 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		requested := AskForNodeInfo(Me.GetId()+1, false)
 		if requested.GetId() != 1 {
 			NextNode = requested
-			smlog.Critical(LOG_UNDEFINED, "%s", NextNode)
+			dest = requested
+			smlog.Critical(LOG_UNDEFINED, "aggiornato NextNode", NextNode)
 		}
 	}
 

@@ -21,11 +21,12 @@ func (msg *MsgElection) GetStarter() int32 {
 func (msg *MsgElection) GetVoters() []int32 {
 	return msg.Voters
 }
-func (msg *MsgElection) AddVoter(newVoter int32) {
+func (msg *MsgElection) AddVoter(newVoter int32) *MsgElection {
 	msg.Voters = append(msg.Voters, newVoter)
+	return msg
 }
-func NewElectionMsg(Starter int32) *MsgElection {
-	return &MsgElection{Starter: Starter, Voters: []int32{Me.GetId()}}
+func NewElectionMsg() *MsgElection {
+	return &MsgElection{Starter: Me.GetId(), Voters: []int32{Me.GetId()}}
 }
 
 type MsgCoordinator struct {
