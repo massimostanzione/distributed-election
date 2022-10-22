@@ -30,7 +30,7 @@ done
 
 # run workers
 base_addr_space=40042
-workersno=20
+workersno=7
 # TODO test workersno >=4, come da requisiti
     $detected_term -T "ServReg" -e "bash -c './bin/serviceRegistry;bash'"   
 for i in $(seq 1 $workersno)

@@ -27,18 +27,21 @@ func main() {
 		SwitchServerState(Pause)
 		log.Printf("Pause = %v", Pause)
 	}()
+	initializeWaitingMap()
+	StartStateMachine()
+}
 
+func initializeWaitingMap() {
 	WaitingMap = map[MsgType]*WaitingStruct{
 		MSG_ELECTION: &WaitingStruct{
 			Waiting: false,
-			Timer:   time.NewTimer(5 * time.Second),
+			Timer:   time.NewTimer(IDLE_WAIT_LIMIT * time.Second),
 		},
 		MSG_COORDINATOR: &WaitingStruct{
 			Waiting: false,
-			Timer:   time.NewTimer(5 * time.Second),
+			Timer:   time.NewTimer(IDLE_WAIT_LIMIT * time.Second),
 		},
 	}
 	WaitingMap[MSG_ELECTION].Timer.Stop()
 	WaitingMap[MSG_COORDINATOR].Timer.Stop()
-	StartStateMachine()
 }
