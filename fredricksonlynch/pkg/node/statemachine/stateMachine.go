@@ -106,7 +106,7 @@ func run() {
 		case STATE_NON_COORDINATOR: // 5
 			state_nonCoordinator()
 			break*/
-		default: //TODO
+		default:
 		}
 	}
 }
