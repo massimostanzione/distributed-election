@@ -134,7 +134,6 @@ func state_joining() {
 				coord := elect(in.GetVoters())
 				smlog.InfoU("eletto")
 				CoordId = coord
-				// TODO simmetria nella gestione + cache locale sul successivo
 				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
 				setHbMgt(HB_SEND)
 				setWaiting(MSG_COORDINATOR, true)
