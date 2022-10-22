@@ -176,7 +176,6 @@ func AskForAllNodesList() []*SMNode {
 	var errl error = error(nil)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	//TODO convertire
 	allNodesList, errl := cs.GetAllNodes(ctx, NONE)
 	if errl != nil {
 		smlog.Fatal(LOG_SERVREG, "problema in GetAllNodes: %v", errl)
