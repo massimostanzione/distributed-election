@@ -223,8 +223,17 @@ func ListenToHb() {
 	noncoordTimer := time.NewTicker(HB_TIMEOUT + HB_TOLERANCE)
 	for {
 		select {
-		case <-Heartbeat:
-			//TODO check su mittente che deve essere il coordinatore, altrimenti inizia elezione
+		case in := <-Heartbeat:
+			if in.GetId() != CoordId {
+				// more than one coordinators in the network!
+				// it can happen when a large (>=15) number
+				// of nodes join at the same time
+				// in this case we need a new election
+				smlog.Error("Received HB from %d, that is not my coordinator %d", in.GetId(), CoordId)
+				smlog.Error("Starting new election...")
+				go startElection()
+				interrupt = true
+			}
 			smlog.Info(LOG_HB, "confermo hb")
 			noncoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
 			break
