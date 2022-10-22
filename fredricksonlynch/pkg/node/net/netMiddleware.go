@@ -11,11 +11,9 @@ import (
 	//	. "fredricksonLynch/tools/formatting"
 	//"fredricksonLynch/pkg/node"
 
-	"flag"
 	. "fredricksonLynch/tools/smlog"
 	smlog "fredricksonLynch/tools/smlog"
 	"net"
-	"strconv"
 	"time"
 
 	"google.golang.org/grpc"
@@ -36,37 +34,6 @@ const RMI_RETRY_TOLERANCE = 1
 const LATE_HB_TOLERANCE = 3
 
 func InitializeNetMW() {
-	//TODO processamento parametri va nel main
-	portParam := flag.String("p", "40043", "porta")
-	flag.Parse()
-	/*	if *help {
-		flag.PrintDefaults()
-		os.Exit(0)
-	}*/
-	//port = *portParam
-	//addr = "localHost:" + port
-	port, _ := strconv.ParseInt(*portParam, 10, 32)
-	smlog.Critical(LOG_UNDEFINED, "%d", int32(port))
-	Me.SetPort(int32(port))
-	Me.SetHost("localhost")
-	//addr = "localHost:" + port
-	// Parsing input arguments
-	/*	filepath := flag.String("f", "../../ILIAD_1STBOOK_IT_ALTERED", "source file to be \"fredricksonLynchp-ed\"")
-		substr := flag.String("substr", "Achille", "substr to be searched into the source file")
-		serverAddr := flag.String("s", "localHost:40042", "server address and port, in the format ADDRESS:PORT")
-		highlight := flag.String("hl", "classic", "[classic/asterisks/none] set substr highlighting in the output\nNOTICE: \"classic\" option may be not available on all systems.")
-		help := flag.Bool("help", false, "show this message")
-
-		flag.Parse()
-		_, exists := HighlightType[*highlight]
-		if !exists {
-			fmt.Println("\"-hl\" flag not correctly set.\nSee 'fredricksonLynch -help' for allowed values.")
-			os.Exit(-1)
-		}
-		if *help {
-			flag.PrintDefaults()
-			os.Exit(0)
-		}*/
 
 	// Contacting the server
 	// il centrale espone il servizio di identificazione dei nodi
