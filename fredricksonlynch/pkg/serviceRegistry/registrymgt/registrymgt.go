@@ -28,8 +28,7 @@ func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 			// quindi o è nato attivo o è stato attivo prima di fallire,
 			// e ora sta rientrando (gli ritorno il posto che aveva prima)
 
-			//TODO metodo setter
-			Nodes[i].ReportedAsFailed = false
+			//Nodes[i].ReportedAsFailed = false
 			return Nodes[i], true
 		}
 	}
@@ -38,7 +37,6 @@ func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 
 func FetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
 	// assunzione che i nodi siano identificati a partire da 1
-	//TODO uniformare logging basato su loggo
 	smlog.InfoU("ricevo richiesta di trovare il nodo %d", id)
 	i := id
 	searchedNodeWasFailed := false
@@ -52,7 +50,6 @@ func FetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
 	// assumo per ipotesi che l'ordinamento dei nodi nell'array
 	// coincida con l'ordinamento degli indici
 	// ossia: Nodes[i] è il nodo i-esimo
-	// TODO implementare ordinamento in base al campo id?
 	for {
 		//i = (i % len(Nodes)==0)?i % len(Nodes):0
 		i = i % len(Nodes)
