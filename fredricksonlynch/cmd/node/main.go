@@ -34,39 +34,30 @@ func main() {
 	StartStateMachine()
 }
 func loadConfig() {
-	//TODO processamento parametri va nel main
-	host := flag.String("h", "localhost", "host of the node, e.g. \"localhost\", 127.0.0.1 or whatever IP address")
-	portParam := flag.String("p", "40043", "target port")
+	//nodeaddr := flag.String("a", "localhost:40042", "complete address of the node (host:port), e.g. \"localhost:40043\", 127.0.0.1:40043")
+	nodehost := flag.String("h", "localhost", "host of the node, e.g. \"localhost\", 127.0.0.1 or whatever IP address")
+	nodeport := flag.Int("p", 40043, "target port")
+	servicereghost := flag.String("sh", "localhost", "host of the service registry, e.g. \"localhost\", 127.0.0.1 or whatever IP address")
+	serviceregport := flag.Int64("sp", 40042, "target port of the service registry")
+	help := flag.Bool("help", false, "show this message")
+
 	flag.Parse()
-	/*	if *help {
+
+	if *help {
 		flag.PrintDefaults()
 		os.Exit(0)
-	}*/
-	//port = *portParam
-	//addr = "localHost:" + port
-	port, _ := strconv.ParseInt(*portParam, 10, 32)
-	//smlog.Critical(LOG_UNDEFINED, "%d", int32(port))
-	Me.SetPort(int32(port))
-	Me.SetHost(*host)
-	//addr = "localHost:" + port
-	// Parsing input arguments
-	/*	filepath := flag.String("f", "../../ILIAD_1STBOOK_IT_ALTERED", "source file to be \"fredricksonLynchp-ed\"")
-		substr := flag.String("substr", "Achille", "substr to be searched into the source file")
-		serverAddr := flag.String("s", "localHost:40042", "server address and port, in the format ADDRESS:PORT")
-		highlight := flag.String("hl", "classic", "[classic/asterisks/none] set substr highlighting in the output\nNOTICE: \"classic\" option may be not available on all systems.")
-		help := flag.Bool("help", false, "show this message")
+	}
+	/*
+		if *nodeaddr {
+			split := strings.Split(*host, ":")
+			Me.SetHost(split[0])
+			Me.SetPort(int32(split[1]))
 
-		flag.Parse()
-		_, exists := HighlightType[*highlight]
-		if !exists {
-			fmt.Println("\"-hl\" flag not correctly set.\nSee 'fredricksonLynch -help' for allowed values.")
-			os.Exit(-1)
-		}
-		if *help {
-			flag.PrintDefaults()
-			os.Exit(0)
 		}*/
 
+	Me.SetHost(*nodehost)
+	Me.SetPort(int32(*nodeport))
+	ServRegAddr = *servicereghost + ":" + strconv.FormatInt(*serviceregport, 10)
 }
 func initializeWaitingMap() {
 	WaitingMap = map[MsgType]*WaitingStruct{

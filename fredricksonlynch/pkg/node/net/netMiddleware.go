@@ -34,12 +34,8 @@ const RMI_RETRY_TOLERANCE = 1
 const LATE_HB_TOLERANCE = 3
 
 func InitializeNetMW() {
-
-	// Contacting the server
 	// il centrale espone il servizio di identificazione dei nodi
-
-	serverAddr := "localHost:40042" //TODO configurare
-	conn := ConnectToNode(serverAddr)
+	conn := ConnectToNode(ServRegAddr)
 	serverConn = conn
 	/*	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
 		serverConn = conn
