@@ -19,6 +19,7 @@ const SIMULATION_DELAY = 0 * time.Second
 const HB_TIMEOUT = 1000 * time.Millisecond
 const HB_TOLERANCE = HB_TIMEOUT * 2 //250 * time.Millisecond
 const RESPONSE_TIME_LIMIT = 1000 * time.Millisecond
+const IDLE_WAIT_LIMIT = 5000 * time.Millisecond
 
 var SuccessfulHB = -1
 var Heartbeat chan (*MsgHeartbeat)

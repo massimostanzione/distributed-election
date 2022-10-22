@@ -110,10 +110,10 @@ func run() {
 		}
 	}
 }
-func setWaiting(msgType MsgType, val bool) {
-	WaitingMap[msgType].Waiting = val
-	if val {
-		WaitingMap[msgType].Timer.Reset(5 * time.Second)
+func setWaiting(msgType MsgType, active bool) {
+	WaitingMap[msgType].Waiting = active
+	if active {
+		WaitingMap[msgType].Timer.Reset(IDLE_WAIT_LIMIT * time.Second)
 	} else {
 		WaitingMap[msgType].Timer.Stop()
 	}
@@ -134,7 +134,7 @@ func state_joining() {
 				coord := elect(in.GetVoters())
 				smlog.InfoU("eletto")
 				CoordId = coord
-				// simmetria nella gestione + cache locale sul successivo
+				// TODO simmetria nella gestione + cache locale sul successivo
 				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
 				setWaiting(MSG_COORDINATOR, true)
 			} else {
@@ -168,19 +168,19 @@ func state_joining() {
 				//}
 			}
 			break
-			/*
-				case <-WaitingMap[MSG_ELECTION].Timer.C:
-					smlog.Trace(LOG_UNDEFINED, "scaduto timer E")
-					setWaiting(MSG_ELECTION, false)
-					startElection()
-					break
-				case <-WaitingMap[MSG_COORDINATOR].Timer.C:
-					smlog.Trace(LOG_UNDEFINED, "scaduto timer C")
-					// AskForNextNode
-					setWaiting(MSG_COORDINATOR, false)
-					sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
-					break
-			*/
+
+		case <-WaitingMap[MSG_ELECTION].Timer.C:
+			smlog.Trace(LOG_UNDEFINED, "scaduto timer E")
+			setWaiting(MSG_ELECTION, false)
+			startElection()
+			break
+		case <-WaitingMap[MSG_COORDINATOR].Timer.C:
+			smlog.Trace(LOG_UNDEFINED, "scaduto timer C")
+			setWaiting(MSG_COORDINATOR, false)
+			// AskForNextNode
+			sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
+			break
+
 		}
 	}
 }
