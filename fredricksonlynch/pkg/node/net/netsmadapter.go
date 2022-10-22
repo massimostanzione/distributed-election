@@ -12,6 +12,9 @@ func ToNetElectionMsg(sm *MsgElection) *pb.Election {
 func ToNetCoordinatorMsg(sm *MsgCoordinator) *pb.Coordinator {
 	return &pb.Coordinator{Starter: sm.GetStarter(), Coordinator: sm.GetCoordinator()}
 }
+func ToNetHeartbeatMsg(sm *MsgHeartbeat) *pb.Heartbeat {
+	return &pb.Heartbeat{Id: sm.GetId()}
+}
 
 func ToSMElectionMsg(net *pb.Election) *MsgElection {
 	return &MsgElection{Starter: net.GetStarter(), Voters: net.GetIds()}

@@ -229,8 +229,8 @@ func ListenToHb() {
 				// it can happen when a large (>=15) number
 				// of nodes join at the same time
 				// in this case we need a new election
-				smlog.Error("Received HB from %d, that is not my coordinator %d", in.GetId(), CoordId)
-				smlog.Error("Starting new election...")
+				smlog.Error(LOG_HB, "Received HB from %d, that is not my coordinator %d", in.GetId(), CoordId)
+				smlog.Error(LOG_HB, "Starting new election...")
 				go startElection()
 				interrupt = true
 			}
@@ -258,4 +258,69 @@ func ListenToHb() {
 	noncoordTimer.Stop()
 	smlog.Info(LOG_HB, "Esco dalla routine di ascolto HB...")
 	ListeningtoHb = false
+}
+
+// da separare nel comportamento
+func InviaHB() {
+	interrupt := false
+	coordTimer := time.NewTicker(HB_TIMEOUT)
+	//defer coordTimer.Stop()
+	//failedNodeExistence := true
+	/*
+		if len(allNodesList.GetList()) == 1 {
+			// se ci sono solo io, evito direttamente
+			smlog.Info(LOG_UNDEFINED, "Sono rimasto solo io")
+			//events <- "STOP"
+			interrupt = true // vedere
+		}*/
+	allNodesList := AskForAllNodesList()
+	hbMsg := &MsgHeartbeat{Id: Me.GetId()}
+	for {
+		select {
+		case <-coordTimer.C:
+			smlog.Critical(LOG_UNDEFINED, "SuccessfulHB=%v", SuccessfulHB)
+			if SuccessfulHB == 0 {
+				interrupt = true
+				SuccessfulHB = -1
+				break
+			}
+			SuccessfulHB = len(allNodesList) - 1
+			//smlog.Critical(LOG_UNDEFINED, "***** INIZIALIZZO SuccessfulHB=%v", SuccessfulHB)
+			for _, node := range allNodesList {
+				//				node := ToSMNode(nodenet)
+				if node.GetFullAddr() != Me.GetFullAddr() {
+					smlog.Info(LOG_HB, "Invio HB al nodo %d, presso %s", node.GetId(), node.GetFullAddr())
+
+					// TODO nota per relazione e documentazione:
+					// uso il parametro FALSE perché, a differenza degli altri casi,
+					// sto *enumerando* i nodi a cui inviare l'HB,
+					// mentre negli altri casi vado alla meglio cercando il successivo in piedi
+					// in questo caso il parametro di ritorno mi indicherà non solo la presenza generica
+					// di un nodo fallito, ma il fatto che il nodo fallito è proprio quello che ho provato
+					//rmiErr := SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
+
+					// mando gli hb in parallelo! tanto devo mandarli a tutti
+					go SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, hbMsg)
+					/*if rmiErr {
+						failedNodeExistence = true
+					}*/
+				}
+			} // qui ho inviato gli hb a tutti i nodi
+
+			smlog.Info(LOG_HB, "Inviati tutti gli HB, attendo timer...")
+			break
+		case in := <-EventsSend:
+			if in == "STOP2" { // fare canali differenti?
+				smlog.InfoU("arrivato evento di STOP: %s", in)
+				interrupt = true
+			}
+			break
+		}
+		if interrupt {
+			break
+		}
+	}
+	coordTimer.Stop()
+	smlog.Info(LOG_HB, "Esco dalla routine di invio HB...")
+	SendingHB = false
 }

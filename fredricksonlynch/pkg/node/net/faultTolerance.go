@@ -26,7 +26,7 @@ func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 	return false
 }
 
-func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, coord *MsgCoordinator, hb *pb.Heartbeat) (failedNodeExistence bool) { //opt ...interface{}) {
+func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, coord *MsgCoordinator, hb *MsgHeartbeat) (failedNodeExistence bool) { //opt ...interface{}) {
 	//TODO gestione delay con parametro (separata da SM)
 	//tryNextWhenFailed = true
 	for Pause {
@@ -75,8 +75,9 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 			_, errq = csN.ForwardCoordinator(ctx, netMsg)
 			break
 		case MSG_HEARTBEAT:
-			smlog.Warn(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING HB %v to %s"+ColorReset, hb, prossimoAddr)
-			_, errq = csN.SendHeartBeat(ctx, hb)
+			netMsg := ToNetHeartbeatMsg(hb)
+			smlog.Warn(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING HB %v to %s"+ColorReset, netMsg, prossimoAddr)
+			_, errq = csN.SendHeartBeat(ctx, netMsg)
 			break
 		default:
 			break
