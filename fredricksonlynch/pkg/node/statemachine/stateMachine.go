@@ -20,7 +20,7 @@ type nodeState uint8 //TODO spostare altrove?
 
 var currentState = STATE_UNDEFINED
 
-var nonCoordTimer *time.Timer
+//var nonCoordTimer *time.Timer
 
 const (
 	STATE_UNDEFINED nodeState = iota
@@ -63,10 +63,12 @@ func setState(state nodeState) {
 }
 
 func StartStateMachine() {
-	Heartbeat = make(chan *MsgHeartbeat, 1)
-	Events = make(chan string, 1)
-	ElectionChannel = make(chan *MsgElection, 1)
-	CoordChannel = make(chan *MsgCoordinator, 1)
+	Heartbeat = make(chan *MsgHeartbeat)
+	EventsSend = make(chan string)
+	EventsList = make(chan string)
+	//	Events = make(chan string, 1)
+	ElectionChannel = make(chan *MsgElection)
+	CoordChannel = make(chan *MsgCoordinator)
 	smlog.InitLogger(false)
 	smlog.Info(LOG_UNDEFINED, "Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
@@ -74,13 +76,17 @@ func StartStateMachine() {
 	InitializeNetMW()
 
 	setState(STATE_JOINING)
+
 	go run()
 	Listen()
 }
 
 func run() {
+	Me = AskForJoining()
+	startElection()
 	for {
 		for Pause {
+			// test
 		}
 		smlog.Info(LOG_STATEMACHINE, "Running state cycle")
 		//smlog.Println("*** RUNNING STATE: ", (msgType)(currentState))
@@ -88,7 +94,7 @@ func run() {
 		case STATE_JOINING: // 1
 			state_joining()
 			break
-		case STATE_ELECTION_STARTER: // 2
+		/*case STATE_ELECTION_STARTER: // 2
 			state_election_starter()
 			break
 		case STATE_ELECTION_VOTER: // 3
@@ -99,233 +105,148 @@ func run() {
 			break
 		case STATE_NON_COORDINATOR: // 5
 			state_nonCoordinator()
-			break
-		default: //TODO
+			break*/
+		default:
 		}
+	}
+}
+func setWaiting(msgType MsgType, val bool) {
+	WaitingMap[msgType].Waiting = val
+	if val {
+		WaitingMap[msgType].Timer.Reset(5 * time.Second)
+	} else {
+		WaitingMap[msgType].Timer.Stop()
 	}
 }
 
 func state_joining() {
 	for Pause {
 	}
-	Me = AskForJoining()
-	startElection()
-}
-
-func state_election_starter() {
-	late_hb_received := 0
+	// WaitingMap già inizializzata prima
 	for {
-		for Pause {
-		}
+		smlog.InfoU("attendo messaggi...")
 		select {
-		case inp := <-ElectionChannel:
-			if inp.GetStarter() == Me.GetId() {
-				smlog.Info(LOG_ELECTION, "- nomino il coord")
-				electedId := elect(inp.GetVoters())
-				// --------------
-				nextNode := AskForNodeInfo(Me.GetId()+1, true)
-				sendCoord(NewCoordinatorMsg(Me.GetId(), electedId), nextNode)
+		case in := <-ElectionChannel:
+			haltHb()
+			if in.GetStarter() == Me.GetId() {
+				smlog.InfoU("tornato election partito da me")
+				setWaiting(MSG_ELECTION, false)
+				coord := elect(in.GetVoters())
+				smlog.InfoU("eletto")
+				CoordId = coord
+				// simmetria nella gestione + cache locale sul successivo
+				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
+				setWaiting(MSG_COORDINATOR, true)
 			} else {
-				// c'è un altro starter, quindi più elezioni in giro
-				// ma va bene così, voto e faccio girare
-				vote(inp)
+				smlog.InfoU("arrivato election non mio")
+				vote(in)
+				smlog.InfoU("ho votato")
+				//è incluso in vote, da portare fuori
+				//sendElection(in, AskForNodeInfo(Me.GetId()+1, false))
 			}
 			break
-		case inp := <-CoordChannel:
-			if inp.GetStarter() == Me.GetId() {
-				endElection(inp, inp.GetStarter() != Me.GetId())
+		case in := <-CoordChannel:
+			haltHb()
+			smlog.InfoU("coordch")
+			if in.GetStarter() == Me.GetId() {
+				setWaiting(MSG_COORDINATOR, false)
 			} else {
-				// sono in attesa della mia elezione, non posso terminarla
-				// quindi semplicemente faccio girare
-				// non accetto quindi coordinatori che non vengano dalla mia elezione
-				nextNode := AskForNodeInfo(Me.GetId()+1, true)
-				sendCoord(NewCoordinatorMsg(inp.GetStarter(), inp.GetCoordinator()), nextNode)
+				go sendCoord(in, AskForNodeInfo(Me.GetId()+1, false))
 			}
-			//endElection(inp, inp.GetStarter() != Me.GetId())
-			break
-		case <-Heartbeat:
-			// non dovrei riceverli qui, quindi ne ignoro alcuni
-			// (potrebbero essere residui di elezioni precedenti)
-			// se continuano ad arrivare vuol dire che c'è qualcosa che non va
-			// quindi nel caso faccio partire nuova elezione
-			late_hb_received++
-			if late_hb_received == LATE_HB_TOLERANCE {
-				startElection()
-			}
-			break
-		}
-		break
-	}
-
-}
-
-func state_election_voter() {
-	late_hb_received := 0
-	for {
-		for Pause {
-		}
-		select {
-		case inp := <-ElectionChannel:
-			/*	if inp.GetStarter() == Me.GetId() {
-				smlog.Info(LOG_ELECTION, "- nomino il coord, ma da ELECTION_VOTER")
-				electedId := elect(inp.GetVoters())
-				nextNode := AskForNodeInfo(Me.GetId()+1, true)
-				sendCoord(NewCoordinatorMsg(Me.GetId(), electedId), nextNode)
-			} else {*/
-			// ho già votato, l'unica cosa che devo aspettare è un COORD,
-			// quindi se ci sono altre elezioni semplicemente voto
-			vote(inp)
-			//}
-			break
-		case inp := <-CoordChannel:
-			endElection(inp, inp.GetStarter() != Me.GetId())
-			break
-		case <-Heartbeat:
-			// non dovrei riceverli qui, quindi ne ignoro alcuni
-			// (potrebbero essere residui di elezioni precedenti)
-			// se continuano ad arrivare vuol dire che c'è qualcosa che non va
-			// quindi nel caso faccio partire nuova elezione
-			late_hb_received++
-			if late_hb_received == LATE_HB_TOLERANCE {
-				startElection()
-			}
-			break
-		}
-		break
-	}
-}
-
-func state_coordinator() {
-	late_hb_received := 0
-	//setState(STATE_ELECTION_VOTER)
-	confirmedCoord := false
-	for {
-		for Pause {
-		}
-		if !confirmedCoord {
-			go HBroutine()
-		}
-		select {
-		case inp := <-ElectionChannel:
-			Events <- "STOP"
-			if inp.GetStarter() == Me.GetId() {
-				smlog.Fatal(LOG_ELECTION, "sono coord ma mi è arrivata elezione da Me!")
-				/*smlog.Info(LOG_ELECTION, "- nomino il coord, ma da COORDINATOR")
-				electedId := elect(inp.GetVoters())
-				// --------------
-				nextNode := AskForNodeInfo(Me.GetId()+1, true)
-				sendCoord(NewCoordinatorMsg(Me.GetId(), electedId), nextNode)*/
-				//sendCoord(electedId, nextAddr)
+			CoordId = in.GetCoordinator() // duplicato?
+			if CoordId == Me.GetId() {
+				smlog.InfoU("sono il nuovo coord!")
+				//	if !SendingHB {
+				SendingHB = true
+				go InviaHB()
+				//	}
 			} else {
-				setState(STATE_ELECTION_VOTER)
-				vote(inp)
+				smlog.InfoU("NON sono il nuovo coord!")
+				//	if !ListeningtoHb {
+				ListeningtoHb = true
+				go ListenToHb()
+				//}
 			}
 			break
-		case inp := <-CoordChannel:
-			if inp.GetCoordinator() == Me.GetId() {
-				confirmedCoord = true
-			} else {
-				// fault tolerance: it can actually happen because of
-				// network delays, so try to handle it instead of stopping working
-				smlog.Critical(LOG_ELECTION, "sono coord, ma mi è arrivato un altro COORD senza elezioni, ad elezioni chiuse")
-				Events <- "STOP"
-				endElection(inp, inp.GetStarter() != Me.GetId())
-			}
-			break
-		case <-Heartbeat:
-			// non dovrei riceverli qui, quindi ne ignoro alcuni
-			// (potrebbero essere residui di elezioni precedenti)
-			// se continuano ad arrivare vuol dire che c'è qualcosa che non va
-			// quindi nel caso faccio partire nuova elezione
-			late_hb_received++
-			if late_hb_received == LATE_HB_TOLERANCE {
-				startElection()
-			}
-			break
-		}
-		//if !confirmedCoord {
-		break
-		//}
-	}
-}
-
-func state_nonCoordinator() {
-	late_hb_received := 0
-	nonCoordTimer = time.NewTimer(HB_TIMEOUT + HB_TOLERANCE)
-	//go listenHB()
-	for {
-		if Pause {
-			nonCoordTimer.Stop()
-			for Pause {
-			}
-			nonCoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
-		}
-		select {
-		case inp := <-Heartbeat:
-			if inp.GetId() != CoordId {
-				late_hb_received++
-				if late_hb_received == LATE_HB_TOLERANCE {
-					nonCoordTimer.Stop()
+			/*
+				case <-WaitingMap[MSG_ELECTION].Timer.C:
+					smlog.Trace(LOG_UNDEFINED, "scaduto timer E")
+					setWaiting(MSG_ELECTION, false)
 					startElection()
-				}
-			} else {
-				nonCoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
+					break
+				case <-WaitingMap[MSG_COORDINATOR].Timer.C:
+					smlog.Trace(LOG_UNDEFINED, "scaduto timer C")
+					// AskForNextNode
+					setWaiting(MSG_COORDINATOR, false)
+					sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
+					break
+			*/
+		}
+	}
+}
+func haltHb() {
+	if ListeningtoHb {
+		ListeningtoHb = false
+		EventsList <- "Stop1"
+	}
+	if SendingHB {
+		SendingHB = false
+		EventsSend <- "STOP2"
+	}
+
+}
+func startElection() {
+	/*
+		l'inoltro al successivo è già gestito in safeRMI,
+		difatti il successivo parametro success non serve
+		for {
+			i := Me.GetId() + 1
+			next := AskForNodeInfo(i, false)
+			if next.GetId() == Me.GetId() {
+				break
 			}
-			break
-		case <-nonCoordTimer.C:
-			nonCoordTimer.Stop()
-			smlog.Critical(LOG_UNDEFINED, "\033[41m*** COORDINATOR FAILURE DETECTED! ***\033[0m")
-			//nonCoordTimer.Stop()
-			//			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-			//locCtx = ctx
-			//		defer cancel()
-			//nonCoordTimer.Stop()
-			failedNode := AskForNodeInfo(CoordId, false) //cs.GetNode(ctx, &pb.NodeId{Id: CoordId})
-			DeclareNodeState(failedNode, false)
-
-			// qui non posso segnalare nulla sugli altri: so solo che COORD è failed,
-			// e che io sono vivo
-			// aggiorno quindi il centrale su di Me
-
-			DeclareNodeState(Me, true)
-
-			//			startElezione(ctx)
-			//stopList = true
-			startElection()
-			break
-
-		case inp := <-ElectionChannel:
-			nonCoordTimer.Stop()
-			//Events <- "STOP"
-			if inp.GetStarter() == Me.GetId() {
-				//TODO fault tolerance - non bloccare tutto con Fatal (left for reference, #51)
-				// fault tolerance: it can actually happen because of
-				// network delays, so try to handle it instead of stopping working
-				smlog.Critical(LOG_ELECTION, "sono coord ma è arrivata elezione da me!")
-
-				smlog.Info(LOG_ELECTION, "- nomino il coord, ma da NON_COORDINATOR")
-				electedId := elect(inp.GetVoters())
-				// --------------
-				nextNode := AskForNodeInfo(Me.GetId()+1, true)
-				sendCoord(NewCoordinatorMsg(Me.GetId(), electedId), nextNode)
-			} else {
-				setState(STATE_ELECTION_VOTER)
-				vote(inp)
+			//TODO mettere starter implicito
+			success := sendElection(NewElectionMsg(Me.GetId()), next)
+			if !success {
+				break
 			}
-			break
-		case inp := <-CoordChannel:
-			nonCoordTimer.Stop()
-			//Events <- "STOP" // TODO serve?
-			//TODO se coord resto io, posso risparmiarmelo?
-			//if inp.GetCoordinator()!=Me.GetId(){
-			//NOTA anche se sono lo stesso, chiamo endElection visto che il comportamento è lo stesso
+			i++
+		}*/
+	sendElection(NewElectionMsg(Me.GetId()), AskForNodeInfo(Me.GetId()+1, false))
+	setWaiting(MSG_ELECTION, true)
+}
 
-			//smlog.Println("pppppppqqqqqqq")
-			//NOTA anche se sono lo stesso, chiamo endElection visto che il comportamento è lo stesso
-			endElection(inp, inp.GetStarter() != Me.GetId())
+// da separare nel comportamento
+func ListenToHb() {
+	smlog.InfoU("inizio routine di ascolto hb...")
+	interrupt := false
+	noncoordTimer := time.NewTicker(HB_TIMEOUT + HB_TOLERANCE)
+	for {
+		select {
+		case <-Heartbeat:
+			//TODO check su mittente che deve essere il coordinatore, altrimenti inizia elezione
+			smlog.Info(LOG_HB, "confermo hb")
+			noncoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
+			break
+		case <-noncoordTimer.C:
+			smlog.Critical(LOG_HB, "non sento più il coord")
+			//Events <- "STOP1"
+			go startElection()
+			interrupt = true
+			break
+		case <-EventsList:
+			//if in == "Stop1" {
+			smlog.Info(LOG_HB, "devo smettere di ascoltare perché c'è una elezione in corso")
+			interrupt = true
 			//}
 			break
+
 		}
-		break
+		if interrupt {
+			break
+		}
 	}
+	noncoordTimer.Stop()
+	smlog.Info(LOG_HB, "Esco dalla routine di ascolto HB...")
+	ListeningtoHb = false
 }

@@ -32,7 +32,7 @@ var w *grpc.Server
 var lis net.Listener
 var serverConn *grpc.ClientConn //server
 
-const RMI_RETRY_TOLERANCE = 3
+const RMI_RETRY_TOLERANCE = 1
 const LATE_HB_TOLERANCE = 3
 
 func InitializeNetMW() {
@@ -139,7 +139,7 @@ func contactServiceReg() *grpc.ClientConn {
 	return conn
 }
 func AskForJoining() *SMNode {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
 	node, err := cs.JoinRing(ctx, &pb.NodeAddr{Host: Me.GetHost(), Port: Me.GetPort()})
@@ -173,126 +173,86 @@ func AskForNodeInfo(i int32, forceRunningNode bool) *SMNode {
 
 }
 
-func HBroutine() {
+// da separare nel comportamento
+func InviaHB() {
 	interrupt := false
 	coordTimer := time.NewTicker(HB_TIMEOUT)
 	//defer coordTimer.Stop()
-	failedNodeExistence := true
+	//failedNodeExistence := true
 	var allNodesList *pb.NodeList
 
+	smlog.Debug(LOG_SERVREG, "vado a chiedere tutti i nodi")
+	var errl error = error(nil)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	//TODO convertire
+	allNodesList, errl = cs.GetAllNodes(ctx, NONE)
+	if errl != nil {
+		smlog.Fatal(LOG_SERVREG, "problema in GetAllNodes: %v", errl)
+	}
+	/*
+		if len(allNodesList.GetList()) == 1 {
+			// se ci sono solo io, evito direttamente
+			smlog.Info(LOG_UNDEFINED, "Sono rimasto solo io")
+			//events <- "STOP"
+			interrupt = true // vedere
+		}*/
 	for {
-		if failedNodeExistence {
-			smlog.Debug(LOG_SERVREG, "vado a chiedere i nodi in piedi")
-			var errl error = error(nil)
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-			defer cancel()
-			allNodesList, errl = cs.GetAllRunningNodes(ctx, NONE)
-			if errl != nil {
-				smlog.Fatal(LOG_SERVREG, "problema nel reperire AllRunningNodes: %v", errl)
-			}
-			failedNodeExistence = false
-
-			if len(allNodesList.GetList()) == 1 {
-				// se ci sono solo io, evito direttamente
-				smlog.Info(LOG_UNDEFINED, "Sono rimasto solo io")
-				//events <- "STOP"
-				interrupt = true
-			}
-		}
-		for _, nodenet := range allNodesList.GetList() {
-			node := ToSMNode(nodenet)
-			if node.GetFullAddr() != Me.GetFullAddr() {
-				// TODO fare funzione che, dato un nodo, ritorna la connessione con esso
-
-				nodoServer := grpc.NewServer()
-				pb.RegisterDistGrepServer(nodoServer, &DGnode{})
-				smlog.Info(LOG_HB, "Invio HB al nodo %d, presso %s", node.GetId(), node.GetFullAddr())
-
-				// mi segnalo come vivo
-				ctx2, cancel2 := context.WithTimeout(context.Background(), time.Second)
-				defer cancel2()
-				_, erro := cs.ReportAsRunning(ctx2, &pb.Node{Id: Me.GetId()})
-				if erro != nil {
-					smlog.Error(LOG_UNDEFINED, "problema nel segnalarmi vivo mentre mando HB: %v", erro)
-				}
-				// TODO nota per relazione e documentazione:
-				// uso il parametro FALSE perché, a differenza degli altri casi,
-				// sto *enumerando* i nodi a cui inviare l'HB,
-				// mentre negli altri casi vado alla meglio cercando il successivo in piedi
-				// in questo caso il parametro di ritorno mi indicherà non solo la presenza generica
-				// di un nodo fallito, ma il fatto che il nodo fallito è proprio quello che ho provato
-				rmiErr := SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
-				if rmiErr {
-					failedNodeExistence = true
-				}
-			}
-		} // qui ho inviato gli hb a tutti i nodi
-
-		smlog.Info(LOG_HB, "Inviati tutti gli HB, attendo timer...")
 		select {
 		case <-coordTimer.C:
-			//smlog.InfoU("SCATTA IL TIMER")
-			// semplicemente vai avanti
-			break
-		case val := <-Events:
-			if val == "STOP" {
-				smlog.InfoU("------------------ ARRIVATO EVENTO DI \"STOP\"")
+			smlog.Critical(LOG_UNDEFINED, "SuccessfulHB=%v", SuccessfulHB)
+			if SuccessfulHB == 0 {
+				interrupt = true
+				SuccessfulHB = -1
+				break
 			}
-			coordTimer.Stop()
-			interrupt = true
+			SuccessfulHB = len(allNodesList.GetList()) - 1
+			//smlog.Critical(LOG_UNDEFINED, "***** INIZIALIZZO SuccessfulHB=%v", SuccessfulHB)
+			for _, nodenet := range allNodesList.GetList() {
+				node := ToSMNode(nodenet)
+				if node.GetFullAddr() != Me.GetFullAddr() {
+					// TODO delegare
+					nodoServer := grpc.NewServer()
+					pb.RegisterDistGrepServer(nodoServer, &DGnode{})
+					smlog.Info(LOG_HB, "Invio HB al nodo %d, presso %s", node.GetId(), node.GetFullAddr())
+
+					// mi segnalo come vivo
+					//	ctx2, cancel2 := context.WithTimeout(context.Background(), time.Second)
+					//defer cancel2()
+					/*_, erro := cs.ReportAsRunning(ctx2, &pb.Node{Id: Me.GetId()})
+					if erro != nil {
+						smlog.Error(LOG_UNDEFINED, "problema nel segnalarmi vivo mentre mando HB: %v", erro)
+					}*/
+					// TODO nota per relazione e documentazione:
+					// uso il parametro FALSE perché, a differenza degli altri casi,
+					// sto *enumerando* i nodi a cui inviare l'HB,
+					// mentre negli altri casi vado alla meglio cercando il successivo in piedi
+					// in questo caso il parametro di ritorno mi indicherà non solo la presenza generica
+					// di un nodo fallito, ma il fatto che il nodo fallito è proprio quello che ho provato
+					//rmiErr := SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
+
+					// mando gli hb in parallelo! tanto devo mandarli a tutti
+					go SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
+					/*if rmiErr {
+						failedNodeExistence = true
+					}*/
+				}
+			} // qui ho inviato gli hb a tutti i nodi
+
+			smlog.Info(LOG_HB, "Inviati tutti gli HB, attendo timer...")
+			break
+		case in := <-EventsSend:
+			if in == "STOP2" { // fare canali differenti?
+				smlog.InfoU("arrivato evento di STOP: %s", in)
+				interrupt = true
+			}
 			break
 		}
-
 		if interrupt {
 			break
 		}
-
 	}
+	coordTimer.Stop()
 	smlog.Info(LOG_HB, "Esco dalla routine di invio HB...")
+	SendingHB = false
 }
-
-//TODO gestire fallimenti temporanei rispetto al servReg
-func DeclareNodeState(node *SMNode, running bool) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	if running {
-		//smlog.Info(LOG_NETWORK, "\033[41m*** dichiaro running il nodo %d ***\033[0m", node.GetId())
-		_, err := cs.ReportAsRunning(ctx, ToNetNode(*node))
-		if err != nil {
-			smlog.Fatal(LOG_UNDEFINED, err.Error())
-		}
-	} else {
-		smlog.Error(LOG_NETWORK, ColorRedBckgrWhite+"*** dichiaro failed il nodo %d ***"+ColorReset, node.GetId())
-		_, err := cs.ReportAsFailed(ctx, ToNetNode(*node))
-		if err != nil {
-			smlog.Fatal(LOG_UNDEFINED, err.Error())
-		}
-	}
-}
-
-/*
-func DeclareFailed(failedNode *SMNode) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	smlog.Error(LOG_NETWORK, "\033[41m*** dichiaro failed il nodo %d ***\033[0m", failedNode.GetId())
-	_, err := cs.ReportAsFailed(ctx, &pb.Node{Id: failedNode.GetId(),
-		Host: failedNode.GetHost(),
-		Port: failedNode.GetPort()})
-	if err != nil {
-		smlog.Fatal(LOG_UNDEFINED, err.Error())
-	}
-}
-
-//TODO unire con la precedente
-func DeclareRunning(runningNode *SMNode) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	smlog.Info(LOG_NETWORK, "\033[41m*** dichiaro running il nodo %d ***\033[0m", runningNode.GetId())
-	_, err := cs.ReportAsFailed(ctx, &pb.Node{Id: runningNode.GetId(),
-		Host: runningNode.GetHost(),
-		Port: runningNode.GetPort()})
-	if err != nil {
-		smlog.Fatal(LOG_UNDEFINED, err.Error())
-	}
-}
-*/

@@ -9,37 +9,39 @@ import (
 	smlog "fredricksonLynch/tools/smlog"
 )
 
-func sendElection(msg *MsgElection, dest *SMNode) {
-	abortIfFailedCoord := false
+func sendElection(msg *MsgElection, dest *SMNode) bool {
+	/*abortIfFailedCoord := false
 	if dest.GetId() == CoordId {
 		abortIfFailedCoord = true
 	}
-
-	rmiErr := SafeRMI(MSG_ELECTION, dest, !abortIfFailedCoord, msg, nil, nil)
+	*/
+	rmiErr := SafeRMI(MSG_ELECTION, dest, true, msg, nil, nil)
 
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
-	if abortIfFailedCoord && rmiErr {
+	/*	if abortIfFailedCoord && rmiErr {
 		smlog.Critical(LOG_ELECTION, "coordinatore andato mentre ancora c'era l'elezione, ne inizio una nuova...")
 
 		startElection()
 		setState(STATE_ELECTION_STARTER)
-	}
+	}*/
+	return rmiErr
 
 }
 
 func sendCoord(msg *MsgCoordinator, dest *SMNode) {
-	abortIfFailedCoord := false
+	/*abortIfFailedCoord := false
 	if dest.GetId() == CoordId {
 		abortIfFailedCoord = true
-	}
-	rmiErr := SafeRMI(MSG_COORDINATOR, dest, !abortIfFailedCoord, nil, msg, nil)
+	}*/
+	//rmiErr := SafeRMI(MSG_COORDINATOR, dest, false, nil, msg, nil)
+	SafeRMI(MSG_COORDINATOR, dest, true, nil, msg, nil)
 
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
-	if abortIfFailedCoord && rmiErr {
+	/*if abortIfFailedCoord && rmiErr {
 		smlog.Critical(LOG_ELECTION, "coordinatore andato mentre ancora c'era l'elezione, ne inizio una nuova...")
 		startElection()
 		setState(STATE_ELECTION_STARTER)
-	}
+	}*/
 	//setState(STATE_ELECTION_STARTER)
 }
 
@@ -48,10 +50,19 @@ func vote(inp *MsgElection) {
 		smlog.Info(LOG_ELECTION, "- voting...")
 		nextNode := AskForNodeInfo(Me.GetId()+1, true)
 		inp.AddVoter(Me.GetId())
-		sendElection(inp, nextNode)
+		//spostare fuori il seguente
+		go sendElection(inp, nextNode)
 		//sendCompiledMessage(Me.GetId(), MSG_ELECTION, nextNode, inp.GetStarter(), inp.GetIds())
 		//setState(STATE_ELECTION_VOTER)
 	} else {
+		// due opzioni:
+		// 1 - me ne accoro a posteriori (che è questa): se lo starter ha fallito me ne
+		//     accorgo perché mi arriva un ELECTION in cui avevo già votato,
+		//     e ciò significa che il messaggio è andato OLTRE il suo giro
+		// 2 - me ne accorgo prima di inviarlo: se il destinatario è lo starter e non risponde
+		//     allora abortisco l'elezione, tanto se torna ha il suo timer lungo
+		// ==> DA PREFERIRSI LA N. 2,
+		//     perché ciò vale anche per COORD, e lì non ho il controllo per vedere se ho votato o meno
 		smlog.Fatal(LOG_ELECTION, "avevo già votato, TODO implementare abortElection")
 	}
 }
@@ -82,19 +93,4 @@ func elect(candidates []int32) int32 {
 	}
 	//	smlog.Println("PROCLAMO ELETTO IL NUMERO", max)
 	return max
-}
-
-func startElection() {
-	smlog.InfoU("aaaaaaaa") //TODO gestire quando rimane solo uno, succede anche altrove
-	nextNode := AskForNodeInfo(Me.GetId()+1, true)
-	// se sono rimasto solo io non faccio nemmeno iniziare l'elezione, è inutile
-	if nextNode.GetId() != Me.GetId() {
-		//sendEmptyMessage(Me.GetId(), MSG_ELECTION, nextNode)
-		sendElection(NewElectionMsg(Me.GetId()), nextNode)
-		//	starter = true //TODO ricordare di resettare
-		setState(STATE_ELECTION_STARTER)
-	} else {
-		smlog.InfoU("Sono rimasto solo io/2")
-		setState(STATE_COORDINATOR)
-	}
 }
