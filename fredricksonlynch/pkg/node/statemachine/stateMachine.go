@@ -127,7 +127,7 @@ func state_joining() {
 		smlog.InfoU("attendo messaggi...")
 		select {
 		case in := <-ElectionChannel:
-			haltHb()
+			//setHbMgt(HB_HALT)
 			if in.GetStarter() == Me.GetId() {
 				smlog.InfoU("tornato election partito da me")
 				setWaiting(MSG_ELECTION, false)
@@ -135,37 +135,32 @@ func state_joining() {
 				smlog.InfoU("eletto")
 				CoordId = coord
 				// TODO simmetria nella gestione + cache locale sul successivo
-				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
+				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
+				setHbMgt(HB_SEND)
 				setWaiting(MSG_COORDINATOR, true)
 			} else {
 				smlog.InfoU("arrivato election non mio")
 				vote(in)
 				smlog.InfoU("ho votato")
 				//è incluso in vote, da portare fuori
-				//sendElection(in, AskForNodeInfo(Me.GetId()+1, false))
+				//sendElection(in, NextNode)
 			}
 			break
 		case in := <-CoordChannel:
-			haltHb()
+			//setHbMgt(HB_HALT)
 			smlog.InfoU("coordch")
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_COORDINATOR, false)
 			} else {
-				go sendCoord(in, AskForNodeInfo(Me.GetId()+1, false))
+				go sendCoord(in, NextNode)
 			}
 			CoordId = in.GetCoordinator() // duplicato?
 			if CoordId == Me.GetId() {
 				smlog.InfoU("sono il nuovo coord!")
-				//	if !SendingHB {
-				SendingHB = true
-				go InviaHB()
-				//	}
+				setHbMgt(HB_SEND)
 			} else {
 				smlog.InfoU("NON sono il nuovo coord!")
-				//	if !ListeningtoHb {
-				ListeningtoHb = true
-				go ListenToHb()
-				//}
+				setHbMgt(HB_LISTEN)
 			}
 			break
 
@@ -178,23 +173,13 @@ func state_joining() {
 			smlog.Trace(LOG_UNDEFINED, "scaduto timer C")
 			setWaiting(MSG_COORDINATOR, false)
 			// AskForNextNode
-			sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
+			sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
 			break
 
 		}
 	}
 }
-func haltHb() {
-	if ListeningtoHb {
-		ListeningtoHb = false
-		EventsList <- "Stop1"
-	}
-	if SendingHB {
-		SendingHB = false
-		EventsSend <- "STOP2"
-	}
 
-}
 func startElection() {
 	/*
 		l'inoltro al successivo è già gestito in safeRMI,
@@ -212,115 +197,6 @@ func startElection() {
 			}
 			i++
 		}*/
-	sendElection(NewElectionMsg(Me.GetId()), AskForNodeInfo(Me.GetId()+1, false))
+	sendElection(NewElectionMsg(Me.GetId()), NextNode)
 	setWaiting(MSG_ELECTION, true)
-}
-
-// da separare nel comportamento
-func ListenToHb() {
-	smlog.InfoU("inizio routine di ascolto hb...")
-	interrupt := false
-	noncoordTimer := time.NewTicker(HB_TIMEOUT + HB_TOLERANCE)
-	for {
-		select {
-		case in := <-Heartbeat:
-			if in.GetId() != CoordId {
-				// more than one coordinators in the network!
-				// it can happen when a large (>=15) number
-				// of nodes join at the same time
-				// in this case we need a new election
-				smlog.Error(LOG_HB, "Received HB from %d, that is not my coordinator %d", in.GetId(), CoordId)
-				smlog.Error(LOG_HB, "Starting new election...")
-				go startElection()
-				interrupt = true
-			}
-			smlog.Info(LOG_HB, "confermo hb")
-			noncoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
-			break
-		case <-noncoordTimer.C:
-			smlog.Critical(LOG_HB, "non sento più il coord")
-			//Events <- "STOP1"
-			go startElection()
-			interrupt = true
-			break
-		case <-EventsList:
-			//if in == "Stop1" {
-			smlog.Info(LOG_HB, "devo smettere di ascoltare perché c'è una elezione in corso")
-			interrupt = true
-			//}
-			break
-
-		}
-		if interrupt {
-			break
-		}
-	}
-	noncoordTimer.Stop()
-	smlog.Info(LOG_HB, "Esco dalla routine di ascolto HB...")
-	ListeningtoHb = false
-}
-
-// da separare nel comportamento
-func InviaHB() {
-	interrupt := false
-	coordTimer := time.NewTicker(HB_TIMEOUT)
-	//defer coordTimer.Stop()
-	//failedNodeExistence := true
-	/*
-		if len(allNodesList.GetList()) == 1 {
-			// se ci sono solo io, evito direttamente
-			smlog.Info(LOG_UNDEFINED, "Sono rimasto solo io")
-			//events <- "STOP"
-			interrupt = true // vedere
-		}*/
-	allNodesList := AskForAllNodesList()
-	hbMsg := &MsgHeartbeat{Id: Me.GetId()}
-	for {
-		select {
-		case <-coordTimer.C:
-			smlog.Critical(LOG_UNDEFINED, "SuccessfulHB=%v", SuccessfulHB)
-			if SuccessfulHB == 0 {
-				interrupt = true
-				SuccessfulHB = -1
-				break
-			}
-			SuccessfulHB = len(allNodesList) - 1
-			//smlog.Critical(LOG_UNDEFINED, "***** INIZIALIZZO SuccessfulHB=%v", SuccessfulHB)
-			for _, node := range allNodesList {
-				//				node := ToSMNode(nodenet)
-				if node.GetFullAddr() != Me.GetFullAddr() {
-					smlog.Info(LOG_HB, "Invio HB al nodo %d, presso %s", node.GetId(), node.GetFullAddr())
-
-					// TODO nota per relazione e documentazione:
-					// uso il parametro FALSE perché, a differenza degli altri casi,
-					// sto *enumerando* i nodi a cui inviare l'HB,
-					// mentre negli altri casi vado alla meglio cercando il successivo in piedi
-					// in questo caso il parametro di ritorno mi indicherà non solo la presenza generica
-					// di un nodo fallito, ma il fatto che il nodo fallito è proprio quello che ho provato
-					//rmiErr := SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
-
-					// mando gli hb in parallelo! tanto devo mandarli a tutti
-					go SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, hbMsg)
-					/*if rmiErr {
-						failedNodeExistence = true
-					}*/
-				}
-			} // qui ho inviato gli hb a tutti i nodi
-
-			smlog.Info(LOG_HB, "Inviati tutti gli HB, attendo timer...")
-			break
-		case in := <-EventsSend:
-			if in == "STOP2" { // fare canali differenti?
-				smlog.InfoU("arrivato evento di STOP: %s", in)
-				interrupt = true
-			}
-			break
-		}
-		if interrupt {
-			break
-		}
-	}
-	coordTimer.Stop()
-	smlog.Info(LOG_HB, "Esco dalla routine di invio HB...")
-	SendingHB = false
 }

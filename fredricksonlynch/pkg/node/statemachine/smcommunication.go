@@ -73,8 +73,8 @@ func endElection(coordinatorMsg *MsgCoordinator, forwardMsg bool) {
 	smlog.Info(LOG_ELECTION, "new coordinator is ", CoordId)
 	// vedi se C/NC
 	if forwardMsg {
-		nextNode := AskForNodeInfo(Me.GetId()+1, true)
-		go sendCoord(coordinatorMsg, nextNode)
+		//nextNode := AskForNodeInfo(Me.GetId()+1, true)
+		go sendCoord(coordinatorMsg, NextNode)
 		//go send(MSG_COORDINATOR, starter, nextNode, )
 	}
 	if CoordId == Me.GetId() {

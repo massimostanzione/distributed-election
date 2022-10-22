@@ -31,6 +31,16 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 	//tryNextWhenFailed = true
 	for Pause {
 	}
+
+	// update local cache the first time a sequential message is sent
+	if NextNode.GetId() == 0 && tipo != MSG_HEARTBEAT {
+		requested := AskForNodeInfo(Me.GetId()+1, false)
+		if requested.GetId() != 1 {
+			NextNode = requested
+			smlog.Critical(LOG_UNDEFINED, "%s", NextNode)
+		}
+	}
+
 	attempts := 0
 	nextNode := dest
 	prossimoId := nextNode.GetId()

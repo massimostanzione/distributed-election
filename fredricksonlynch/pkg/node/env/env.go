@@ -10,6 +10,7 @@ import (
 )
 
 var Me *SMNode = &SMNode{}
+var NextNode *SMNode = &SMNode{}
 var CoordId int32 = -1
 var Pause = false
 
@@ -36,5 +37,3 @@ type WaitingStruct struct {
 }
 
 var WaitingMap = map[MsgType]*WaitingStruct{}
-var SendingHB = false
-var ListeningtoHb = false
