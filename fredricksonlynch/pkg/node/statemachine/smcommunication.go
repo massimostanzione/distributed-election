@@ -15,7 +15,7 @@ func sendElection(msg *MsgElection, dest *SMNode) bool {
 		abortIfFailedCoord = true
 	}
 	*/
-	rmiErr := SafeRMI(MSG_ELECTION, dest, false, msg, nil, nil)
+	rmiErr := SafeRMI(MSG_ELECTION, dest, true, msg, nil, nil)
 
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
 	/*	if abortIfFailedCoord && rmiErr {
@@ -34,7 +34,7 @@ func sendCoord(msg *MsgCoordinator, dest *SMNode) {
 		abortIfFailedCoord = true
 	}*/
 	//rmiErr := SafeRMI(MSG_COORDINATOR, dest, false, nil, msg, nil)
-	SafeRMI(MSG_COORDINATOR, dest, false, nil, msg, nil)
+	SafeRMI(MSG_COORDINATOR, dest, true, nil, msg, nil)
 
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
 	/*if abortIfFailedCoord && rmiErr {
@@ -50,10 +50,19 @@ func vote(inp *MsgElection) {
 		smlog.Info(LOG_ELECTION, "- voting...")
 		nextNode := AskForNodeInfo(Me.GetId()+1, true)
 		inp.AddVoter(Me.GetId())
-		sendElection(inp, nextNode)
+		//spostare fuori il seguente
+		go sendElection(inp, nextNode)
 		//sendCompiledMessage(Me.GetId(), MSG_ELECTION, nextNode, inp.GetStarter(), inp.GetIds())
 		//setState(STATE_ELECTION_VOTER)
 	} else {
+		// due opzioni:
+		// 1 - me ne accoro a posteriori (che è questa): se lo starter ha fallito me ne
+		//     accorgo perché mi arriva un ELECTION in cui avevo già votato,
+		//     e ciò significa che il messaggio è andato OLTRE il suo giro
+		// 2 - me ne accorgo prima di inviarlo: se il destinatario è lo starter e non risponde
+		//     allora abortisco l'elezione, tanto se torna ha il suo timer lungo
+		// ==> DA PREFERIRSI LA N. 2,
+		//     perché ciò vale anche per COORD, e lì non ho il controllo per vedere se ho votato o meno
 		smlog.Fatal(LOG_ELECTION, "avevo già votato, TODO implementare abortElection")
 	}
 }

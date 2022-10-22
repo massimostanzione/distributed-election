@@ -17,10 +17,13 @@ const SIMULATION_DELAY = 0 * time.Second
 
 // TODO file di configurazione con i parametri
 const HB_TIMEOUT = 1000 * time.Millisecond
-const HB_TOLERANCE = HB_TIMEOUT / 2 //250 * time.Millisecond
+const HB_TOLERANCE = HB_TIMEOUT * 2 //250 * time.Millisecond
+const RESPONSE_TIME_LIMIT = 1000 * time.Millisecond
 
+var SuccessfulHB = -1
 var Heartbeat chan (*MsgHeartbeat)
-var Events chan (string)
+var EventsSend chan (string)
+var EventsList chan (string)
 var ElectionChannel chan (*MsgElection)
 var CoordChannel chan (*MsgCoordinator)
 var Sigchan chan (os.Signal)

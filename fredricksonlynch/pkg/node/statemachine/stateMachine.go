@@ -20,7 +20,7 @@ type nodeState uint8 //TODO spostare altrove?
 
 var currentState = STATE_UNDEFINED
 
-var nonCoordTimer *time.Timer
+//var nonCoordTimer *time.Timer
 
 const (
 	STATE_UNDEFINED nodeState = iota
@@ -63,10 +63,12 @@ func setState(state nodeState) {
 }
 
 func StartStateMachine() {
-	Heartbeat = make(chan *MsgHeartbeat, 1)
-	Events = make(chan string, 1)
-	ElectionChannel = make(chan *MsgElection, 1)
-	CoordChannel = make(chan *MsgCoordinator, 1)
+	Heartbeat = make(chan *MsgHeartbeat)
+	EventsSend = make(chan string)
+	EventsList = make(chan string)
+	//	Events = make(chan string, 1)
+	ElectionChannel = make(chan *MsgElection)
+	CoordChannel = make(chan *MsgCoordinator)
 	smlog.InitLogger(false)
 	smlog.Info(LOG_UNDEFINED, "Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
@@ -74,11 +76,14 @@ func StartStateMachine() {
 	InitializeNetMW()
 
 	setState(STATE_JOINING)
+
 	go run()
 	Listen()
 }
 
 func run() {
+	Me = AskForJoining()
+	startElection()
 	for {
 		for Pause {
 			// test
@@ -117,43 +122,50 @@ func setWaiting(msgType MsgType, val bool) {
 func state_joining() {
 	for Pause {
 	}
-	Me = AskForJoining()
 	// WaitingMap già inizializzata prima
-	startElection()
 	for {
+		smlog.InfoU("attendo messaggi...")
 		select {
 		case in := <-ElectionChannel:
+			haltHb()
 			if in.GetStarter() == Me.GetId() {
 				smlog.InfoU("tornato election partito da me")
 				setWaiting(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
 				smlog.InfoU("eletto")
 				CoordId = coord
-				// simmetria nella gestione
-				sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
+				// simmetria nella gestione + cache locale sul successivo
+				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), AskForNodeInfo(Me.GetId()+1, false))
 				setWaiting(MSG_COORDINATOR, true)
 			} else {
 				smlog.InfoU("arrivato election non mio")
 				vote(in)
 				smlog.InfoU("ho votato")
-				Events <- "STOP"
-				sendElection(in, AskForNodeInfo(Me.GetId()+1, false))
+				//è incluso in vote, da portare fuori
+				//sendElection(in, AskForNodeInfo(Me.GetId()+1, false))
 			}
 			break
 		case in := <-CoordChannel:
+			haltHb()
 			smlog.InfoU("coordch")
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_COORDINATOR, false)
+			} else {
+				go sendCoord(in, AskForNodeInfo(Me.GetId()+1, false))
 			}
 			CoordId = in.GetCoordinator() // duplicato?
 			if CoordId == Me.GetId() {
 				smlog.InfoU("sono il nuovo coord!")
+				//	if !SendingHB {
 				SendingHB = true
 				go InviaHB()
+				//	}
 			} else {
 				smlog.InfoU("NON sono il nuovo coord!")
+				//	if !ListeningtoHb {
 				ListeningtoHb = true
 				go ListenToHb()
+				//}
 			}
 			break
 			/*
@@ -171,6 +183,17 @@ func state_joining() {
 			*/
 		}
 	}
+}
+func haltHb() {
+	if ListeningtoHb {
+		ListeningtoHb = false
+		EventsList <- "Stop1"
+	}
+	if SendingHB {
+		SendingHB = false
+		EventsSend <- "STOP2"
+	}
+
 }
 func startElection() {
 	/*
@@ -195,23 +218,35 @@ func startElection() {
 
 // da separare nel comportamento
 func ListenToHb() {
+	smlog.InfoU("inizio routine di ascolto hb...")
 	interrupt := false
 	noncoordTimer := time.NewTicker(HB_TIMEOUT + HB_TOLERANCE)
 	for {
 		select {
 		case <-Heartbeat:
+			//TODO check su mittente che deve essere il coordinatore, altrimenti inizia elezione
+			smlog.Info(LOG_HB, "confermo hb")
 			noncoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
 			break
 		case <-noncoordTimer.C:
+			smlog.Critical(LOG_HB, "non sento più il coord")
+			//Events <- "STOP1"
 			go startElection()
-			Events <- "STOP"
 			interrupt = true
 			break
+		case <-EventsList:
+			//if in == "Stop1" {
+			smlog.Info(LOG_HB, "devo smettere di ascoltare perché c'è una elezione in corso")
+			interrupt = true
+			//}
+			break
+
 		}
 		if interrupt {
 			break
 		}
 	}
-	smlog.Info(LOG_HB, "Esco dalla routine di invio HB...")
-	SendingHB = false
+	noncoordTimer.Stop()
+	smlog.Info(LOG_HB, "Esco dalla routine di ascolto HB...")
+	ListeningtoHb = false
 }

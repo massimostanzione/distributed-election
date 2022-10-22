@@ -32,7 +32,7 @@ var w *grpc.Server
 var lis net.Listener
 var serverConn *grpc.ClientConn //server
 
-const RMI_RETRY_TOLERANCE = 3
+const RMI_RETRY_TOLERANCE = 1
 const LATE_HB_TOLERANCE = 3
 
 func InitializeNetMW() {
@@ -173,7 +173,7 @@ func AskForNodeInfo(i int32, forceRunningNode bool) *SMNode {
 
 }
 
-func HBroutine() {
+func HBOLDroutine() {
 	interrupt := false
 	coordTimer := time.NewTicker(HB_TIMEOUT)
 	//defer coordTimer.Stop()
@@ -234,11 +234,10 @@ func HBroutine() {
 			//smlog.InfoU("SCATTA IL TIMER")
 			// semplicemente vai avanti
 			break
-		case val := <-Events:
-			if val == "STOP" {
-				smlog.InfoU("------------------ ARRIVATO EVENTO DI \"STOP\"")
-			}
-			coordTimer.Stop()
+		case <-EventsSend:
+			//if val == "STOP" {
+			smlog.InfoU("------------------ ARRIVATO EVENTO DI \"STOP\"")
+			//}
 			interrupt = true
 			break
 		}
@@ -248,7 +247,8 @@ func HBroutine() {
 		}
 
 	}
-	smlog.Info(LOG_HB, "Esco dalla routine di invio HB...")
+	coordTimer.Stop()
+	smlog.Info(LOG_HB, "aaaaaaaaaaaaaaaaaaaaaEsco dalla routine di invio HB...")
 }
 
 //TODO gestire fallimenti temporanei rispetto al servReg
@@ -323,7 +323,14 @@ func InviaHB() {
 	for {
 		select {
 		case <-coordTimer.C:
-
+			smlog.Critical(LOG_UNDEFINED, "SuccessfulHB=%v", SuccessfulHB)
+			if SuccessfulHB == 0 {
+				interrupt = true
+				SuccessfulHB = -1
+				break
+			}
+			SuccessfulHB = len(allNodesList.GetList()) - 1
+			//smlog.Critical(LOG_UNDEFINED, "***** INIZIALIZZO SuccessfulHB=%v", SuccessfulHB)
 			for _, nodenet := range allNodesList.GetList() {
 				node := ToSMNode(nodenet)
 				if node.GetFullAddr() != Me.GetFullAddr() {
@@ -346,7 +353,9 @@ func InviaHB() {
 					// in questo caso il parametro di ritorno mi indicherà non solo la presenza generica
 					// di un nodo fallito, ma il fatto che il nodo fallito è proprio quello che ho provato
 					//rmiErr := SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
-					SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
+
+					// mando gli hb in parallelo! tanto devo mandarli a tutti
+					go SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, &pb.Heartbeat{Id: Me.GetId()})
 					/*if rmiErr {
 						failedNodeExistence = true
 					}*/
@@ -355,14 +364,18 @@ func InviaHB() {
 
 			smlog.Info(LOG_HB, "Inviati tutti gli HB, attendo timer...")
 			break
-		case <-Events:
-			interrupt = true
+		case in := <-EventsSend:
+			if in == "STOP2" { // fare canali differenti?
+				smlog.InfoU("arrivato evento di STOP: %s", in)
+				interrupt = true
+			}
 			break
 		}
 		if interrupt {
 			break
 		}
 	}
+	coordTimer.Stop()
 	smlog.Info(LOG_HB, "Esco dalla routine di invio HB...")
 	SendingHB = false
 }
