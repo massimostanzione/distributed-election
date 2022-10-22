@@ -63,7 +63,6 @@ func (s *DGserver) ReportAsRunning(ctx context.Context, in *pb.Node) (*pb.NONE, 
 	return NONE, status.New(codes.OK, "").Err()
 }
 
-//TODO altrove?
 func (s *DGserver) GetAllNodes(ctx context.Context, in *pb.NONE) (*pb.NodeList, error) {
 	return GetAllNodesExecutive(false), status.New(codes.OK, "").Err()
 }
