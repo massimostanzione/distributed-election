@@ -6,14 +6,10 @@ package fredricksonLynch;
 service DistGrep {
     rpc joinRing(NodeAddr) returns (Node);
     rpc getNode(NodeId) returns (Node);
-    rpc getNextRunningNode(NodeId) returns (Node);
+    rpc getAllNodes(NONE) returns (NodeList);
     rpc forwardElection(Election) returns (NONE);
     rpc forwardCoordinator(Coordinator) returns (NONE);
     rpc sendHeartBeat(Heartbeat) returns (NONE);
-    rpc getAllNodes(NONE) returns (NodeList);
-    rpc getAllRunningNodes(NONE) returns (NodeList);
-    rpc reportAsFailed(Node) returns (NONE);
-    rpc reportAsRunning(Node) returns (NONE);
 } 
 message Node {
 	int32 id = 1;

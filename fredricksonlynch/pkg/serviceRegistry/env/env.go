@@ -6,3 +6,4 @@ import (
 
 var Nodes []NodeRecord
 var NONE = &pb.NONE{}
+var Port int
