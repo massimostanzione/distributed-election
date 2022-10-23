@@ -6,9 +6,11 @@ import (
 	. "fredricksonLynch/pkg/node/net"
 	. "fredricksonLynch/pkg/node/statemachine"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -33,10 +35,9 @@ func main() {
 	initializeWaitingMap()
 	StartStateMachine()
 }
+
 func loadConfig() {
-	//nodeaddr := flag.String("a", "localhost:40042", "complete address of the node (host:port), e.g. \"localhost:40043\", 127.0.0.1:40043")
-	nodehost := flag.String("h", "localhost", "host of the node, e.g. \"localhost\", 127.0.0.1 or whatever IP address")
-	nodeport := flag.Int("p", 40043, "target port")
+	nodeport := flag.Int("p", 40043, "listening port")
 	servicereghost := flag.String("sh", "localhost", "host of the service registry, e.g. \"localhost\", 127.0.0.1 or whatever IP address")
 	serviceregport := flag.Int64("sp", 40042, "target port of the service registry")
 	help := flag.Bool("help", false, "show this message")
@@ -47,18 +48,23 @@ func loadConfig() {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
-	/*
-		if *nodeaddr {
-			split := strings.Split(*host, ":")
-			Me.SetHost(split[0])
-			Me.SetPort(int32(split[1]))
 
-		}*/
-
-	Me.SetHost(*nodehost)
+	Me.SetHost(GetOutboundIP())
 	Me.SetPort(int32(*nodeport))
 	ServRegAddr = *servicereghost + ":" + strconv.FormatInt(*serviceregport, 10)
 }
+
+func GetOutboundIP() string {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	split := strings.Split(localAddr.String(), ":")
+	return split[0]
+}
+
 func initializeWaitingMap() {
 	WaitingMap = map[MsgType]*WaitingStruct{
 		MSG_ELECTION: &WaitingStruct{

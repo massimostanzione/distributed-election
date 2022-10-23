@@ -91,8 +91,8 @@ func getNewId() int {
 
 func PrintRing() {
 	smlog.InfoU("L'anello adesso è fatto così:")
-	smlog.InfoU("id\taddr\t\tstatus")
-	smlog.InfoU("---\t---------------\t---------")
+	smlog.InfoU("id\taddr\t\t\tstatus")
+	smlog.InfoU("---\t-------------------\t---------")
 	for _, node := range Nodes {
 		statusStr := "N.D."
 		if node.ReportedAsFailed {

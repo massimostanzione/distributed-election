@@ -96,8 +96,7 @@ func SwitchServerState(run bool) {
 	}
 }
 func contactServiceReg() *grpc.ClientConn {
-	serverAddr := "localHost:40042" //TODO configurare
-	conn := ConnectToNode(serverAddr)
+	conn := ConnectToNode(ServRegAddr)
 	defer conn.Close() //chiusura, se porta problemi controllare
 	return conn
 }
