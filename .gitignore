@@ -2,6 +2,8 @@ bully/go.mod
 bully/go.sum
 
 bully/bin/
+bully/cmd/node/node
+bully/cmd/serviceRegistry/serviceRegistry
 bully/pb/node/*.go
 bully/pb/serviceRegistry/*.go
 
@@ -9,5 +11,6 @@ fredricksonlynch/go.mod
 fredricksonlynch/go.sum
 
 fredricksonlynch/bin/
+fredricksonlynch/cmd/serviceRegistry/serviceRegistry
 fredricksonlynch/pb/node/*.go
 fredricksonlynch/pb/serviceRegistry/*.go
