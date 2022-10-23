@@ -6,12 +6,9 @@ import (
 	. "bully/pkg/serviceRegistry/env"
 	"fmt"
 
-	//	. "bully/tools/smlog"
 	smlog "bully/tools/smlog"
 
-	//. "bully/pkg/serviceRegistry/net"
 	. "bully/tools/formatting"
-	//"log"
 )
 
 /*
@@ -28,8 +25,6 @@ func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 			// quindi o è nato attivo o è stato attivo prima di fallire,
 			// e ora sta rientrando (gli ritorno il posto che aveva prima)
 
-			//TODO metodo setter
-			Nodes[i].ReportedAsFailed = false
 			return Nodes[i], true
 		}
 	}

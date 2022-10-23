@@ -37,19 +37,7 @@ func InitializeNetMW() {
 	// il centrale espone il servizio di identificazione dei nodi
 	conn := ConnectToNode(ServRegAddr)
 	serverConn = conn
-	/*	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
-		serverConn = conn
-		if err != nil {
-			smlog.Fatal("Error while contacting server on %v:\n %v", serverAddr, err)
-		}
-	*/
-	//defer conn.Close()
-	//	locCtx = ctx
-	// MI METTO IN ASCOLTO: la porta su cui ascolto è
-	// la stessa che invierò al gestore dell'anello,
-	// in quanto è quella sulla quale sarò contattato
-	// Start listening for incoming calls
-	//port := "40046"
+
 	liss, err := net.Listen("tcp", Me.GetFullAddr())
 	lis = liss
 	if err != nil {
