@@ -25,14 +25,11 @@ var nonCoordTimer *time.Timer
 const (
 	STATE_UNDEFINED nodeState = iota
 
-	//TODO per documentazione: STATE_JOINING è obbligatorio, non tanto per la SM quanto per la fase di registrazione
 	STATE_JOINING
-	STATE_ELECTION
+	/*STATE_ELECTION
 	STATE_COORDINATOR
-	STATE_NON_COORDINATOR
+	STATE_NON_COORDINATOR*/
 )
-
-//var smlog = log.New(os.Stderr, "[SM] "+time.Now().Format("15:04:05")+" "+currentState.Short()+" "+starterToLogout(starter)+" ", 0)
 
 func (state nodeState) Short() string {
 	switch state {
@@ -40,12 +37,12 @@ func (state nodeState) Short() string {
 		return "N/A  "
 	case STATE_JOINING:
 		return "JOINI"
-	case STATE_ELECTION:
-		return "ELECTION"
-	case STATE_COORDINATOR:
-		return "COORD"
-	case STATE_NON_COORDINATOR:
-		return "NONCO"
+		/*case STATE_ELECTION:
+			return "ELECTION"
+		case STATE_COORDINATOR:
+			return "COORD"
+		case STATE_NON_COORDINATOR:
+			return "NONCO"*/
 	}
 	return "err"
 }
@@ -79,176 +76,56 @@ func StartStateMachine() {
 }
 
 func run() {
-	for {
-		for Pause {
-		}
-		smlog.Info(LOG_STATEMACHINE, "Running state cycle")
-		//smlog.Println("*** RUNNING STATE: ", (msgType)(currentState))
-		switch currentState {
-		case STATE_JOINING: // 1
-			state_joining()
-			break
-		case STATE_ELECTION: //2
-			state_election()
-			break
-		case STATE_COORDINATOR: // 3
-			state_coordinator()
-			break
-		case STATE_NON_COORDINATOR: // 4
-			state_nonCoordinator()
-			break
-		default: //TODO
-		}
-	}
+	state_joining()
 }
 
 func state_joining() {
 	for Pause {
 	}
 	Me = AskForJoining()
-	go checkNetHealtiness()
-	setState(STATE_ELECTION)
-	//startElection()
-}
-func checkNetHealtiness() {
-	CNHTimer := time.NewTimer(3 * time.Second)
-	for {
-		<-CNHTimer.C
-		for _, dest := range AskForAllNodes() {
-			if dest.GetId() != Me.GetId() {
-				//				sendCNH(TODO, dest)
-				//sendCoord(NewCoordinatorMsg(Me.GetId()), dest)
-			}
-		}
-	}
 
-}
-func state_election() {
 	isElectionStarted := true
-	//late_hb_received := 0
 	//ELECTION messages alraeady sent in startElection()
 	electionTimer := time.NewTimer(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
 	for {
 		for Pause {
 		}
-		//TODO check questo approccio su FL
 		if isElectionStarted {
 			startElection()
 		}
 		select {
 		case <-electionTimer.C:
-			setState(STATE_COORDINATOR)
-			break
-		case <-OkChannel:
-			setState(STATE_NON_COORDINATOR)
-			break
-		// --------------------------------
-		// fault tolerance below
-		case inp := <-ElectionChannel:
-			// other elections are occurring
-			if Me.GetId() >= inp.GetStarter() {
-
-				sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter(), false))
-				// TODO verificare:
-				// no need to start new election, I am already
-				// doing mine
-			}
-			break
-		case <-CoordChannel:
-			// ignore it: I am doing election anyway
-			break
-		}
-		break
-		isElectionStarted = false
-	}
-	electionTimer.Stop()
-}
-
-func state_coordinator() {
-	//late_hb_received := 0
-	//setState(STATE_ELECTION_VOTER)
-	//confirmedCoord := false
-	isNewCoord := true
-	for {
-		if isNewCoord {
-			//invia COORD a tutti
-			//TODO in FL è implementato diversamente
+			electionTimer.Stop()
+			smlog.InfoU("sono il coord, autoproclamato")
 			for _, dest := range AskForAllNodes() {
 				if dest.GetId() != Me.GetId() {
-					sendCoord(NewCoordinatorMsg(Me.GetId()), dest)
+					go sendCoord(NewCoordinatorMsg(Me.GetId()), dest)
 				}
 			}
-		}
-		for Pause {
-		}
-		/*if !confirmedCoord {
-			go HBroutine()
-		}*/
-		select {
+			break
+		case <-OkChannel:
+			electionTimer.Stop()
+			smlog.InfoU("qualcuno è più bully di me")
+			break
 		case inp := <-ElectionChannel:
+			smlog.InfoU("arrivato E")
+			// other elections are occurring
 			if Me.GetId() > inp.GetStarter() {
 				sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter(), false))
-				setState(STATE_ELECTION)
+				isElectionStarted = true
 				//startElection()
-
-			} else {
-				// I am sure that I am no more the coordinator
-				setState(STATE_NON_COORDINATOR)
+				electionTimer.Reset(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
 			}
 			break
-
-		// --------------------------------
-		// fault tolerance below
-		case <-OkChannel:
-			// ignore
-			break
 		case inp := <-CoordChannel:
+			smlog.InfoU("arrivato C")
 			if inp.GetCoordinator() != Me.GetId() {
-				setState(STATE_NON_COORDINATOR)
+				smlog.InfoU("nuovo coord è %d", inp.GetCoordinator())
+			} else {
+				smlog.Fatal(LOG_UNDEFINED, "unreachable")
 			}
 			break
-
 		}
-		//if !confirmedCoord {
-		break
-		//}
-		isNewCoord = false
-	}
-}
-
-func state_nonCoordinator() {
-	//	late_hb_received := 0
-	//	nonCoordTimer = time.NewTimer(HB_TIMEOUT + HB_TOLERANCE)
-	//go listenHB()
-	for {
-		if Pause {
-			//		nonCoordTimer.Stop()
-			for Pause {
-			}
-			//		nonCoordTimer.Reset(HB_TIMEOUT + HB_TOLERANCE)
-		}
-		select {
-		case inp := <-ElectionChannel:
-			if Me.GetId() > inp.GetStarter() {
-				sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter(), false))
-				setState(STATE_ELECTION)
-				//startElection()
-			} // else not needed, simply ignore
-
-			break
-
-		// --------------------------------
-		// fault tolerance below
-		case <-OkChannel:
-			// ignore
-			break
-		case inp := <-CoordChannel:
-			if inp.GetCoordinator() == Me.GetId() {
-				setState(STATE_COORDINATOR)
-			}
-			break
-
-		}
-		break
+		isElectionStarted = false
 	}
 }

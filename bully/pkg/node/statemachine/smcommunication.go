@@ -101,8 +101,10 @@ func startElection() {
 	//     per rilevare eventuali nodi offline
 	nodes := AskForNodesWithGreaterIds(Me.GetId(), false)
 	for _, nextNode := range nodes {
-		smlog.Error(LOG_ELECTION, "invio a %s", nextNode.GetId())
-		sendElection(NewElectionMsg(Me.GetId()), nextNode)
+		if nextNode.GetId() != Me.GetId() {
+			smlog.Error(LOG_ELECTION, "invio a %s", nextNode.GetId())
+			go sendElection(NewElectionMsg(Me.GetId()), nextNode)
+		}
 	}
 	//setState(STATE_ELECTION)
 	// se sono rimasto solo io non faccio nemmeno iniziare l'elezione, è inutile
