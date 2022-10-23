@@ -59,7 +59,7 @@ func setState(state nodeState) {
 }
 
 func StartStateMachine() {
-	//	Heartbeat = make(chan *MsgHeartbeat, 1)
+	Heartbeat = make(chan *MsgHeartbeat, 1)
 	Events = make(chan string, 1)
 	ElectionChannel = make(chan *MsgElection, 1)
 	OkChannel = make(chan *MsgOk, 1)
@@ -85,54 +85,64 @@ func state_joining() {
 	}
 	Me = AskForJoining()
 
-	isElectionStarted := true
-	//ELECTION messages alraeady sent in startElection()
-	electionTimer := time.NewTimer(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
+	IsElectionStarted = true
 	for {
 		for Pause {
 		}
-		if isElectionStarted {
-			startElection()
+		if IsElectionStarted {
+			setHbMgt(HB_HALT)
+			//ELECTION messages alraeady sent in startElection()
+			ElectionTimer = time.NewTimer(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
+			go startElection()
+			IsElectionStarted = false
 		}
 		select {
-		case <-electionTimer.C:
-			electionTimer.Stop()
+		case <-ElectionTimer.C:
+			ElectionTimer.Stop()
+			setHbMgt(HB_SEND)
 			smlog.InfoU("sono il coord, autoproclamato")
+			CoordId = Me.GetId()
 			for _, dest := range AskForAllNodes() {
 				if dest.GetId() != Me.GetId() {
 					go sendCoord(NewCoordinatorMsg(Me.GetId()), dest)
 				}
 			}
-			setHbMgt(HB_SEND)
-			break
-		case <-OkChannel:
-			electionTimer.Stop()
-			smlog.InfoU("qualcuno è più bully di me")
-			setHbMgt(HB_LISTEN)
+			IsElectionStarted = false
 			break
 		case inp := <-ElectionChannel:
-			setHbMgt(HB_HALT)
-			electionTimer.Stop()
+			//setHbMgt(HB_HALT)
+			//electionTimer.Stop()
 			smlog.InfoU("arrivato E")
 			// other elections are occurring
 			if Me.GetId() > inp.GetStarter() {
-				sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter()))
-				isElectionStarted = true
-				//startElection()
-				electionTimer.Reset(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
+				go sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter()))
+				IsElectionStarted = true
+				//ElectionTimer.Reset(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
+			} else {
+
+				IsElectionStarted = false
 			}
 			break
+		case <-OkChannel:
+			//ElectionTimer.Stop()
+			smlog.InfoU("qualcuno è più bully di me")
+			//time.Sleep(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
+			ElectionTimer.Stop()
+			setHbMgt(HB_HALT)
+			IsElectionStarted = false
+			break
 		case inp := <-CoordChannel:
-			electionTimer.Stop()
+			//electionTimer.Stop()
+			CoordId = inp.GetCoordinator()
 			smlog.InfoU("arrivato C")
 			if inp.GetCoordinator() != Me.GetId() {
 				smlog.InfoU("nuovo coord è %d", inp.GetCoordinator())
+				setHbMgt(HB_LISTEN)
 			} else {
 				smlog.Fatal(LOG_UNDEFINED, "unreachable")
 			}
-			setHbMgt(HB_LISTEN)
+			IsElectionStarted = false
 			break
 		}
-		isElectionStarted = false
 	}
 }

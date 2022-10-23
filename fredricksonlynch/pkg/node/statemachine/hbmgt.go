@@ -130,7 +130,7 @@ func ListenToHb() {
 	for {
 		select {
 		case in := <-Heartbeat:
-			if in.GetId() != CoordId {
+			if in.GetId() != CoordId && CoordId != -1 {
 				// more than one coordinators in the network!
 				// it can happen when a large (>=15) number
 				// of nodes join at the same time

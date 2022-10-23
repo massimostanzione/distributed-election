@@ -11,12 +11,12 @@ import (
 )
 
 func sendElection(msg *MsgElection, dest *SMNode) {
-	abortIfFailedCoord := false
+	/*abortIfFailedCoord := false
 	if dest.GetId() == CoordId {
 		abortIfFailedCoord = true
-	}
+	}*/
 
-	rmiErr := SafeRMI(MSG_ELECTION, dest, !abortIfFailedCoord, msg, nil, nil, nil)
+	rmiErr := SafeRMI(MSG_ELECTION, dest, false, msg, nil, nil, nil)
 	smlog.InfoU("(rimuovere) %s", rmiErr)
 	// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
 	/*	if abortIfFailedCoord && rmiErr {
@@ -29,16 +29,16 @@ func sendElection(msg *MsgElection, dest *SMNode) {
 }
 func sendOk(msg *MsgOk, dest *SMNode) {
 	// controllo AIFC?
-	abortIfFailedCoord := false
-	rmiErr := SafeRMI(MSG_OK, dest, !abortIfFailedCoord, nil, msg, nil, nil)
+	//abortIfFailedCoord := false
+	rmiErr := SafeRMI(MSG_OK, dest, false, nil, msg, nil, nil)
 	smlog.InfoU("(rimuovere) rmiErr=%s", rmiErr)
 }
 func sendCoord(msg *MsgCoordinator, dest *SMNode) {
-	abortIfFailedCoord := false
-	if dest.GetId() == CoordId {
-		abortIfFailedCoord = true
-	}
-	rmiErr := SafeRMI(MSG_COORDINATOR, dest, !abortIfFailedCoord, nil, nil, msg, nil)
+	/*	abortIfFailedCoord := false
+		if dest.GetId() == CoordId {
+			abortIfFailedCoord = true
+		}*/
+	rmiErr := SafeRMI(MSG_COORDINATOR, dest, false, nil, nil, msg, nil)
 	smlog.InfoU("(rimuovere) rmiErr=%s", rmiErr)
 	/*
 		// se il coordinatore è fallito prima che l'elezione terminasse, essa va abortita e va iniziata una nuova
@@ -106,6 +106,7 @@ func startElection() {
 			go sendElection(NewElectionMsg(Me.GetId()), nextNode)
 		}
 	}
+	ElectionTimer.Reset(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
 	//setState(STATE_ELECTION)
 	// se sono rimasto solo io non faccio nemmeno iniziare l'elezione, è inutile
 	/*if nextNode.GetId() != Me.GetId() {

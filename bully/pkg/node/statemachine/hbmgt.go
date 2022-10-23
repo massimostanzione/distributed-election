@@ -36,7 +36,7 @@ var SendingHB = false
 var ListeningtoHb = false
 
 func setHbMgt(state hbMgtState) {
-	smlog.InfoU("setting HBmgt to %s", state)
+	smlog.InfoU("setting HBmgt to %v", state)
 	switch state {
 	case HB_HALT:
 		setProperty(HB_PROPERTY_LISTENING, false)
@@ -136,7 +136,8 @@ func ListenToHb() {
 	for {
 		select {
 		case in := <-Heartbeat:
-			if in.GetId() != CoordId {
+			smlog.Info(LOG_HB, "confermo hb")
+			if in.GetId() != CoordId && CoordId != -1 {
 				// more than one coordinators in the network!
 				// it can happen when a large (>=15) number
 				// of nodes join at the same time
@@ -144,6 +145,7 @@ func ListenToHb() {
 				smlog.Error(LOG_HB, "Received HB from %d, that is not my coordinator %d", in.GetId(), CoordId)
 				smlog.Error(LOG_HB, "Starting new election...")
 				go startElection()
+				IsElectionStarted = true
 				interrupt = true
 			}
 			smlog.Info(LOG_HB, "confermo hb")
@@ -153,6 +155,7 @@ func ListenToHb() {
 			smlog.Critical(LOG_HB, "non sento più il coord")
 			//Events <- "STOP1"
 			go startElection()
+			IsElectionStarted = true
 			interrupt = true
 			break
 		case <-EventsList:
