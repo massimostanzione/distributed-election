@@ -113,28 +113,18 @@ func AskForJoining() *SMNode {
 	return ToSMNode(node)
 }
 
-//func askForNodeInfo(i int32, forceRunningNode bool) (int32, string) {
-//TODO B: strutture come forceRunningNode non servono più, non c'è struttura ad anello
-func AskForNodeInfo(i int32, forceRunningNode bool) *SMNode {
+func AskForNodeInfo(i int32) *SMNode {
 	smlog.Info(LOG_SERVREG, "Chiedo al centrale informazioni sul nodo %d", i)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	//	locCtx = ctx
 	defer cancel()
-	if forceRunningNode {
-		ret, errr := cs.GetNextRunningNode(ctx, &pb.NodeId{Id: int32(i)})
-		if errr != nil {
-			smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
-			return nil
-		}
-		return &SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
-	} else {
-		ret, errr := cs.GetNode(ctx, &pb.NodeId{Id: int32(i)})
-		if errr != nil {
-			smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
-			return nil
-		}
-		return &SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
+
+	ret, errr := cs.GetNode(ctx, &pb.NodeId{Id: int32(i)})
+	if errr != nil {
+		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
+		return nil
 	}
+	return &SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
 
 }
 
@@ -168,8 +158,7 @@ func AskForNodesWithGreaterIds(baseId int32, forceRunningNode bool) []*SMNode {
 
 }
 func AskForAllNodes() []*SMNode {
-	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni su TUTTI i nodi,")
-	smlog.Trace(LOG_SERVREG, "attivi o meno, per verificare stato di essi")
+	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni su TUTTI i nodi")
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	//	locCtx = ctx
 	defer cancel()

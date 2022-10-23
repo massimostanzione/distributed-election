@@ -8,6 +8,7 @@ const (
 	MSG_ELECTION
 	MSG_OK
 	MSG_COORDINATOR
+	MSG_HEARTBEAT
 )
 
 type MsgElection struct {
@@ -42,4 +43,12 @@ func (msg *MsgCoordinator) GetCoordinator() int32 {
 
 func NewCoordinatorMsg(elected int32) *MsgCoordinator {
 	return &MsgCoordinator{Coordinator: elected}
+}
+
+type MsgHeartbeat struct {
+	Id int32
+}
+
+func (msg *MsgHeartbeat) GetId() int32 {
+	return msg.Id
 }

@@ -39,3 +39,10 @@ func ToSMNode(net *pb.Node) *SMNode {
 func ToNetNode(sm SMNode) *pb.Node {
 	return &pb.Node{Id: sm.GetId(), Host: sm.GetHost(), Port: int32(sm.GetPort())}
 }
+
+func ToNetHeartbeatMsg(sm *MsgHeartbeat) *pb.Heartbeat {
+	return &pb.Heartbeat{Id: sm.GetId()}
+}
+func ToSMHeartbeat(net *pb.Heartbeat) *MsgHeartbeat {
+	return &MsgHeartbeat{Id: net.GetId()}
+}

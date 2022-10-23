@@ -21,11 +21,16 @@ const SIMULATION_DELAY = 0 * time.Second
 const HB_TOLERANCE = HB_TIMEOUT / 2 //250 * time.Millisecond
 
 var Heartbeat chan (*MsgHeartbeat)*/
-const ELECTION_ESPIRY = 1 * time.Second
+const ELECTION_ESPIRY = 3 * time.Second
 const ELECTION_ESPIRY_TOLERANCE = 500 * time.Millisecond
 
+const RESPONSE_TIME_LIMIT = 1000 * time.Millisecond
+const IDLE_WAIT_LIMIT = 5000 * time.Millisecond
+
+var SuccessfulHB = -1
 var Events chan (string)
 var ElectionChannel chan (*MsgElection)
 var OkChannel chan (*MsgOk)
 var CoordChannel chan (*MsgCoordinator)
+var Heartbeat chan (*MsgHeartbeat)
 var Sigchan chan (os.Signal)

@@ -76,6 +76,7 @@ func StartStateMachine() {
 }
 
 func run() {
+	initHbMgt()
 	state_joining()
 }
 
@@ -102,28 +103,34 @@ func state_joining() {
 					go sendCoord(NewCoordinatorMsg(Me.GetId()), dest)
 				}
 			}
+			setHbMgt(HB_SEND)
 			break
 		case <-OkChannel:
 			electionTimer.Stop()
 			smlog.InfoU("qualcuno è più bully di me")
+			setHbMgt(HB_LISTEN)
 			break
 		case inp := <-ElectionChannel:
+			setHbMgt(HB_HALT)
+			electionTimer.Stop()
 			smlog.InfoU("arrivato E")
 			// other elections are occurring
 			if Me.GetId() > inp.GetStarter() {
-				sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter(), false))
+				sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter()))
 				isElectionStarted = true
 				//startElection()
 				electionTimer.Reset(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
 			}
 			break
 		case inp := <-CoordChannel:
+			electionTimer.Stop()
 			smlog.InfoU("arrivato C")
 			if inp.GetCoordinator() != Me.GetId() {
 				smlog.InfoU("nuovo coord è %d", inp.GetCoordinator())
 			} else {
 				smlog.Fatal(LOG_UNDEFINED, "unreachable")
 			}
+			setHbMgt(HB_LISTEN)
 			break
 		}
 		isElectionStarted = false

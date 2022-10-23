@@ -37,7 +37,6 @@ func (s *DGnode) ForwardCoordinator(ctx context.Context, in *pb.Coordinator) (*p
 	return NONE, status.New(codes.OK, "").Err()
 }
 
-/*
 func (s *DGnode) SendHeartBeat(ctx context.Context, in *pb.Heartbeat) (*pb.NONE, error) {
 
 	smlog.Info(LOG_HB, "Ricevo HEARTBEAT dal nodo %d", in.GetId())
@@ -46,4 +45,3 @@ func (s *DGnode) SendHeartBeat(ctx context.Context, in *pb.Heartbeat) (*pb.NONE,
 	}
 	return NONE, status.New(codes.OK, "").Err()
 }
-*/
