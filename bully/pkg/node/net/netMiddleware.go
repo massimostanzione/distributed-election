@@ -74,7 +74,6 @@ func ConnectToNode(addr string) *grpc.ClientConn {
 	return conn
 }
 
-//TODO non è chiamata al di fuori del contesto SIGTSTP
 func Listen() {
 	smlog.Info(LOG_NETWORK, "Listening on port %v.", Me.GetPort())
 	if err := w.Serve(lis); err != nil {
