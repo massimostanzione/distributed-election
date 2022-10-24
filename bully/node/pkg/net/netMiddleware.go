@@ -147,8 +147,6 @@ func AskForNodesWithGreaterIds(baseId int32, forceRunningNode bool) []*SMNode {
 			smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
 			return nil
 		}
-		//conversion
-		//TODO implementare anche nelle altre chiamate simili
 		var array []*SMNode
 		for _, node := range ret.GetList() {
 			array = append(array, ToSMNode(node))
