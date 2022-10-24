@@ -11,6 +11,7 @@ fredricksonlynch/go.mod
 fredricksonlynch/go.sum
 
 fredricksonlynch/bin/
-fredricksonlynch/cmd/serviceRegistry/serviceRegistry
-fredricksonlynch/pb/node/*.go
-fredricksonlynch/pb/serviceRegistry/*.go
+fredricksonlynch/node/cmd/node
+fredricksonlynch/serviceRegistry/cmd/serviceRegistry
+fredricksonlynch/node/pb/*.go
+fredricksonlynch/serviceRegistry/pb/*.go

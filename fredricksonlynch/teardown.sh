@@ -3,11 +3,13 @@
 echo -E "Cleaning up..."
 sudo rm -f go.mod go.sum
 
-for item in node serviceRegistry
+modules=( node serviceregistry )
+
+for item in "${modules[@]}"
 do
-    sudo rm -f pb/$item/*.go \
-	           bin/$item \
-	           cmd/$item/$item
+    sudo rm -f bin/$item        \
+               $item/cmd/$item  \
+	           $item/pb/*.go
 done
 sudo rmdir bin
 echo -E "Done."
