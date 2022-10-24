@@ -2,10 +2,10 @@ bully/go.mod
 bully/go.sum
 
 bully/bin/
-bully/cmd/node/node
-bully/cmd/serviceRegistry/serviceRegistry
-bully/pb/node/*.go
-bully/pb/serviceRegistry/*.go
+bully/node/cmd/node
+bully/serviceRegistry/cmd/serviceRegistry
+bully/node/pb/*.go
+bully/serviceRegistry/pb/*.go
 
 fredricksonlynch/go.mod
 fredricksonlynch/go.sum

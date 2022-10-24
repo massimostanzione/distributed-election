@@ -32,7 +32,7 @@ done
 base_addr_space=40042
 workersno=10
 # TODO test workersno >=4, come da requisiti
-    $detected_term -T "ServReg" -e "bash -c './bin/serviceRegistry;bash'"   
+    $detected_term -T "ServReg" -e "bash -c './bin/serviceregistry;bash'"   
 for i in $(seq 1 $workersno)
 do
 # inserisco ritardo random per evitare che tutti si connettano insieme (TODO risolvere)

@@ -1,0 +1,34 @@
+// DistGrep Server interface
+syntax = "proto3";
+option go_package = "bully/pb/serviceregistry";
+package bully;
+
+service DistGrep {
+    rpc joinRing(NodeAddr) returns (Node);
+    rpc getNode(NodeId) returns (Node);
+    rpc getNextRunningNode(NodeId) returns (Node);
+    rpc getAllNodes(NONE) returns (NodeList);
+    rpc getAllRunningNodes(NONE) returns (NodeList);
+    rpc getAllNodesWithIdGreaterThan(NodeId) returns (NodeList);
+    rpc reportAsFailed(Node) returns (NONE);
+    rpc reportAsRunning(Node) returns (NONE);
+}
+
+message Node {
+	int32 id = 1;
+	string host = 2;
+	int32 port = 3;
+	bool actualNextFailed = 4;
+}
+message NodeAddr {
+    string host = 1;
+    int32 port = 2;
+}
+message NodeId {
+    int32 id = 1;
+}
+message NodeList {
+    repeated Node list = 1;
+}
+
+message NONE {}

@@ -2,16 +2,14 @@
 package registrymgt
 
 import (
+	pb "bully/serviceregistry/pb"
+	. "bully/serviceregistry/pkg/env"
+	. "bully/serviceregistry/pkg/tools"
+	. "bully/tools/formatting"
+
+	//. "bully/tools/netsmadapter"
+	smlog "bully/tools/smlog"
 	"fmt"
-	pb "fredricksonLynch/pb/serviceRegistry"
-	. "fredricksonLynch/pkg/serviceRegistry/env"
-
-	//	. "fredricksonLynch/tools/smlog"
-	smlog "fredricksonLynch/tools/smlog"
-
-	//. "fredricksonLynch/pkg/serviceRegistry/net"
-	. "fredricksonLynch/tools/formatting"
-	//"log"
 )
 
 /*
@@ -28,7 +26,6 @@ func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 			// quindi o è nato attivo o è stato attivo prima di fallire,
 			// e ora sta rientrando (gli ritorno il posto che aveva prima)
 
-			//Nodes[i].ReportedAsFailed = false
 			return Nodes[i], true
 		}
 	}
@@ -82,15 +79,31 @@ func GetAllNodesExecutive(forceRunningNodeOnly bool) *pb.NodeList {
 		}
 	}
 	return &pb.NodeList{List: array}
-
 }
+
+func GetAllNodesWithIdGreaterThanExecutive(baseId int32) *pb.NodeList {
+	var array []*pb.Node
+	for i := (baseId + 1); i <= int32(len(Nodes)); i++ {
+		//for _, node := range Nodes {
+		// Oss. only running nodes, by default
+		//      active nodes will check if these nodes are running or not,
+		//      signalling those who are failed
+		//if (forceRunningNodeOnly && !node.ReportedAsFailed) || !forceRunningNodeOnly {
+		grpcNode := ToNetNode(Nodes[i-1]) // &pb.Node{Id: int32(Nodes[i-1].Id), Host: Nodes[i-1].Host, Port: Nodes[i-1].Port}
+		array = append(array, grpcNode)
+		//}
+	}
+
+	return &pb.NodeList{List: array}
+}
+
 func getNewId() int {
 	return len(Nodes) + 1
 }
 
 func PrintRing() {
 	smlog.InfoU("L'anello adesso è fatto così:")
-	smlog.InfoU("id\taddr\t\t\tstatus")
+	smlog.InfoU("id\taddr\t\tstatus")
 	smlog.InfoU("---\t-------------------\t---------")
 	for _, node := range Nodes {
 		statusStr := "N.D."
