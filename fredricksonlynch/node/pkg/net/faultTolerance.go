@@ -5,6 +5,8 @@ import (
 	pb "fredricksonlynch/node/pb"
 	. "fredricksonlynch/node/pkg/env"
 	. "fredricksonlynch/tools/formatting"
+	"math/rand"
+	"time"
 
 	//"fredricksonlynch/node/pkg/statemachine"
 
@@ -17,6 +19,45 @@ import (
 	"google.golang.org/grpc"
 )
 
+const NCL_CUSTOM_DELAY_MAX = 500 // ms
+const NCL_CUSTOM_DELAY_MIN = 0   // ms
+var congestionLevel = NCL_LIGHT
+
+type NetCongestionLevel uint8
+
+const (
+	NCL_ABSENT NetCongestionLevel = iota
+	NCL_LIGHT
+	NCL_MEDIUM
+	NCL_SEVERE
+	NCL_CUSTOM
+)
+
+func generateDelay() int32 {
+	var min float32
+	var max float32
+	switch congestionLevel {
+	case NCL_ABSENT:
+		min = 0
+		max = 0
+	case NCL_LIGHT:
+		min = 0
+		max = .2 * HB_TIMEOUT
+	case NCL_MEDIUM:
+		min = .3 * HB_TIMEOUT
+		max = .5 * HB_TIMEOUT
+	case NCL_SEVERE:
+		min = .5 * HB_TIMEOUT
+		max = 1.5 * HB_TIMEOUT
+	case NCL_CUSTOM:
+		min = NCL_CUSTOM_DELAY_MIN
+		max = NCL_CUSTOM_DELAY_MAX
+
+	}
+	ret := (rand.Float32() * (max - min)) + min
+	return int32(ret)
+}
+
 func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 	for _, i := range electionMsg.GetVoters() {
 		if i == voter {
@@ -27,11 +68,8 @@ func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 }
 
 func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, coord *MsgCoordinator, hb *MsgHeartbeat) (failedNodeExistence bool) { //opt ...interface{}) {
-	//TODO gestione delay con parametro (separata da SM)
-	//tryNextWhenFailed = true
 	for Pause {
 	}
-
 	// update local cache the first time a sequential message is sent
 	if NextNode.GetId() == 0 && tipo != MSG_HEARTBEAT {
 		requested := AskForNodeInfo(Me.GetId() + 1)
@@ -52,6 +90,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 	// L'ALTRO NODO FUNGE DA SERVER NEI MIEI CONFRONTI
 	var errq error
 	var starter int32
+	time.Sleep(time.Duration(generateDelay()) * time.Millisecond)
 	for {
 		starter = -1
 		errq = nil
@@ -69,10 +108,12 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 			ok = true
 		}
 		attempts++
+
 		switch tipo {
 		case MSG_ELECTION:
 			starter = elezione.GetStarter()
 			netMsg := ToNetElectionMsg(elezione)
+
 			//smlog.Println("\033[42m\033[1;30mSENDING ELECTION [", elezione, "] to ", prossimoAddr, "\033[0m")
 			smlog.Warn(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, prossimoAddr)
 			_, errq = csN.ForwardElection(ctx, netMsg)

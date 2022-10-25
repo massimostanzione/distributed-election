@@ -23,6 +23,9 @@ const SIMULATION_DELAY = 0 * time.Second
 const HB_TOLERANCE = HB_TIMEOUT / 2 //250 * time.Millisecond
 
 var Heartbeat chan (*MsgHeartbeat)*/
+
+const HB_TIMEOUT = 1000             // ms
+const HB_TOLERANCE = HB_TIMEOUT * 2 //250 * time.Millisecond
 const ELECTION_ESPIRY = 500 * time.Millisecond
 const ELECTION_ESPIRY_TOLERANCE = 10 * time.Millisecond
 

@@ -6,6 +6,9 @@ import (
 	. "bully/tools/formatting"
 	"context"
 
+	"math/rand"
+	"time"
+
 	//"bully/node/pkg/statemachine"
 
 	//. "bully/node/pkg/net"
@@ -17,19 +20,45 @@ import (
 	"google.golang.org/grpc"
 )
 
-/*
-func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
-	for _, i := range electionMsg.GetVoters() {
-		if i == voter {
-			return true
-		}
+const NCL_CUSTOM_DELAY_MAX = 500 // ms
+const NCL_CUSTOM_DELAY_MIN = 0   // ms
+var congestionLevel = NCL_MEDIUM
+
+type NetCongestionLevel uint8
+
+const (
+	NCL_ABSENT NetCongestionLevel = iota
+	NCL_LIGHT
+	NCL_MEDIUM
+	NCL_SEVERE
+	NCL_CUSTOM
+)
+
+func generateDelay() int32 {
+	var min float32
+	var max float32
+	switch congestionLevel {
+	case NCL_ABSENT:
+		min = 0
+		max = 0
+	case NCL_LIGHT:
+		min = 0
+		max = .2 * HB_TIMEOUT
+	case NCL_MEDIUM:
+		min = .3 * HB_TIMEOUT
+		max = .5 * HB_TIMEOUT
+	case NCL_SEVERE:
+		min = .5 * HB_TIMEOUT
+		max = 1.5 * HB_TIMEOUT
+	case NCL_CUSTOM:
+		min = NCL_CUSTOM_DELAY_MIN
+		max = NCL_CUSTOM_DELAY_MAX
+
 	}
-	return false
+	ret := (rand.Float32() * (max - min)) + min
+	return int32(ret)
 }
-*/
 func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, okMsg *MsgOk, coord *MsgCoordinator, hb *MsgHeartbeat) (failedNodeExistence bool) { //opt ...interface{}) {
-	//TODO gestione delay con parametro (separata da SM)
-	//tryNextWhenFailed = true
 	for Pause {
 	}
 	attempts := 0
@@ -42,6 +71,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 	// L'ALTRO NODO FUNGE DA SERVER NEI MIEI CONFRONTI
 	var errq error
 	var starter int32
+	time.Sleep(time.Duration(generateDelay()) * time.Millisecond)
 	for {
 		starter = -1
 		errq = nil
