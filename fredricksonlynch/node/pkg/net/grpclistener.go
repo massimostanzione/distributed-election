@@ -16,7 +16,7 @@ import (
 )
 
 func (s *DGnode) ForwardElection(ctx context.Context, in *pb.Election) (*pb.NONE, error) {
-	smlog.Info(LOG_MSG_SENT, ColorBlkBckgrYellow+BoldBlack+"RECEIVED ELECTION %v"+ColorReset, in)
+	smlog.Info(LOG_MSG_RECV, ColorBlkBckgrYellow+BoldBlack+"RECEIVED ELECTION %v"+ColorReset, in)
 	if !Pause {
 		ElectionChannel <- ToSMElectionMsg(in)
 	}
@@ -32,7 +32,7 @@ func (s *DGnode) ForwardCoordinator(ctx context.Context, in *pb.Coordinator) (*p
 }
 func (s *DGnode) SendHeartBeat(ctx context.Context, in *pb.Heartbeat) (*pb.NONE, error) {
 
-	smlog.Info(LOG_HB, "Ricevo HEARTBEAT dal nodo %d", in.GetId())
+	smlog.Info(LOG_HB, "Received HEARTBEAT from node %d", in.GetId())
 	if !Pause {
 		Heartbeat <- ToSMHeartbeat(in)
 	}

@@ -83,6 +83,7 @@ func SwitchServerState(run bool) {
 	}
 }
 func contactServiceReg() *grpc.ClientConn {
+	smlog.Trace(LOG_NETWORK, "Contacting service registry")
 	conn := ConnectToNode(ServRegAddr)
 	defer conn.Close() //chiusura, se porta problemi controllare
 	return conn
@@ -98,34 +99,32 @@ func AskForJoining() *SMNode {
 	return ToSMNode(node)
 }
 
-//func askForNodeInfo(i int32, forceRunningNode bool) (int32, string) {
 func AskForNodeInfo(i int32) *SMNode {
-	smlog.Info(LOG_SERVREG, "Chiedo al centrale informazioni sul nodo %d", i)
+	smlog.Debug(LOG_SERVREG, "Asking servReg for info about node n. %d", i)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	//	locCtx = ctx
 	defer cancel()
-
-	ret, errr := cs.GetNode(ctx, &pb.NodeId{Id: int32(i)})
-	if errr != nil {
-		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
+	ret, err := cs.GetNode(ctx, &pb.NodeId{Id: int32(i)})
+	if err != nil {
+		smlog.Fatal(LOG_NETWORK, "Error while executing GetNode:\n%v", err)
 		return nil
 	}
 	return &SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
 
 }
+
+// For monitoring use only
 func AskForAllNodesList() []*SMNode {
-	smlog.Debug(LOG_SERVREG, "vado a chiedere tutti i nodi")
-	var errl error = error(nil)
+	smlog.Debug(LOG_SERVREG, "Asking servReg for info about all nodes")
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	allNodesList, errl := cs.GetAllNodes(ctx, NONE)
-	if errl != nil {
-		smlog.Fatal(LOG_SERVREG, "problema in GetAllNodes: %v", errl)
+	allNodesList, err := cs.GetAllNodes(ctx, NONE)
+	if err != nil {
+		smlog.Fatal(LOG_NETWORK, "Error while executing GetAllNodes:\n%v", err)
 	}
 	var ret []*SMNode
 	for _, node := range allNodesList.List {
 		ret = append(ret, ToSMNode(node))
-
 	}
 	return ret
 }

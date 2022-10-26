@@ -24,7 +24,7 @@ func sendCoord(msg *MsgCoordinator, dest *SMNode) {
 func vote(inp *MsgElection) *MsgElection {
 	var ret *MsgElection
 	if !RedudantElectionCheck(Me.GetId(), inp) {
-		smlog.Info(LOG_ELECTION, "- voting...")
+		smlog.Trace(LOG_ELECTION, "- voting...")
 		//nextNode := AskForNodeInfo(Me.GetId()+1, true)
 		ret = inp.AddVoter(Me.GetId())
 		//spostare fuori il seguente

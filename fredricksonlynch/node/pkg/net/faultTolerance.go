@@ -78,7 +78,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		if requested.GetId() != 1 {
 			NextNode = requested
 			dest = requested
-			smlog.Critical(LOG_UNDEFINED, "aggiornato NextNode", NextNode)
+			smlog.Debug(LOG_UNDEFINED, "NextNode initialized.", NextNode)
 		}
 	}
 
@@ -117,20 +117,20 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 			netMsg := ToNetElectionMsg(elezione)
 
 			//smlog.Println("\033[42m\033[1;30mSENDING ELECTION [", elezione, "] to ", prossimoAddr, "\033[0m")
-			smlog.Warn(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, prossimoAddr)
+			smlog.Info(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, prossimoAddr)
 			_, errq = csN.ForwardElection(ctx, netMsg)
 			break
 		case MSG_COORDINATOR:
 			starter = coord.GetStarter()
 			netMsg := ToNetCoordinatorMsg(coord)
 			//smlog.Println("\033[42m\033[1;30mSENDING COORDINATOR [", coord, "] to ", prossimoAddr, "\033[0m")
-			smlog.Warn(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING COORD %v to %s"+ColorReset, netMsg, prossimoAddr)
+			smlog.Info(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING COORD %v to %s"+ColorReset, netMsg, prossimoAddr)
 			//	log.Printf("\033[42m\033[1;30mSENDING COORD %[1]v to %[2]s \033[0m", coord, prossimoAddr)
 			_, errq = csN.ForwardCoordinator(ctx, netMsg)
 			break
 		case MSG_HEARTBEAT:
 			netMsg := ToNetHeartbeatMsg(hb)
-			smlog.Warn(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING HB %v to %s"+ColorReset, netMsg, prossimoAddr)
+			smlog.Info(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING HB %v to %s"+ColorReset, netMsg, prossimoAddr)
 			_, errq = csN.SendHeartBeat(ctx, netMsg)
 			break
 		default:
@@ -139,14 +139,17 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		//_, errq := csN.InoltraElezione(ctx, elezione)
 		if errq != nil {
 			if attempts != RMI_RETRY_TOLERANCE {
-				smlog.Warn(LOG_UNDEFINED, "tentativo n. %d non andato a buon fine per %v, riprovo... %s", attempts, prossimoAddr, errq)
+				smlog.Warn(LOG_NETWORK, "Failed attempt n. %d to contact %v, trying again...", attempts, prossimoAddr)
+				smlog.Warn(LOG_NETWORK, "(%s)", errq)
 
 			} else {
 				if (tipo == MSG_ELECTION || tipo == MSG_COORDINATOR) && prossimoId == starter {
 					// lo starter è fallito, smetto di far circolare una seconda volta il messaggio
 					// ci penserà quando tornerà in piedi a far ripartire elezione
 					// così tolgo messaggi inutili dalla rete
-					smlog.Critical(LOG_NETWORK, "\n\n\n\n\n\n\n\n\nlo starter è failed, smetto di far circolare")
+
+					smlog.Error(LOG_NETWORK, "Election starter failed! Stopping forwarding...")
+					smlog.Debug(LOG_NETWORK, "(%s)", errq)
 					ok = true
 					tryNextWhenFailed = false
 				}
@@ -155,13 +158,13 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 				}
 				//DeclareNodeState(nextNode, false)
 				failedNodeExistence = true
-				smlog.Error(LOG_UNDEFINED, "impossibile chiamare RMI su %v:\n %v", prossimoAddr, errq)
+				smlog.Error(LOG_NETWORK, "Could not invoke RMI on %v", prossimoAddr)
+				smlog.Debug(LOG_NETWORK, "(%s)", errq)
 
 				if tryNextWhenFailed {
-					smlog.Error(LOG_UNDEFINED, "provo col prossimo...")
 					//nextNode = AskForNodeInfo(nextNode.GetId()+1, true)
 					nextNode = AskForNodeInfo(nextNode.GetId() + 1)
-					smlog.InfoU("Prossimo: %v presso %v", nextNode.GetId(), nextNode.GetFullAddr())
+					smlog.Info(LOG_NETWORK, "Trying next node: %v@%v", nextNode.GetId(), nextNode.GetFullAddr())
 					prossimoId = nextNode.GetId()
 					prossimoAddr = nextNode.GetFullAddr()
 					if prossimoAddr == Me.GetFullAddr() {
@@ -172,15 +175,15 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 				//break
 			}
 		} else {
-			smlog.InfoU("Ok, andata bene! posso uscire")
+			smlog.Trace(LOG_NETWORK, "RMI invoked correctly, exiting from SafeRMI...")
 			ok = true
 		}
 		if ok {
-			smlog.InfoU("esco...")
+			//smlog.InfoU("esco...")
 			break
 		}
 		attempts = 0
-		smlog.InfoU("torno nel ciclo col prossimo nodo...")
+		//smlog.InfoU("torno nel ciclo col prossimo nodo...")
 	}
 	return failedNodeExistence
 }
