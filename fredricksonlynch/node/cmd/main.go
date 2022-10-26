@@ -24,6 +24,14 @@ func printNodeInfo(node *SMNode) {
 }
 */
 func main() {
+	log.Println("+------------------------------------------------+")
+	log.Println("|          FREDRICKSON-LYNCH ALGORITHM           |")
+	log.Println("|github.com/massimostanzione/distributed-election|")
+	log.Println("+------------------------------------------------+")
+	log.Println("|                      Node                      |")
+	log.Println("+------------------------------------------------+")
+	log.Println("")
+	log.Println("Loading configuration environment...")
 	loadConfig()
 	Sigchan = make(chan os.Signal, 1)
 	signal.Notify(Sigchan, syscall.SIGTSTP)
@@ -35,6 +43,7 @@ func main() {
 		log.Printf("Pause = %v", Pause)
 	}()
 	initializeWaitingMap()
+	log.Println("... done. Starting...")
 	StartStateMachine()
 }
 
@@ -63,7 +72,7 @@ func loadConfig() {
 	//   (could not have all the parameters set, or some of them could be invalid)
 	iniFile, err := ini.Load(*iniPath)
 	if err != nil {
-		log.Printf("Could not load %s.\nLoading default parameters...", *iniPath)
+		log.Printf("[ERROR] Could not load %s.\nLoading default parameters...", *iniPath)
 	} else {
 		iniSections := iniFile.Sections()
 		for i := 0; i < len(iniSections); i++ {
@@ -77,7 +86,7 @@ func loadConfig() {
 		key, _ := iniFile.Section("delay-conf").GetKey("NCL_CONGESTION_LEVEL")
 		Cfg.NCL_CONGESTION_LEVEL = ToNCL(key.String())
 		if Cfg.NCL_CUSTOM_DELAY_MIN > Cfg.NCL_CUSTOM_DELAY_MAX {
-			log.Printf("Cannot consider min delay > max delay! Falling back to default value.")
+			log.Printf("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
 			Cfg.NCL_CUSTOM_DELAY_MIN = 0
 			Cfg.NCL_CUSTOM_DELAY_MAX = 500
 		}
@@ -93,10 +102,10 @@ func loadConfig() {
 					Cfg.NCL_CUSTOM_DELAY_MIN = float32(*nclmin)
 					Cfg.NCL_CUSTOM_DELAY_MAX = float32(*nclmax)
 				} else {
-					log.Printf("Cannot consider min delay > max delay! Falling back to default value.")
+					log.Printf("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
 				}
 			} else {
-				log.Printf("CUSTOM specified as net congestion level but without -nclmin and -nclmax. Falling back to default parameters.")
+				log.Printf("[ERROR] CUSTOM specified as net congestion level but without -nclmin and -nclmax. Falling back to default parameters.")
 			}
 		} else {
 			Cfg.NCL_CONGESTION_LEVEL = parsed

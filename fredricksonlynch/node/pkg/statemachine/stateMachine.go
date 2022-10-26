@@ -5,22 +5,12 @@ import (
 	. "fredricksonlynch/node/pkg/net"
 	. "fredricksonlynch/tools/smlog"
 	smlog "fredricksonlynch/tools/smlog"
-
-	//	smlog "fredricksonlynch/smlog"
-
-	//	"log"
-	//	"os"
-
-	//"strconv"
 	"time"
-	//	loggo "github.com/juju/loggo"
 )
 
 type nodeState uint8 //TODO spostare altrove?
 
 var currentState = STATE_UNDEFINED
-
-//var nonCoordTimer *time.Timer
 
 const (
 	STATE_UNDEFINED nodeState = iota
@@ -30,8 +20,6 @@ const (
 	STATE_COORDINATOR
 	STATE_NON_COORDINATOR
 )
-
-//var smlog = log.New(os.Stderr, "[SM] "+time.Now().Format("15:04:05")+" "+currentState.Short()+" "+starterToLogout(starter)+" ", 0)
 
 func (state nodeState) Short() string {
 	switch state {
@@ -70,7 +58,7 @@ func StartStateMachine() {
 	ElectionChannel = make(chan *MsgElection)
 	CoordChannel = make(chan *MsgCoordinator)
 	smlog.InitLogger(false)
-	smlog.Info(LOG_UNDEFINED, "Starting SM...")
+	smlog.InfoU("Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
 	smlog.InfoU("Type CTRL+Z to Pause/resume")
 	InitializeNetMW()
@@ -124,31 +112,24 @@ func state_joining() {
 	}
 	// WaitingMap già inizializzata prima
 	for {
-		smlog.InfoU("attendo messaggi...")
+		smlog.Trace(LOG_STATEMACHINE, "Waiting for messages...")
 		select {
 		case in := <-ElectionChannel:
-			//setHbMgt(HB_HALT)
+			smlog.Trace(LOG_STATEMACHINE, "Handling ELECTION message")
 			if in.GetStarter() == Me.GetId() {
-				smlog.InfoU("tornato election partito da me")
 				setWaiting(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
-				smlog.InfoU("eletto")
 				CoordId = coord
 				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
 				setHbMgt(HB_SEND)
 				setWaiting(MSG_COORDINATOR, true)
 			} else {
-				smlog.InfoU("arrivato election non mio")
 				voted := vote(in)
 				go sendElection(voted, NextNode)
-				smlog.InfoU("ho votato")
-				//è incluso in vote, da portare fuori
-				//sendElection(in, NextNode)
 			}
 			break
 		case in := <-CoordChannel:
-			//setHbMgt(HB_HALT)
-			smlog.InfoU("coordch")
+			smlog.Trace(LOG_STATEMACHINE, "Handling COORDINATOR message")
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_COORDINATOR, false)
 			} else {
@@ -156,21 +137,20 @@ func state_joining() {
 			}
 			CoordId = in.GetCoordinator()
 			if CoordId == Me.GetId() {
-				smlog.InfoU("sono il nuovo coord!")
+				smlog.Info(LOG_ELECTION, "*** I am the new coordinator ***")
 				setHbMgt(HB_SEND)
 			} else {
-				smlog.InfoU("NON sono il nuovo coord!")
+				smlog.Debug(LOG_ELECTION, "I am NOT the new coordinator")
 				setHbMgt(HB_LISTEN)
 			}
 			break
-
 		case <-WaitingMap[MSG_ELECTION].Timer.C:
-			smlog.Trace(LOG_UNDEFINED, "scaduto timer E")
+			smlog.Error(LOG_NETWORK, "ELECTION message not returned back within time limit. Starting new election...")
 			setWaiting(MSG_ELECTION, false)
 			startElection()
 			break
 		case <-WaitingMap[MSG_COORDINATOR].Timer.C:
-			smlog.Trace(LOG_UNDEFINED, "scaduto timer C")
+			smlog.Error(LOG_NETWORK, "COORDINATOR message not returned back within time limit. Sending it again...")
 			setWaiting(MSG_COORDINATOR, false)
 			sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
 			break
