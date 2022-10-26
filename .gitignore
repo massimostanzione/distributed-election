@@ -3,15 +3,15 @@ bully/go.sum
 
 bully/bin/
 bully/node/cmd/node
-bully/serviceRegistry/cmd/serviceRegistry
+bully/serviceregistry/cmd/serviceregistry
 bully/node/pb/*.go
-bully/serviceRegistry/pb/*.go
+bully/serviceregistry/pb/*.go
 
 fredricksonlynch/go.mod
 fredricksonlynch/go.sum
 
 fredricksonlynch/bin/
 fredricksonlynch/node/cmd/node
-fredricksonlynch/serviceRegistry/cmd/serviceRegistry
+fredricksonlynch/serviceregistry/cmd/serviceregistry
 fredricksonlynch/node/pb/*.go
-fredricksonlynch/serviceRegistry/pb/*.go
+fredricksonlynch/serviceregistry/pb/*.go
