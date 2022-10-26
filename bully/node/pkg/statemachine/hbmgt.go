@@ -131,7 +131,7 @@ func haltHb() {
 func ListenToHb() {
 	smlog.InfoU("inizio routine di ascolto hb...")
 	interrupt := false
-	noncoordTimer = time.NewTicker((HB_TIMEOUT + HB_TOLERANCE) * time.Millisecond)
+	noncoordTimer = time.NewTicker(time.Duration(Cfg.HB_TIMEOUT+Cfg.HB_TOLERANCE) * time.Millisecond)
 	for {
 		select {
 		case in := <-Heartbeat:
@@ -148,7 +148,7 @@ func ListenToHb() {
 				interrupt = true
 			}
 			smlog.Info(LOG_HB, "confermo hb")
-			noncoordTimer.Reset((HB_TIMEOUT + HB_TOLERANCE) * time.Millisecond)
+			noncoordTimer.Reset(time.Duration(Cfg.HB_TIMEOUT+Cfg.HB_TOLERANCE) * time.Millisecond)
 			break
 		case <-noncoordTimer.C:
 			smlog.Critical(LOG_HB, "non sento più il coord")
@@ -177,7 +177,7 @@ func ListenToHb() {
 
 func InviaHB() {
 	interrupt := false
-	coordTimer = time.NewTicker(HB_TIMEOUT * time.Millisecond)
+	coordTimer = time.NewTicker(time.Duration(Cfg.HB_TIMEOUT) * time.Millisecond)
 	//defer coordTimer.Stop()
 	//failedNodeExistence := true
 	/*

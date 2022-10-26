@@ -92,7 +92,7 @@ func state_joining() {
 		if IsElectionStarted {
 			setHbMgt(HB_HALT)
 			//ELECTION messages alraeady sent in startElection()
-			ElectionTimer = time.NewTimer(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
+			ElectionTimer = time.NewTimer(time.Duration(Cfg.ELECTION_ESPIRY+Cfg.ELECTION_ESPIRY_TOLERANCE) * time.Millisecond)
 			go startElection()
 			IsElectionStarted = false
 		}

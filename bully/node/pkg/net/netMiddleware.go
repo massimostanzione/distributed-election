@@ -30,9 +30,6 @@ var w *grpc.Server
 var lis net.Listener
 var serverConn *grpc.ClientConn //server
 
-const RMI_RETRY_TOLERANCE = 3
-const LATE_HB_TOLERANCE = 3
-
 func InitializeNetMW() {
 
 	// il centrale espone il servizio di identificazione dei nodi

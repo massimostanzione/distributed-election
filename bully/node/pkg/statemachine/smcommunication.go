@@ -5,9 +5,9 @@ package statemachine
 import (
 	. "bully/node/pkg/env"
 	. "bully/node/pkg/net"
-
 	. "bully/tools/smlog"
 	smlog "bully/tools/smlog"
+	"time"
 )
 
 func sendElection(msg *MsgElection, dest *SMNode) {
@@ -106,7 +106,7 @@ func startElection() {
 			go sendElection(NewElectionMsg(Me.GetId()), nextNode)
 		}
 	}
-	ElectionTimer.Reset(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
+	ElectionTimer.Reset(time.Duration(Cfg.ELECTION_ESPIRY+Cfg.ELECTION_ESPIRY_TOLERANCE) * time.Millisecond)
 	//setState(STATE_ELECTION)
 	// se sono rimasto solo io non faccio nemmeno iniziare l'elezione, è inutile
 	/*if nextNode.GetId() != Me.GetId() {
