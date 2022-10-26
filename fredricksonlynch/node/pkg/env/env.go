@@ -26,23 +26,21 @@ const (
 )
 
 type ConfigEnv struct {
-	NODE_PORT                 int
-	SERVREG_HOST              string
-	SERVREG_PORT              int64
-	HB_TIMEOUT                float32
-	HB_TOLERANCE              float32
-	ELECTION_ESPIRY           int
-	ELECTION_ESPIRY_TOLERANCE int
-	RESPONSE_TIME_LIMIT       int
-	IDLE_WAIT_LIMIT           int
-	RMI_RETRY_TOLERANCE       int
-	LATE_HB_TOLERANCE         int
-	NCL_CONGESTION_LEVEL      NetCongestionLevel
-	NCL_CUSTOM_DELAY_MIN      float32
-	NCL_CUSTOM_DELAY_MAX      float32
+	NODE_PORT            int
+	SERVREG_HOST         string
+	SERVREG_PORT         int64
+	HB_TIMEOUT           float32
+	HB_TOLERANCE         float32
+	RESPONSE_TIME_LIMIT  int
+	IDLE_WAIT_LIMIT      int
+	RMI_RETRY_TOLERANCE  int
+	LATE_HB_TOLERANCE    int
+	NCL_CONGESTION_LEVEL NetCongestionLevel
+	NCL_CUSTOM_DELAY_MIN float32
+	NCL_CUSTOM_DELAY_MAX float32
 }
 
-var DEFAULT_CONFIG_ENV = &ConfigEnv{40043, "localhost", 40042, 1000, 500, 500, 10, 1000, 1000, 3, 3, NCL_ABSENT, 0, 500}
+var DEFAULT_CONFIG_ENV = &ConfigEnv{40043, "localhost", 40042, 1000, 500, 1000, 1000, 3, 3, NCL_ABSENT, 0, 500}
 
 var Cfg *ConfigEnv = &ConfigEnv{}
 var SuccessfulHB = -1
