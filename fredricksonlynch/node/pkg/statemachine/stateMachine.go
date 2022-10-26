@@ -113,7 +113,7 @@ func run() {
 func setWaiting(msgType MsgType, active bool) {
 	WaitingMap[msgType].Waiting = active
 	if active {
-		WaitingMap[msgType].Timer.Reset(IDLE_WAIT_LIMIT * time.Second)
+		WaitingMap[msgType].Timer.Reset(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second)
 	} else {
 		WaitingMap[msgType].Timer.Stop()
 	}

@@ -19,39 +19,41 @@ import (
 	"google.golang.org/grpc"
 )
 
-const NCL_CUSTOM_DELAY_MAX = 500 // ms
-const NCL_CUSTOM_DELAY_MIN = 0   // ms
-var congestionLevel = NCL_LIGHT
-
-type NetCongestionLevel uint8
-
-const (
-	NCL_ABSENT NetCongestionLevel = iota
-	NCL_LIGHT
-	NCL_MEDIUM
-	NCL_SEVERE
-	NCL_CUSTOM
-)
-
+func ToNCL(input string) NetCongestionLevel {
+	switch input {
+	case "ABSENT":
+		return NCL_ABSENT
+	case "LIGHT":
+		return NCL_LIGHT
+	case "MEDIUM":
+		return NCL_MEDIUM
+	case "SEVERE":
+		return NCL_SEVERE
+	case "CUSTOM":
+		return NCL_CUSTOM
+	default:
+		return NCL_ABSENT
+	}
+}
 func generateDelay() int32 {
 	var min float32
 	var max float32
-	switch congestionLevel {
+	switch Cfg.NCL_CONGESTION_LEVEL {
 	case NCL_ABSENT:
 		min = 0
 		max = 0
 	case NCL_LIGHT:
 		min = 0
-		max = .2 * HB_TIMEOUT
+		max = .2 * Cfg.HB_TIMEOUT
 	case NCL_MEDIUM:
-		min = .3 * HB_TIMEOUT
-		max = .5 * HB_TIMEOUT
+		min = .3 * Cfg.HB_TIMEOUT
+		max = .5 * Cfg.HB_TIMEOUT
 	case NCL_SEVERE:
-		min = .5 * HB_TIMEOUT
-		max = 1.5 * HB_TIMEOUT
+		min = .5 * Cfg.HB_TIMEOUT
+		max = 1.5 * Cfg.HB_TIMEOUT
 	case NCL_CUSTOM:
-		min = NCL_CUSTOM_DELAY_MIN
-		max = NCL_CUSTOM_DELAY_MAX
+		min = Cfg.NCL_CUSTOM_DELAY_MIN
+		max = Cfg.NCL_CUSTOM_DELAY_MAX
 
 	}
 	ret := (rand.Float32() * (max - min)) + min
@@ -100,7 +102,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		nodoServer := grpc.NewServer()
 		pb.RegisterDistGrepServer(nodoServer, &DGnode{})
 		csN := pb.NewDistGrepClient(connN)
-		ctx, cancel := context.WithTimeout(context.Background(), RESPONSE_TIME_LIMIT)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Millisecond)
 		//	locCtx = ctx
 		defer cancel()
 		ok := false

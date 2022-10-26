@@ -15,14 +15,36 @@ var ServRegAddr string
 var CoordId int32 = -1
 var Pause = false
 
-const SIMULATION_DELAY = 0 * time.Second
+type NetCongestionLevel uint8
 
-// TODO file di configurazione con i parametri
-const HB_TIMEOUT = 1000             //ms
-const HB_TOLERANCE = HB_TIMEOUT * 2 //250 * time.Millisecond
-const RESPONSE_TIME_LIMIT = 1000 * time.Millisecond
-const IDLE_WAIT_LIMIT = 5000 * time.Millisecond
+const (
+	NCL_ABSENT NetCongestionLevel = iota
+	NCL_LIGHT
+	NCL_MEDIUM
+	NCL_SEVERE
+	NCL_CUSTOM
+)
 
+type ConfigEnv struct {
+	NODE_PORT                 int
+	SERVREG_HOST              string
+	SERVREG_PORT              int64
+	HB_TIMEOUT                float32
+	HB_TOLERANCE              float32
+	ELECTION_ESPIRY           int
+	ELECTION_ESPIRY_TOLERANCE int
+	RESPONSE_TIME_LIMIT       int
+	IDLE_WAIT_LIMIT           int
+	RMI_RETRY_TOLERANCE       int
+	LATE_HB_TOLERANCE         int
+	NCL_CONGESTION_LEVEL      NetCongestionLevel
+	NCL_CUSTOM_DELAY_MIN      float32
+	NCL_CUSTOM_DELAY_MAX      float32
+}
+
+var DEFAULT_CONFIG_ENV = &ConfigEnv{40043, "localhost", 40042, 1000, 500, 500, 10, 1000, 1000, 3, 3, NCL_ABSENT, 0, 500}
+
+var Cfg *ConfigEnv = &ConfigEnv{}
 var SuccessfulHB = -1
 var Heartbeat chan (*MsgHeartbeat)
 var EventsSend chan (string)
