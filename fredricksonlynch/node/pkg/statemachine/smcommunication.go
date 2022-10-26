@@ -10,14 +10,14 @@ import (
 )
 
 func sendElection(msg *MsgElection, dest *SMNode) bool {
-	smlog.Debug(LOG_ELECTION, "Sending ELECTION message to the next node")
+	smlog.Trace(LOG_ELECTION, "Sending ELECTION message to the next node")
 	rmiErr := SafeRMI(MSG_ELECTION, dest, true, msg, nil, nil)
 	return rmiErr
 
 }
 
 func sendCoord(msg *MsgCoordinator, dest *SMNode) {
-	smlog.Debug(LOG_ELECTION, "Sending COORDINATOR message to the next node")
+	smlog.Trace(LOG_ELECTION, "Sending COORDINATOR message to the next node")
 	SafeRMI(MSG_COORDINATOR, dest, true, nil, msg, nil)
 }
 

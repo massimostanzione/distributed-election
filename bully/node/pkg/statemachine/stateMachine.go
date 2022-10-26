@@ -64,7 +64,7 @@ func StartStateMachine() {
 	ElectionChannel = make(chan *MsgElection, 1)
 	OkChannel = make(chan *MsgOk, 1)
 	CoordChannel = make(chan *MsgCoordinator, 1)
-	smlog.InitLogger(false)
+	smlog.InitLogger(false, Cfg.TERMINAL_SMLOG_LEVEL)
 	smlog.Info(LOG_UNDEFINED, "Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
 	smlog.InfoU("Type CTRL+Z to Pause/resume")

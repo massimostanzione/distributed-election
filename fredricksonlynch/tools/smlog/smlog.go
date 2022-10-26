@@ -17,7 +17,7 @@ func SetStateSMLogger(state string) {
 
 var loggoLogger = loggo.GetLogger("")
 
-func InitLogger(isServRegExec bool) {
+func InitLogger(isServRegExec bool, levelParam string) {
 	IsServReg = isServRegExec
 	if IsServReg {
 		fmt.Println("[ServReg] Time     Lvl   Event  Description")
@@ -27,6 +27,8 @@ func InitLogger(isServRegExec bool) {
 		fmt.Println("[SM] -------- ----- ----- ------ ---------------")
 	}
 
+	level, _ := loggo.ParseLevel(levelParam)
+	loggoLogger.SetLogLevel(level)
 }
 func Trace(typee LogEvent, message string, args ...interface{}) {
 	sendToLoggo(loggo.TRACE, typee, message, args...)
@@ -92,7 +94,6 @@ func sendToLoggo(level loggo.Level, typee LogEvent, message string, args ...inte
 
 }
 func init() {
-	loggoLogger.SetLogLevel(loggo.TRACE)
 	loggo.ReplaceDefaultWriter(NewSMColorWriter(os.Stderr))
 }
 

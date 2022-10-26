@@ -57,6 +57,8 @@ func loadConfig() {
 	ncl := flag.String("ncl", "ABSENT", "network congestion level: ABSENT, LIGHT, MEDIUM, SEVERE, CUSTOM. If custom, please specify flags -nclmin and -nclmax")
 	nclmin := flag.Int64("nclmin", 0, "minimum network delay, valid only if -ncl CUSTOM is set")
 	nclmax := flag.Int64("nclmax", 500, "maximum network delay, valid only if -ncl CUSTOM is set")
+	logLevel := flag.String("l", "INFO", "log level: CRITICAL, ERROR, WARNING, INFO, DEBUG, TRACE")
+	verbose := flag.Bool("v", false, "verbose")
 	help := flag.Bool("help", false, "show this message")
 	flag.Parse()
 
@@ -119,6 +121,13 @@ func loadConfig() {
 	}
 	if isFlagPassed("p") {
 		Cfg.NODE_PORT = *nodeport
+	}
+	if isFlagPassed("l") {
+		// conversion is done by loggo
+		Cfg.TERMINAL_SMLOG_LEVEL = *logLevel
+	}
+	if isFlagPassed("v") {
+		Cfg.VERBOSE = *verbose
 	}
 
 	Me.SetHost(GetOutboundIP())

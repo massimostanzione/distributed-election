@@ -23,6 +23,8 @@ type ConfigEnv struct {
 	NODE_PORT                 int
 	SERVREG_HOST              string
 	SERVREG_PORT              int64
+	TERMINAL_SMLOG_LEVEL      string
+	VERBOSE                   bool
 	HB_TIMEOUT                float32
 	HB_TOLERANCE              float32
 	ELECTION_ESPIRY           int
@@ -36,7 +38,7 @@ type ConfigEnv struct {
 	NCL_CUSTOM_DELAY_MAX      float32
 }
 
-var DEFAULT_CONFIG_ENV = &ConfigEnv{40043, "localhost", 40042, 1000, 500, 500, 10, 1000, 1000, 3, 3, NCL_ABSENT, 0, 500}
+var DEFAULT_CONFIG_ENV = &ConfigEnv{40043, "localhost", 40042, "Info", false, 1000, 500, 500, 10, 1000, 1000, 3, 3, NCL_ABSENT, 0, 500}
 
 var Cfg *ConfigEnv = &ConfigEnv{}
 var Me *SMNode = &SMNode{}

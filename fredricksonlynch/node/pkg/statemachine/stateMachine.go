@@ -44,7 +44,7 @@ func setState(state nodeState) {
 	//	smlog.SetState(stateToLogout(currentState))
 	//logger := loggo.GetLogger("")
 	//loggo.ConfigureLoggers("eeeeee")
-	//logger.SetLogLevel(loggo.TRACE)
+	//logger.SetLogLevel(loggo.Debug)
 	//logger.Infof("new state: ", stateToLogout(currentState))
 	smlog.SetStateSMLogger(state.Short())
 	smlog.Info(LOG_STATEMACHINE, "new state: %s", currentState.Short())
@@ -57,7 +57,7 @@ func StartStateMachine() {
 	//	Events = make(chan string, 1)
 	ElectionChannel = make(chan *MsgElection)
 	CoordChannel = make(chan *MsgCoordinator)
-	smlog.InitLogger(false)
+	smlog.InitLogger(false, Cfg.TERMINAL_SMLOG_LEVEL)
 	smlog.InfoU("Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
 	smlog.InfoU("Type CTRL+Z to Pause/resume")
@@ -112,10 +112,10 @@ func state_joining() {
 	}
 	// WaitingMap già inizializzata prima
 	for {
-		smlog.Trace(LOG_STATEMACHINE, "Waiting for messages...")
+		smlog.Debug(LOG_STATEMACHINE, "Waiting for messages...")
 		select {
 		case in := <-ElectionChannel:
-			smlog.Trace(LOG_STATEMACHINE, "Handling ELECTION message")
+			smlog.Debug(LOG_STATEMACHINE, "Handling ELECTION message")
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
@@ -129,7 +129,7 @@ func state_joining() {
 			}
 			break
 		case in := <-CoordChannel:
-			smlog.Trace(LOG_STATEMACHINE, "Handling COORDINATOR message")
+			smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_COORDINATOR, false)
 			} else {
@@ -140,7 +140,7 @@ func state_joining() {
 				smlog.Info(LOG_ELECTION, "*** I am the new coordinator ***")
 				setHbMgt(HB_SEND)
 			} else {
-				smlog.Debug(LOG_ELECTION, "I am NOT the new coordinator")
+				smlog.Trace(LOG_ELECTION, "I am NOT the new coordinator")
 				setHbMgt(HB_LISTEN)
 			}
 			break
