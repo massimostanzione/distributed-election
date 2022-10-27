@@ -1,0 +1,67 @@
+// DistGrep Client interface
+syntax = "proto3";
+option go_package = "distributedelection/pb/node";
+package distributedelection;
+
+service DistGrep {
+    rpc joinRing(NodeAddr) returns (Node);
+    rpc getNode(NodeId) returns (Node);
+    rpc getAllNodes(NONE) returns (NodeList);
+    rpc forwardElection(Election) returns (NONE);
+    rpc forwardCoordinator(Coordinator) returns (NONE);
+    rpc sendHeartBeat(Heartbeat) returns (NONE);
+    
+    
+    
+    rpc getNextRunningNode(NodeId) returns (Node);
+    
+    rpc forwardOk(Ok) returns (NONE);
+    rpc getAllRunningNodes(NONE) returns (NodeList);
+    rpc getAllNodesWithIdGreaterThan(NodeId) returns (NodeList);
+    
+    
+    
+    
+} 
+message Node {
+	int32 id = 1;
+	string host = 2;
+	int32 port = 3;
+	bool actualNextFailed = 4;
+}
+
+message NodeAddr {
+    string host = 1;
+    int32 port = 2;
+}
+
+message NodeId {
+    int32 id = 1;
+}
+
+message Election{
+	int32 starter = 1;
+	repeated int32 ids = 2;
+	float delay = 3;
+}
+
+message Ok{
+	int32 starter = 1;
+	float delay = 2;
+}
+
+message Coordinator{
+	int32 starter = 1;
+	int32 coordinator = 2;
+	float delay = 3;
+}
+
+message Heartbeat {
+    int32 id = 1;
+	float delay = 2;
+}
+
+message NodeList {
+    repeated Node list = 1;
+}
+message NONE{}
