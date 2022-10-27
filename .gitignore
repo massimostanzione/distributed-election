@@ -1,17 +1,8 @@
-bully/go.mod
-bully/go.sum
+go.mod
+go.sum
 
-bully/bin/
-bully/node/cmd/node
-bully/serviceregistry/cmd/serviceregistry
-bully/node/pb/*.go
-bully/serviceregistry/pb/*.go
-
-fredricksonlynch/go.mod
-fredricksonlynch/go.sum
-
-fredricksonlynch/bin/
-fredricksonlynch/node/cmd/node
-fredricksonlynch/serviceregistry/cmd/serviceregistry
-fredricksonlynch/node/pb/*.go
-fredricksonlynch/serviceregistry/pb/*.go
+bin/
+node/cmd/node
+node/pb/*.go
+serviceregistry/cmd/serviceregistry
+serviceregistry/pb/*.go
