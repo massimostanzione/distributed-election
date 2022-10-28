@@ -114,12 +114,12 @@ func state_joining() {
 		select {
 		case in := <-ElectionChannel:
 			smlog.Debug(LOG_STATEMACHINE, "Handling ELECTION message")
+			SetMonitoringState(HB_HALT)
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
 				CoordId = coord
 				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
-				SetMonitoringState(HB_HALT)
 				setWaiting(MSG_COORDINATOR, true)
 			} else {
 				voted := vote(in)

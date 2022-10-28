@@ -55,7 +55,7 @@ var DEFAULT_CONFIG_ENV = &ConfigEnv{
 	500,                    // ELECTION_ESPIRY
 	10,                     // ELECTION_ESPIRY_TOLERANCE
 	1000,                   // RESPONSE_TIME_LIMIT
-	1000,                   // IDLE_WAIT_LIMIT
+	3000,                   // IDLE_WAIT_LIMIT
 	1,                      // RMI_RETRY_TOLERANCE
 	3,                      // LATE_HB_TOLERANCE
 	NCL_ABSENT,             // NCL_CONGESTION_LEVEL
