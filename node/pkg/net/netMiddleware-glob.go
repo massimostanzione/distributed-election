@@ -62,8 +62,6 @@ func Listen() {
 	if err := w.Serve(lis); err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while trying to serve request: %v", err)
 	}
-	//	for pause {
-	//	}
 }
 
 func contactServiceReg() *grpc.ClientConn {

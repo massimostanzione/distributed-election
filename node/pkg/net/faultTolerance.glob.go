@@ -66,8 +66,6 @@ type DGnode struct {
 
 /*
 func SafeRMIHb(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, okMsg *MsgOk, coord *MsgCoordinator, hb *MsgHeartbeat) (failedNodeExistence bool) { //opt ...interface{}) {
-	for Pause {
-	}
 	attempts := 0
 	nextNode := dest
 	prossimoId := nextNode.GetId()

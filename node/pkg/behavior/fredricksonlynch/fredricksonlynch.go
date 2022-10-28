@@ -63,7 +63,6 @@ func Run() {
 	smlog.InitLogger(false, Cfg.TERMINAL_SMLOG_LEVEL)
 	smlog.InfoU("Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
-	smlog.InfoU("Type CTRL+Z to Pause/resume")
 	InitializeNetMW()
 
 	setState(STATE_JOINING)
@@ -76,9 +75,6 @@ func run() {
 	Me = AskForJoining()
 	go startElection()
 	for {
-		for Pause {
-			// test
-		}
 		smlog.Info(LOG_STATEMACHINE, "Running state cycle")
 		//smlog.Println("*** RUNNING STATE: ", (msgType)(currentState))
 		switch currentState {
@@ -112,8 +108,6 @@ func setWaiting(msgType MsgType, active bool) {
 }
 
 func state_joining() {
-	for Pause {
-	}
 	// WaitingMap già inizializzata prima
 	for {
 		smlog.Debug(LOG_STATEMACHINE, "Waiting for messages...")

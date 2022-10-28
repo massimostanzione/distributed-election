@@ -14,7 +14,6 @@ var Me *SMNode = &SMNode{}
 var NextNode *SMNode = &SMNode{}
 var ServRegAddr string
 var CoordId int32 = -1
-var Pause = false
 
 var Heartbeat chan (*MsgHeartbeat)
 

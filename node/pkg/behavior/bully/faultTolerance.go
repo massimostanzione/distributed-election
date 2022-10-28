@@ -21,8 +21,7 @@ import (
 )
 
 func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, okMsg *MsgOk, coord *MsgCoordinator) (failedNodeExistence bool) { //opt ...interface{}) {
-	for Pause {
-	}
+
 	attempts := 0
 	nextNode := dest
 	prossimoId := nextNode.GetId()

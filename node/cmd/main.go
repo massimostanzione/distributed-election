@@ -9,10 +9,8 @@ import (
 	"log"
 	"net"
 	"os"
-	"os/signal"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/go-ini/ini"
@@ -28,15 +26,6 @@ func main() {
 	fmt.Println("")
 	fmt.Println("Loading configuration environment...")
 	loadConfig()
-	Sigchan = make(chan os.Signal, 1)
-	signal.Notify(Sigchan, syscall.SIGTSTP)
-	go func() {
-		sig := <-Sigchan
-		log.Printf("SEGNALE!", sig)
-		Pause = !Pause
-		//SwitchServerState(Pause)
-		log.Printf("Pause = %v", Pause)
-	}()
 	initializeWaitingMap()
 	fmt.Println("... done. Starting...")
 	//StartStateMachine()

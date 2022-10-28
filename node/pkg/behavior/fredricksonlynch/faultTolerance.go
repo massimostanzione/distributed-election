@@ -32,8 +32,7 @@ func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 	return false
 }
 func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, coord *MsgCoordinator) (failedNodeExistence bool) { //opt ...interface{}) {
-	for Pause {
-	}
+
 	// update local cache the first time a sequential message is sent
 	if NextNode.GetId() == 0 {
 		requested := AskForNodeInfo(Me.GetId() + 1)

@@ -68,7 +68,6 @@ func Run() {
 	smlog.InitLogger(false, Cfg.TERMINAL_SMLOG_LEVEL)
 	smlog.Info(LOG_UNDEFINED, "Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
-	smlog.InfoU("Type CTRL+Z to Pause/resume")
 	InitializeNetMW()
 
 	setState(STATE_JOINING)
@@ -82,14 +81,10 @@ func run() {
 }
 
 func state_joining() {
-	for Pause {
-	}
 	Me = AskForJoining()
 
 	IsElectionStarted = true
 	for {
-		for Pause {
-		}
 		if IsElectionStarted {
 			SetMonitoringState(HB_HALT)
 			//ELECTION messages alraeady sent in startElection()
