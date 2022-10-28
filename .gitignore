@@ -2,7 +2,7 @@ go.mod
 go.sum
 
 bin/
-node/cmd/node
+node/cmd/cmd
 node/pb/*.go
-serviceregistry/cmd/serviceregistry
+serviceregistry/cmd/cmd
 serviceregistry/pb/*.go

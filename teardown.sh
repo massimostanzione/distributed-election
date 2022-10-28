@@ -8,7 +8,7 @@ modules=( node serviceregistry )
 for item in "${modules[@]}"
 do
     sudo rm -f bin/$item        \
-               $item/cmd/$item  \
+               $item/cmd/cmd    \
 	           $item/pb/*.go
 done
 sudo rmdir bin
