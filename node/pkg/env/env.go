@@ -81,5 +81,3 @@ var SuccessfulHB = -1
 // Bully-specific variables (needed to be global)
 var ElectionTimer *time.Timer
 var IsElectionStarted = false
-
-var Sigchan chan (os.Signal)
