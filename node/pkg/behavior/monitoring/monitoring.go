@@ -1,9 +1,6 @@
-// hbmgt
 package monitoring
 
 import (
-	//. "distributedelection/node/pkg/behavior"
-	//	pb "distributedelection/node/pb"
 	. "distributedelection/node/pkg/env"
 	. "distributedelection/node/pkg/net"
 	. "distributedelection/tools/smlog"
@@ -85,49 +82,6 @@ func setProperty(prop hbMgtProperty, val bool) {
 	}
 }
 
-/*
-func startListening() {
-	if !ListeningtoHb {
-		ListeningtoHb = true
-		go ListenToHb()
-	}
-}
-func stopListening() {
-	if ListeningtoHb {
-		ListeningtoHb = false
-		EventsList <- "Stop1"
-		noncoordTimer.Stop()
-	}
-}
-func startSending() {
-	if !SendingHB {
-		SendingHB = true
-		go InviaHB()
-	}
-}
-func stopSending() {
-	if SendingHB {
-		SendingHB = false
-		EventsSend <- "STOP2"
-		coordTimer.Stop()
-	}
-}
-
-func haltHb() {
-	if ListeningtoHb {
-		ListeningtoHb = false
-		EventsList <- "Stop1"
-		noncoordTimer.Stop()
-	}
-	if SendingHB {
-		SendingHB = false
-		EventsSend <- "STOP2"
-		coordTimer.Stop()
-	}
-
-}
-*/
-// da separare nel comportamento
 func ListenToHb() {
 	smlog.InfoU("inizio routine di ascolto hb...")
 	interrupt := false

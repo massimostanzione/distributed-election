@@ -1,16 +1,11 @@
 // netMiddleware
 package net
 
-//var cs pb.DistGrepClient
 import (
 	"context"
 	pb "distributedelection/node/pb"
 
 	. "distributedelection/node/pkg/env"
-	//"distributedelection/node/pkg/statemachine"
-	//	. "distributedelection/tools/formatting"
-	//"distributedelection/node/pkg"
-
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
 	"net"
@@ -32,23 +27,22 @@ var serverConn *grpc.ClientConn //server
 
 func InitializeNetMW() {
 	// il centrale espone il servizio di identificazione dei nodi
-	conn := ConnectToNode(ServRegAddr)
-	serverConn = conn
+	serverConn = ConnectToNode(ServRegAddr)
+	//serverConn = conn
 
-	liss, err := net.Listen("tcp", Me.GetFullAddr())
-	lis = liss
+	listener, err := net.Listen("tcp", Me.GetFullAddr())
+	lis = listener
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while trying to listen to port %v:\n%v", Me.GetPort(), err)
 	}
 	// New server instance and service registering
 	w = grpc.NewServer()
 	pb.RegisterDistGrepServer(w, &DGnode{})
-	// Serve incoming calls
-
 	// Defining client interface, to be used to invoke the fredricksonlynch service
 	cs = pb.NewDistGrepClient(serverConn)
 }
 
+// Returns a connection with the node whose address is specified by <code>addr</code>
 func ConnectToNode(addr string) *grpc.ClientConn {
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
@@ -110,6 +104,7 @@ func AskForAllNodesList() []*SMNode {
 	}
 	return ret
 }
+
 func SafeHB(hb *pb.Heartbeat, node *SMNode) {
 	connN := ConnectToNode(node.GetFullAddr())
 	//defer connN.Close()

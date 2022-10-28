@@ -6,7 +6,6 @@ import (
 	. "distributedelection/node/pkg/net"
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"strconv"
@@ -26,15 +25,16 @@ func main() {
 	fmt.Println("")
 	fmt.Println("Loading configuration environment...")
 	loadConfig()
+	setNodeKnowledge()
 	initializeWaitingMap()
 	fmt.Println("... done. Starting...")
-	//StartStateMachine()
 	runner.Run()
 }
 
 // Load Config. Priority order: i) default values, ii) INI file, iii) flags
 func loadConfig() {
 	// Parse flags
+	// (notice: only some of the config parameteres are settable via flags, for practical use)
 	algorithm := flag.String("a", "UNDEFINED", "distributed election algorithm to be run, accepted values: [BULLY b FREDRICKSONLYNCH fl]")
 	iniPath := flag.String("c", "./../config.ini", "path of a INI file containing environment configuration")
 	nodeport := flag.Int("p", 40043, "target port")
@@ -51,18 +51,18 @@ func loadConfig() {
 	// 1. set default parameters, to be sure that all parameters are set
 	Cfg = DEFAULT_CONFIG_ENV
 
-	// 2 if present, override parameters via INI file
+	// 2. if present, override parameters via INI file
 	//   (could not have all the parameters set, or some of them could be invalid)
 	iniFile, err := ini.Load(*iniPath)
 	if err != nil {
-		log.Printf("[ERROR] Could not load %s.\nLoading default parameters...", *iniPath)
+		fmt.Printf("[ERROR] Could not load %s.\nLoading default parameters...", *iniPath)
 	} else {
 		iniSections := iniFile.Sections()
 		for i := 0; i < len(iniSections); i++ {
 			sectName := iniSections[i].Name()
 			sect, err := iniFile.GetSection(sectName)
 			if err != nil {
-				log.Printf("err")
+				fmt.Printf("[ERROR] Cannot get INI section: %s", err)
 			}
 			sect.MapTo(&Cfg)
 		}
@@ -71,26 +71,27 @@ func loadConfig() {
 		key, _ = iniFile.Section("delay-conf").GetKey("NCL_CONGESTION_LEVEL")
 		Cfg.NCL_CONGESTION_LEVEL = ToNCL(key.String())
 		if Cfg.NCL_CUSTOM_DELAY_MIN > Cfg.NCL_CUSTOM_DELAY_MAX {
-			log.Printf("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
+			fmt.Printf("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
 			Cfg.NCL_CUSTOM_DELAY_MIN = 0
 			Cfg.NCL_CUSTOM_DELAY_MAX = 500
 		}
 	}
-	fmt.Print(Cfg.ALGORITHM == DE_ALGORITHM_UNDEFINED)
+
 	// 3. if flags are set, override INI parameters
+	//    (notice: only some of them are settable, for practical use)
 	algo := ParseDEAlgorithm(*algorithm)
 	if algo == DE_ALGORITHM_UNDEFINED && Cfg.ALGORITHM == DE_ALGORITHM_UNDEFINED {
 		fmt.Print("Please specify a distributed election algorithm to be run providing an INI file (-c flag) or via -a flag.\n",
 			"Admissible values for -a flag:\n",
 			"\tBULLY\n\tb\n\tFREDRICKSONLYNCH\n\tfl\n")
-		os.Exit(0)
+		os.Exit(1)
 	}
 	if isFlagPassed("a") {
 		Cfg.ALGORITHM = algo
 	}
 	if *help {
 		flag.PrintDefaults()
-		os.Exit(0)
+		os.Exit(1)
 	}
 
 	if isFlagPassed("ncl") {
@@ -102,10 +103,10 @@ func loadConfig() {
 					Cfg.NCL_CUSTOM_DELAY_MIN = float32(*nclmin)
 					Cfg.NCL_CUSTOM_DELAY_MAX = float32(*nclmax)
 				} else {
-					log.Printf("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
+					fmt.Printf("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
 				}
 			} else {
-				log.Printf("[ERROR] CUSTOM specified as net congestion level but without -nclmin and -nclmax. Falling back to default parameters.")
+				fmt.Printf("[ERROR] CUSTOM specified as net congestion level but without -nclmin and -nclmax. Falling back to default parameters.")
 			}
 		} else {
 			Cfg.NCL_CONGESTION_LEVEL = parsed
@@ -127,19 +128,19 @@ func loadConfig() {
 	if isFlagPassed("v") {
 		Cfg.VERBOSE = *verbose
 	}
+}
 
+func setNodeKnowledge() {
 	Me.SetHost(GetOutboundIP())
 	Me.SetPort(int32(Cfg.NODE_PORT))
-
 	ServRegAddr = Cfg.SERVREG_HOST + ":" + strconv.FormatInt(Cfg.SERVREG_PORT, 10)
-	//fmt.Println(Cfg.ALGORITHM)
-	fmt.Println(*Cfg)
 }
 
 func GetOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Could not retrieve IP address: %s", err)
+		os.Exit(1)
 	}
 	defer conn.Close()
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
