@@ -1,8 +1,6 @@
 // Messages
 package env
 
-import "time"
-
 type MsgType uint8
 
 const (
@@ -47,14 +45,6 @@ func (msg *MsgCoordinator) GetCoordinator() int32 {
 func NewCoordinatorMsg(Starter int32, elected int32) *MsgCoordinator {
 	return &MsgCoordinator{Starter: Starter, Coordinator: elected}
 }
-
-type WaitingStruct struct {
-	Name    MsgType
-	Waiting bool
-	Timer   *time.Timer
-}
-
-var WaitingMap = map[MsgType]*WaitingStruct{}
 
 type MsgOk struct {
 	Starter int32

@@ -1,4 +1,3 @@
-// nde.go
 package env
 
 import (
@@ -12,9 +11,6 @@ type SMNode struct {
 	Host string
 	Port int32
 }
-
-//TODO per relazione: specificare che getter/setters non sono necessariamente richiesti per golang
-// ref.: https://go.dev/doc/effective_go#Getters
 
 func (msg *SMNode) SetId(id int32) {
 	msg.Id = id

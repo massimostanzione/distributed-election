@@ -1,7 +1,6 @@
 package env
 
 import (
-	"os"
 	"time"
 )
 
@@ -81,3 +80,12 @@ var SuccessfulHB = -1
 // Bully-specific variables (needed to be global)
 var ElectionTimer *time.Timer
 var IsElectionStarted = false
+
+// WaitingMaps
+type WaitingStruct struct {
+	Name    MsgType
+	Waiting bool
+	Timer   *time.Timer
+}
+
+var WaitingMap = map[MsgType]*WaitingStruct{}

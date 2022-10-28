@@ -2,7 +2,6 @@ package env
 
 import (
 	pb "distributedelection/node/pb"
-	//. "distributedelection/node/pkg/env"
 )
 
 func ToNetElectionMsg(sm *MsgElection) *pb.Election {
