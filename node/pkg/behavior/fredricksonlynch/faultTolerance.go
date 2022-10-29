@@ -58,7 +58,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		starter = -1
 		errq = nil
 		connN := ConnectToNode(prossimoAddr)
-		//defer connN.Close()
+		defer connN.Close()
 		// New server instance and service registering
 		nodoServer := grpc.NewServer()
 		pb.RegisterDistGrepServer(nodoServer, &DGnode{})

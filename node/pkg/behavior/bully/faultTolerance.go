@@ -27,7 +27,6 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 	prossimoId := nextNode.GetId()
 	prossimoAddr := nextNode.GetFullAddr()
 	failedNodeExistence = false
-	//TODO funzione unica "connetti a..." con paramtero addr, qui e altrove
 	//	smlog.Printf("il nodo NON sono io, quindi provo a contattarlo")
 	// L'ALTRO NODO FUNGE DA SERVER NEI MIEI CONFRONTI
 	var errq error
@@ -37,7 +36,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		starter = -1
 		errq = nil
 		connN := ConnectToNode(prossimoAddr)
-		//defer connN.Close()
+		defer connN.Close()
 		// New server instance and service registering
 		nodoServer := grpc.NewServer()
 		pb.RegisterDistGrepServer(nodoServer, &DGnode{})

@@ -107,7 +107,7 @@ func AskForAllNodesList() []*SMNode {
 
 func SafeHB(hb *pb.Heartbeat, node *SMNode) {
 	connN := ConnectToNode(node.GetFullAddr())
-	//defer connN.Close()
+	defer connN.Close()
 	// New server instance and service registering
 	nodoServer := grpc.NewServer()
 	pb.RegisterDistGrepServer(nodoServer, &DGnode{})
