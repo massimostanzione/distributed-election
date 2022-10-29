@@ -53,9 +53,6 @@ func setState(state nodeState) {
 }
 
 func Run() {
-	Heartbeat = make(chan *MsgHeartbeat)
-	EventsSend = make(chan string)
-	EventsList = make(chan string)
 	//	Events = make(chan string, 1)
 	ElectionChannel = make(chan *MsgElection)
 	CoordChannel = make(chan *MsgCoordinator)
@@ -115,7 +112,6 @@ func state_joining() {
 		select {
 		case in := <-ElectionChannel:
 			smlog.Debug(LOG_STATEMACHINE, "Handling ELECTION message")
-			SetMonitoringState(HB_HALT)
 			smlog.Debug(LOG_STATEMACHINE, "setmonitoringstate to HALT")
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_ELECTION, false)
@@ -133,6 +129,7 @@ func state_joining() {
 			break
 		case in := <-CoordChannel:
 			smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
+			SetMonitoringState(HB_HALT)
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_COORDINATOR, false)
 			} else {
@@ -148,8 +145,9 @@ func state_joining() {
 			}
 			break
 		case <-MonitoringChannel:
+			SetMonitoringState(HB_HALT)
 			smlog.Critical(LOG_ELECTION, "non sento più, ricomincio elez")
-			startElection()
+			go startElection()
 			break
 		case <-WaitingMap[MSG_ELECTION].Timer.C:
 			smlog.Error(LOG_NETWORK, "ELECTION message not returned back within time limit. Starting new election...")
@@ -183,6 +181,8 @@ func startElection() {
 			}
 			i++
 		}*/
-	sendElection(NewElectionMsg(), NextNode)
-	setWaiting(MSG_ELECTION, true)
+	err := sendElection(NewElectionMsg(), NextNode)
+	if !err {
+		setWaiting(MSG_ELECTION, true)
+	}
 }

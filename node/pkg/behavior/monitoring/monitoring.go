@@ -24,6 +24,7 @@ const (
 	HB_PROPERTY_SENDING
 )
 
+var timer *time.Ticker
 var coordTimer *time.Ticker
 
 //var COORDTIMER_DURATION =
@@ -35,29 +36,43 @@ var ListeningtoHb = false
 var EventsSend chan (string)
 var EventsList chan (string)
 var MonitoringChannel chan (string)
+var stateChan chan (string)
+var statee string
 
 func InitMonitoring() {
+	Heartbeat = make(chan *MsgHeartbeat)
+	EventsSend = make(chan string)
+	EventsList = make(chan string)
+	stateChan = make(chan string)
+	statee = ""
 	coordTimer = time.NewTicker(time.Duration(Cfg.HB_TIMEOUT) * time.Millisecond)
 	noncoordTimer = time.NewTicker(time.Duration(Cfg.HB_TIMEOUT+Cfg.HB_TOLERANCE) * time.Millisecond)
 	// https://github.com/golang/go/issues/12721
 	coordTimer.Stop()
 	noncoordTimer.Stop()
+	timer = time.NewTicker(1 * time.Millisecond)
+	timer.Stop()
+	go monitoring()
 	go InviaHB()
 	go ListenToHb()
+	SetMonitoringState(HB_HALT)
 }
 func SetMonitoringState(state hbMgtState) {
 	switch state {
 	case HB_HALT:
-		setProperty(HB_PROPERTY_LISTENING, false)
-		setProperty(HB_PROPERTY_SENDING, false)
+		stateChan <- "halt"
+		//setProperty(HB_PROPERTY_LISTENING, false)
+		//setProperty(HB_PROPERTY_SENDING, false)
 		break
 	case HB_SEND:
-		setProperty(HB_PROPERTY_LISTENING, false)
-		setProperty(HB_PROPERTY_SENDING, true)
+		stateChan <- "send"
+		//setProperty(HB_PROPERTY_LISTENING, false)
+		//setProperty(HB_PROPERTY_SENDING, true)
 		break
 	case HB_LISTEN:
-		setProperty(HB_PROPERTY_LISTENING, true)
-		setProperty(HB_PROPERTY_SENDING, false)
+		stateChan <- "listen"
+		//setProperty(HB_PROPERTY_LISTENING, true)
+		//setProperty(HB_PROPERTY_SENDING, false)
 		break
 	}
 }
@@ -106,6 +121,94 @@ func setProperty(prop hbMgtProperty, val bool) {
 	}
 }
 
+func monitoring() {
+	for {
+		select {
+		case staterecv := <-stateChan:
+			statee = staterecv
+			smlog.Critical(LOG_HB, "staterecv: RICEVO %s", statee)
+			if statee == "send" {
+				timer.Reset(time.Duration(Cfg.HB_TIMEOUT) * time.Millisecond)
+			}
+			if statee == "listen" {
+				timer.Reset(time.Duration(Cfg.HB_TIMEOUT+Cfg.HB_TOLERANCE) * time.Millisecond)
+			}
+			if statee == "halt" {
+				timer.Stop()
+			}
+			break
+		case <-Heartbeat:
+			smlog.Critical(LOG_HB, "arriva hb")
+			if statee == "listen" {
+				acknowledgeHb()
+			}
+			break
+		case <-timer.C:
+			smlog.Critical(LOG_HB, "arriva timer")
+			if statee == "send" {
+				sendhb()
+			}
+			if statee == "listen" {
+				timer.Stop()
+				statee = "halt"
+				smlog.Critical(LOG_HB, "non sento più il coord")
+				MonitoringChannel <- "elect"
+			}
+			if statee == "halt" {
+				timer.Stop()
+			}
+			break
+		}
+	}
+}
+func acknowledgeHb() {
+	/*if in.GetId() != CoordId && CoordId != -1 {
+		// more than one coordinators in the network!
+		// it can happen when a large (>=15) number
+		// of nodes join at the same time
+		// in this case we need a new election
+		smlog.Error(LOG_HB, "Received HB from %d, that is not my coordinator %d", in.GetId(), CoordId)
+		smlog.Error(LOG_HB, "Starting new election...")
+		MonitoringChannel <- "elect"
+		interrupt = true
+	}*/
+	smlog.Info(LOG_HB, "confermo hb")
+	timer.Reset(time.Duration(Cfg.HB_TIMEOUT+Cfg.HB_TOLERANCE) * time.Millisecond)
+}
+
+func sendhb() {
+	timer.Reset(time.Duration(Cfg.HB_TIMEOUT) * time.Millisecond)
+	//defer coordTimer.Stop()
+	//failedNodeExistence := true
+	/*
+		if len(allNodesList.GetList()) == 1 {
+			// se ci sono solo io, evito direttamente
+			smlog.Info(LOG_UNDEFINED, "Sono rimasto solo io")
+			//events <- "STOP"
+			interrupt = true // vedere
+		}*/
+	allNodesList := AskForAllNodesList()
+	hbMsg := &MsgHeartbeat{Id: Me.GetId()}
+	smlog.Critical(LOG_UNDEFINED, "SuccessfulHB=%v", SuccessfulHB)
+	if SuccessfulHB == 0 {
+		//		interrupt = true
+		SuccessfulHB = -1
+		//		break
+	}
+	SuccessfulHB = len(allNodesList) - 1
+	//smlog.Critical(LOG_UNDEFINED, "***** INIZIALIZZO SuccessfulHB=%v", SuccessfulHB)
+	for _, node := range allNodesList {
+		//				node := ToSMNode(nodenet)
+		if node.GetFullAddr() != Me.GetFullAddr() {
+			smlog.Info(LOG_HB, "Invio HB al nodo %d, presso %s", node.GetId(), node.GetFullAddr())
+			// mando gli hb in parallelo! tanto devo mandarli a tutti
+			//go SafeRMI(MSG_HEARTBEAT, node, false, nil, nil, hbMsg)
+			go SafeHB(ToNetHeartbeatMsg(hbMsg), node)
+
+		}
+	}
+}
+
 func ListenToHb() {
 	smlog.InfoU("inizio routine di ascolto hb...")
 	for {
@@ -134,9 +237,11 @@ func ListenToHb() {
 					smlog.Critical(LOG_HB, "non sento più il coord")
 					MonitoringChannel <- "elect"
 					//Events <- "STOP1"
-					interrupt = true
+					noncoordTimer.Stop()
+					//interrupt = true
 					break
 				case in := <-EventsList:
+					smlog.Critical(LOG_HB, ">>> leggo da EVENTSLIST: %s", in)
 					if in == "stop" {
 						smlog.Info(LOG_HB, "devo smettere di ascoltare perché c'è una elezione in corso")
 						interrupt = true
