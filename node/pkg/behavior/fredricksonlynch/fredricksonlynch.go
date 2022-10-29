@@ -57,9 +57,10 @@ func Run() {
 	EventsSend = make(chan string)
 	EventsList = make(chan string)
 	//	Events = make(chan string, 1)
-	ElectionChannel = make(chan *MsgElection, 1)
-	CoordChannel = make(chan *MsgCoordinator, 1)
+	ElectionChannel = make(chan *MsgElection)
+	CoordChannel = make(chan *MsgCoordinator)
 	MonitoringChannel = make(chan string)
+	InitMonitoring()
 	smlog.InitLogger(false, Cfg.TERMINAL_SMLOG_LEVEL)
 	smlog.InfoU("Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
@@ -74,34 +75,34 @@ func Run() {
 func run() {
 	Me = AskForJoining()
 	go startElection()
-	for {
-		smlog.Info(LOG_STATEMACHINE, "Running state cycle")
-		//smlog.Println("*** RUNNING STATE: ", (msgType)(currentState))
-		switch currentState {
-		case STATE_JOINING: // 1
-			state_joining()
-			break
-		/*case STATE_ELECTION_STARTER: // 2
-			state_election_starter()
-			break
-		case STATE_ELECTION_VOTER: // 3
-			state_election_voter()
-			break
-		case STATE_COORDINATOR: // 4
-			state_coordinator()
-			break
-		case STATE_NON_COORDINATOR: // 5
-			state_nonCoordinator()
-			break*/
-		default:
-			break
-		}
-	}
+	//	for {
+	smlog.Info(LOG_STATEMACHINE, "Running state cycle")
+	//smlog.Println("*** RUNNING STATE: ", (msgType)(currentState))
+	//		switch currentState {
+	//		case STATE_JOINING: // 1
+	state_joining()
+	//			break
+	/*case STATE_ELECTION_STARTER: // 2
+		state_election_starter()
+		break
+	case STATE_ELECTION_VOTER: // 3
+		state_election_voter()
+		break
+	case STATE_COORDINATOR: // 4
+		state_coordinator()
+		break
+	case STATE_NON_COORDINATOR: // 5
+		state_nonCoordinator()
+		break*/
+	//		default:
+	//	break
+	//		}
+	//	}
 }
 func setWaiting(msgType MsgType, active bool) {
 	WaitingMap[msgType].Waiting = active
 	if active {
-		WaitingMap[msgType].Timer.Reset(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second)
+		WaitingMap[msgType].Timer.Reset(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Millisecond)
 	} else {
 		WaitingMap[msgType].Timer.Stop()
 	}
@@ -115,6 +116,7 @@ func state_joining() {
 		case in := <-ElectionChannel:
 			smlog.Debug(LOG_STATEMACHINE, "Handling ELECTION message")
 			SetMonitoringState(HB_HALT)
+			smlog.Debug(LOG_STATEMACHINE, "setmonitoringstate to HALT")
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
@@ -122,8 +124,11 @@ func state_joining() {
 				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
 				setWaiting(MSG_COORDINATOR, true)
 			} else {
+				smlog.Debug(LOG_STATEMACHINE, "voting")
 				voted := vote(in)
+				smlog.Debug(LOG_STATEMACHINE, "voted")
 				go sendElection(voted, NextNode)
+				smlog.Debug(LOG_STATEMACHINE, "goroutine sent started")
 			}
 			break
 		case in := <-CoordChannel:

@@ -131,7 +131,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 				//break
 			}
 		} else {
-			smlog.Info(LOG_NETWORK, "RMI invoked correctly, exiting from SafeRMI...")
+			smlog.Trace(LOG_NETWORK, "RMI invoked correctly, exiting from SafeRMI...")
 			ok = true
 		}
 		if ok {

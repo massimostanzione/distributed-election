@@ -55,14 +55,14 @@ func loadConfig() {
 	//   (could not have all the parameters set, or some of them could be invalid)
 	iniFile, err := ini.Load(*iniPath)
 	if err != nil {
-		fmt.Printf("[ERROR] Could not load %s.\nLoading default parameters...", *iniPath)
+		fmt.Printf("[ERROR] Could not load %s.\n%s\nLoading default parameters...\n", *iniPath, err)
 	} else {
 		iniSections := iniFile.Sections()
 		for i := 0; i < len(iniSections); i++ {
 			sectName := iniSections[i].Name()
 			sect, err := iniFile.GetSection(sectName)
 			if err != nil {
-				fmt.Printf("[ERROR] Cannot get INI section: %s", err)
+				fmt.Println("[ERROR] Cannot get INI section: %s", err)
 			}
 			sect.MapTo(&Cfg)
 		}
@@ -71,7 +71,7 @@ func loadConfig() {
 		key, _ = iniFile.Section("delay-conf").GetKey("NCL_CONGESTION_LEVEL")
 		Cfg.NCL_CONGESTION_LEVEL = ToNCL(key.String())
 		if Cfg.NCL_CUSTOM_DELAY_MIN > Cfg.NCL_CUSTOM_DELAY_MAX {
-			fmt.Printf("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
+			fmt.Println("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
 			Cfg.NCL_CUSTOM_DELAY_MIN = 0
 			Cfg.NCL_CUSTOM_DELAY_MAX = 500
 		}
@@ -103,10 +103,10 @@ func loadConfig() {
 					Cfg.NCL_CUSTOM_DELAY_MIN = float32(*nclmin)
 					Cfg.NCL_CUSTOM_DELAY_MAX = float32(*nclmax)
 				} else {
-					fmt.Printf("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
+					fmt.Println("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
 				}
 			} else {
-				fmt.Printf("[ERROR] CUSTOM specified as net congestion level but without -nclmin and -nclmax. Falling back to default parameters.")
+				fmt.Println("[ERROR] CUSTOM specified as net congestion level but without -nclmin and -nclmax. Falling back to default parameters.")
 			}
 		} else {
 			Cfg.NCL_CONGESTION_LEVEL = parsed
