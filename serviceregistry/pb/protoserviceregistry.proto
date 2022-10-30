@@ -1,12 +1,13 @@
 // DistGrep Server interface
 syntax = "proto3";
-option go_package = "distributedelection/pb/serviceregistry";
+import "google/protobuf/empty.proto";
+option go_package = "distributedelection/serviceregistry/pb";
 package distributedelection;
 
-service DistGrep {
+service DistrElectServReg {
     rpc joinRing(NodeAddr) returns (Node);
     rpc getNode(NodeId) returns (Node);
-    rpc getAllNodes(NONE) returns (NodeList);
+    rpc getAllNodes(google.protobuf.Empty) returns (NodeList);
     rpc getAllNodesWithIdGreaterThan(NodeId) returns (NodeList);
 }
 
@@ -14,17 +15,17 @@ message Node {
 	int32 id = 1;
 	string host = 2;
 	int32 port = 3;
-	bool actualNextFailed = 4;
 }
+
 message NodeAddr {
     string host = 1;
     int32 port = 2;
 }
+
 message NodeId {
     int32 id = 1;
 }
+
 message NodeList {
     repeated Node list = 1;
 }
-
-message NONE {}

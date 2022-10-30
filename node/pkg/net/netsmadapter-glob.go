@@ -1,8 +1,8 @@
 package net
 
 import (
-	pb "distributedelection/node/pb"
 	. "distributedelection/node/pkg/env"
+	pb "distributedelection/serviceregistry/pb"
 )
 
 func ToSMNode(net *pb.Node) *SMNode {

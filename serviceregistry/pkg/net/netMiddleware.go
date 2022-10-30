@@ -23,7 +23,7 @@ import (
 )
 
 type DGnode struct {
-	pb.UnimplementedDistGrepServer
+	pb.UnimplementedDistrElectServRegServer
 }
 
 //var NONE = &pb.NONE{}
@@ -108,7 +108,7 @@ func InitializeNetMW() {
 
 	// New server instance and service registering
 	w = grpc.NewServer()
-	pb.RegisterDistGrepServer(w, &DGnode{})
+	pb.RegisterDistrElectServRegServer(w, &DGnode{})
 	// Serve incoming calls
 
 	// Defining client interface, to be used to invoke the fredricksonlynch service
@@ -127,7 +127,7 @@ func Listen(host string, port string) {
 	smlog.InfoU("Listening on port %v...", port)
 	// New server instance and service registering
 	s := grpc.NewServer()
-	pb.RegisterDistGrepServer(s, &DGserver{})
+	pb.RegisterDistrElectServRegServer(s, &DGserver{})
 	// Serve incoming calls
 	if err := s.Serve(lis); err != nil {
 		smlog.Fatal(LOG_UNDEFINED, "Error while trying to serve request: %v", err)

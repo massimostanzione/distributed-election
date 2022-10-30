@@ -39,8 +39,8 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 		defer connN.Close()
 		// New server instance and service registering
 		nodoServer := grpc.NewServer()
-		pb.RegisterDistGrepServer(nodoServer, &DGnode{})
-		csN := pb.NewDistGrepClient(connN)
+		pb.RegisterDistrElectNodeServer(nodoServer, &DGnode{})
+		csN := pb.NewDistrElectNodeClient(connN)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Millisecond)
 		//	locCtx = ctx
 		defer cancel()

@@ -3,7 +3,8 @@ package net
 
 import (
 	"context"
-	pb "distributedelection/node/pb"
+	pbn "distributedelection/node/pb"
+	pbsr "distributedelection/serviceregistry/pb"
 
 	. "distributedelection/node/pkg/env"
 	. "distributedelection/tools/smlog"
@@ -11,15 +12,19 @@ import (
 	"net"
 	"time"
 
+	empty "github.com/golang/protobuf/ptypes/empty"
+
 	"google.golang.org/grpc"
 )
 
 type DGnode struct {
-	pb.UnimplementedDistGrepServer
+	pbn.UnimplementedDistrElectNodeServer
+}
+type DGservreg struct {
+	pbsr.UnimplementedDistrElectServRegServer
 }
 
-var NONE = &pb.NONE{}
-var cs pb.DistGrepClient
+var cs pbsr.DistrElectServRegClient
 
 var w *grpc.Server
 var lis net.Listener
@@ -36,9 +41,9 @@ func InitializeNetMW() {
 	}
 	// New server instance and service registering
 	w = grpc.NewServer()
-	pb.RegisterDistGrepServer(w, &DGnode{})
+	pbn.RegisterDistrElectNodeServer(w, &DGnode{})
 	// Defining client interface, to be used to invoke the fredricksonlynch service
-	cs = pb.NewDistGrepClient(serverConn)
+	cs = pbsr.NewDistrElectServRegClient(serverConn)
 }
 
 // Returns a connection with the node whose address is specified by <code>addr</code>
@@ -67,7 +72,7 @@ func AskForJoining() *SMNode {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
-	node, err := cs.JoinRing(ctx, &pb.NodeAddr{Host: State.NodeInfo.GetHost(), Port: State.NodeInfo.GetPort()})
+	node, err := cs.JoinRing(ctx, &pbsr.NodeAddr{Host: State.NodeInfo.GetHost(), Port: State.NodeInfo.GetPort()})
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while executing fredricksonlynch:\n%v", err)
 	}
@@ -78,7 +83,7 @@ func AskForNodeInfo(i int32) *SMNode {
 	smlog.Debug(LOG_SERVREG, "Asking servReg for info about node n. %d", i)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
-	ret, err := cs.GetNode(ctx, &pb.NodeId{Id: int32(i)})
+	ret, err := cs.GetNode(ctx, &pbsr.NodeId{Id: int32(i)})
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while executing GetNode:\n%v", err)
 		return nil
@@ -93,7 +98,7 @@ func AskForAllNodesList() []*SMNode {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
-	allNodesList, err := cs.GetAllNodes(ctx, NONE)
+	allNodesList, err := cs.GetAllNodes(ctx, new(empty.Empty))
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while executing GetAllNodes:\n%v", err)
 	}
@@ -104,13 +109,13 @@ func AskForAllNodesList() []*SMNode {
 	return ret
 }
 
-func SafeHB(hb *pb.Heartbeat, node *SMNode) {
+func SafeHB(hb *pbn.Heartbeat, node *SMNode) {
 	connN := ConnectToNode(node.GetFullAddr())
 	defer connN.Close()
 	// New server instance and service registering
 	nodoServer := grpc.NewServer()
-	pb.RegisterDistGrepServer(nodoServer, &DGnode{})
-	csN := pb.NewDistGrepClient(connN)
+	pbn.RegisterDistrElectNodeServer(nodoServer, &DGnode{})
+	csN := pbn.NewDistrElectNodeClient(connN)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Millisecond)
 	//	locCtx = ctx
 	defer cancel()
@@ -129,7 +134,7 @@ func AskForNodesWithGreaterIds(baseId int32) []*SMNode {
 	//	locCtx = ctx
 	defer cancel()
 
-	ret, err := cs.GetAllNodesWithIdGreaterThan(ctx, &pb.NodeId{Id: int32(baseId)})
+	ret, err := cs.GetAllNodesWithIdGreaterThan(ctx, &pbsr.NodeId{Id: int32(baseId)})
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "errore in GETNODOa:\n%v", err)
 		return nil
@@ -147,7 +152,7 @@ func AskForAllNodes() []*SMNode {
 	//	locCtx = ctx
 	defer cancel()
 
-	ret, errr := cs.GetAllNodes(ctx, NONE)
+	ret, errr := cs.GetAllNodes(ctx, new(empty.Empty))
 	if errr != nil {
 		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
 		return nil
