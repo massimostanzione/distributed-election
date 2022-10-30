@@ -101,14 +101,6 @@ func run() {
 	//		}
 	//	}
 }
-func setWaiting(msgType MsgType, active bool) {
-	WaitingMap[msgType].Waiting = active
-	if active {
-		WaitingMap[msgType].Timer.Reset(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Millisecond)
-	} else {
-		WaitingMap[msgType].Timer.Stop()
-	}
-}
 
 func state_joining() {
 	// WaitingMap già inizializzata prima
@@ -119,11 +111,11 @@ func state_joining() {
 			smlog.Debug(LOG_STATEMACHINE, "Handling ELECTION message")
 			smlog.Debug(LOG_STATEMACHINE, "setmonitoringstate to HALT")
 			if in.GetStarter() == Me.GetId() {
-				setWaiting(MSG_ELECTION, false)
+				SetWaiting(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
 				CoordId = coord
 				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
-				setWaiting(MSG_COORDINATOR, true)
+				SetWaiting(MSG_COORDINATOR, true)
 			} else {
 				smlog.Debug(LOG_STATEMACHINE, "voting")
 				voted := vote(in)
@@ -136,7 +128,7 @@ func state_joining() {
 			smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
 			SetMonitoringState(MONITORING_HALT)
 			if in.GetStarter() == Me.GetId() {
-				setWaiting(MSG_COORDINATOR, false)
+				SetWaiting(MSG_COORDINATOR, false)
 			} else {
 				go sendCoord(in, NextNode)
 			}
@@ -156,12 +148,12 @@ func state_joining() {
 			break
 		case <-WaitingMap[MSG_ELECTION].Timer.C:
 			smlog.Error(LOG_NETWORK, "ELECTION message not returned back within time limit. Starting new election...")
-			setWaiting(MSG_ELECTION, false)
+			SetWaiting(MSG_ELECTION, false)
 			startElection()
 			break
 		case <-WaitingMap[MSG_COORDINATOR].Timer.C:
 			smlog.Error(LOG_NETWORK, "COORDINATOR message not returned back within time limit. Sending it again...")
-			setWaiting(MSG_COORDINATOR, false)
+			SetWaiting(MSG_COORDINATOR, false)
 			sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
 			break
 
@@ -188,6 +180,6 @@ func startElection() {
 		}*/
 	err := sendElection(NewElectionMsg(), NextNode)
 	if !err {
-		setWaiting(MSG_ELECTION, true)
+		SetWaiting(MSG_ELECTION, true)
 	}
 }

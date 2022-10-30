@@ -5,6 +5,7 @@ import (
 	. "distributedelection/node/pkg/env"
 
 	"math/rand"
+	"time"
 )
 
 func ToNCL(input string) NetCongestionLevel {
@@ -46,4 +47,12 @@ func GenerateDelay() int32 {
 	}
 	ret := (rand.Float32() * (max - min)) + min
 	return int32(ret)
+}
+func SetWaiting(msgType MsgType, active bool) {
+	WaitingMap[msgType].Waiting = active
+	if active {
+		WaitingMap[msgType].Timer.Reset(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Millisecond)
+	} else {
+		WaitingMap[msgType].Timer.Stop()
+	}
 }

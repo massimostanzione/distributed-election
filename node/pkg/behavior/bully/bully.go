@@ -6,15 +6,7 @@ import (
 	. "distributedelection/node/pkg/net"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
-
-	//	smlog "bully/smlog"
-
-	//	"log"
-	//	"os"
-
-	//"strconv"
 	"time"
-	//	loggo "github.com/juju/loggo"
 )
 
 type nodeState uint8 //TODO spostare altrove?
@@ -60,9 +52,10 @@ func setState(state nodeState) {
 }
 
 func Run() {
-	ElectionChannel = make(chan *MsgElection, 1)
-	OkChannel = make(chan *MsgOk, 1)
-	CoordChannel = make(chan *MsgCoordinator, 1)
+	initializeWaitingMap()
+	ElectionChannel = make(chan *MsgElection)
+	OkChannel = make(chan *MsgOk)
+	CoordChannel = make(chan *MsgCoordinator)
 	smlog.Initialize(false, Cfg.TERMINAL_SMLOG_LEVEL)
 	smlog.Info(LOG_UNDEFINED, "Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
@@ -70,6 +63,20 @@ func Run() {
 	setState(STATE_JOINING)
 	go run()
 	Listen()
+}
+func initializeWaitingMap() {
+	WaitingMap = map[MsgType]*WaitingStruct{
+		/*MSG_ELECTION: &WaitingStruct{
+			Waiting: false,
+			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
+		},*/
+		MSG_COORDINATOR: &WaitingStruct{
+			Waiting: false,
+			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
+		},
+	}
+	//WaitingMap[MSG_ELECTION].Timer.Stop()
+	WaitingMap[MSG_COORDINATOR].Timer.Stop()
 }
 
 func run() {
@@ -93,6 +100,7 @@ func state_joining() {
 		case <-ElectionTimer.C:
 			ElectionTimer.Stop()
 			SetMonitoringState(MONITORING_SEND)
+			SetWaiting(MSG_COORDINATOR, false)
 			smlog.InfoU("sono il coord, autoproclamato")
 			CoordId = Me.GetId()
 			for _, dest := range AskForAllNodes() {
@@ -103,8 +111,9 @@ func state_joining() {
 			IsElectionStarted = false
 			break
 		case inp := <-ElectionChannel:
-			//SetMonitoringState(HB_HALT)
+			SetMonitoringState(MONITORING_HALT)
 			//electionTimer.Stop()
+			SetWaiting(MSG_COORDINATOR, true)
 			smlog.InfoU("arrivato E")
 			// other elections are occurring
 			if Me.GetId() > inp.GetStarter() {
@@ -117,7 +126,9 @@ func state_joining() {
 			}
 			break
 		case <-OkChannel:
+			SetMonitoringState(MONITORING_HALT)
 			//ElectionTimer.Stop()
+			SetWaiting(MSG_COORDINATOR, true)
 			smlog.InfoU("qualcuno è più bully di me")
 			//time.Sleep(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
 			ElectionTimer.Stop()
@@ -125,6 +136,8 @@ func state_joining() {
 			IsElectionStarted = false
 			break
 		case inp := <-CoordChannel:
+			SetMonitoringState(MONITORING_HALT)
+			SetWaiting(MSG_COORDINATOR, false)
 			//electionTimer.Stop()
 			CoordId = inp.GetCoordinator()
 			smlog.InfoU("arrivato C")
@@ -136,7 +149,16 @@ func state_joining() {
 			}
 			IsElectionStarted = false
 			break
-
+		case <-MonitoringChannel:
+			SetMonitoringState(MONITORING_HALT)
+			startElection()
+			break
+		case <-WaitingMap[MSG_COORDINATOR].Timer.C:
+			SetMonitoringState(MONITORING_HALT)
+			smlog.Error(LOG_NETWORK, "COORDINATOR message not returned back within time limit. Sending it again...")
+			SetWaiting(MSG_COORDINATOR, false)
+			startElection()
+			break
 		}
 	}
 }

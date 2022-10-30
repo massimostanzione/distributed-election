@@ -70,21 +70,34 @@ func FetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
 	}
 }
 
-func GetAllNodesExecutive(forceRunningNodeOnly bool) *pb.NodeList {
+func GetAllNodesExecutive(baseId int32) *pb.NodeList {
 	var array []*pb.Node
-	for _, node := range Nodes {
-		// TODO documentazione: qui è il centrale che si occupa di sapere lo stato di ciascuno,
-		// anche perché è lo stesso che mantiene la struttura dell'anello,
-		// quindi è anche giusto che se ne occupi lui che distribuire il tutto
-		// in modo distribuito
-		if (forceRunningNodeOnly && !node.ReportedAsFailed) || !forceRunningNodeOnly {
-			grpcNode := ToNetNode(node) //&pb.Node{Id: int32(node.Id), Host: node.Host, Port: node.Port}
-			array = append(array, grpcNode)
-		}
+	for i := (baseId + 1); i <= int32(len(Nodes)); i++ {
+		node := Nodes[i-1]
+		grpcNode := ToNetNode(node)
+		array = append(array, grpcNode)
 	}
 	return &pb.NodeList{List: array}
-
 }
+
+/*
+func GetAllNodesWithIdGreaterThanExecutive(baseId int32) *pb.NodeList {
+	var array []*pb.Node
+	for i := (baseId + 1); i <= int32(len(Nodes)); i++ {
+		//for _, node := range Nodes {
+		// Oss. only running nodes, by default
+		//      active nodes will check if these nodes are running or not,
+		//      signalling those who are failed
+		//if (forceRunningNodeOnly && !node.ReportedAsFailed) || !forceRunningNodeOnly {
+		//TODO funzione di mappatura/demappatura da grpc.Node a Node di go, locale qui
+		grpcNode := &pb.Node{Id: int32(Nodes[i-1].Id), Host: Nodes[i-1].Host, Port: Nodes[i-1].Port}
+		array = append(array, grpcNode)
+		//}
+	}
+
+	return &pb.NodeList{List: array}
+}*/
+
 func getNewId() int {
 	return len(Nodes) + 1
 }

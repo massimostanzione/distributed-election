@@ -6,8 +6,8 @@ package distributedelection;
 service DistGrep {
     rpc joinRing(NodeAddr) returns (Node);
     rpc getNode(NodeId) returns (Node);
-    rpc getNextRunningNode(NodeId) returns (Node);
     rpc getAllNodes(NONE) returns (NodeList);
+    rpc getAllNodesWithIdGreaterThan(NodeId) returns (NodeList);
 }
 
 message Node {

@@ -64,12 +64,12 @@ func (s *DGserver) ReportAsRunning(ctx context.Context, in *pb.Node) (*pb.NONE, 
 }
 
 func (s *DGserver) GetAllNodes(ctx context.Context, in *pb.NONE) (*pb.NodeList, error) {
-	return GetAllNodesExecutive(false), status.New(codes.OK, "").Err()
-}
-func (s *DGserver) GetAllRunningNodes(ctx context.Context, in *pb.NONE) (*pb.NodeList, error) {
-	return GetAllNodesExecutive(true), status.New(codes.OK, "").Err()
+	return GetAllNodesExecutive(0), status.New(codes.OK, "").Err()
 }
 
+func (s *DGserver) GetAllNodesWithIdGreaterThan(ctx context.Context, in *pb.NodeId) (*pb.NodeList, error) {
+	return GetAllNodesExecutive(in.GetId()), status.New(codes.OK, "").Err()
+}
 func (s *DGserver) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error) {
 	smlog.InfoU("*** REQUEST RECEIVED ***")
 	smlog.InfoU("Serve conoscere chi è %d", in.Id)

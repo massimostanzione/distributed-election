@@ -99,7 +99,8 @@ func startElection() {
 	//nextNode := AskForNodeInfo(Me.GetId()+1, true)
 	//Oss. secondo parametro sempre false per fault tolerance,
 	//     per rilevare eventuali nodi offline
-	nodes := AskForNodesWithGreaterIds(Me.GetId(), false)
+	nodes := AskForNodesWithGreaterIds(Me.GetId())
+	smlog.InfoU("ricevo: %s", nodes)
 	for _, nextNode := range nodes {
 		if nextNode.GetId() != Me.GetId() {
 			smlog.Error(LOG_ELECTION, "invio a %s", nextNode.GetId())
