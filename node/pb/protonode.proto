@@ -1,34 +1,29 @@
-// DistGrep Client interface
 syntax = "proto3";
 import "google/protobuf/empty.proto";
 option go_package = "distributedelection/node/pb";
 package distributedelection;
 
 service DistrElectNode {
-    rpc forwardElection(Election) returns (google.protobuf.Empty);
+    rpc forwardElection(Election) 		returns (google.protobuf.Empty);
     rpc forwardCoordinator(Coordinator) returns (google.protobuf.Empty);
-    rpc forwardOk(Ok) returns (google.protobuf.Empty);
-    rpc sendHeartBeat(Heartbeat) returns (google.protobuf.Empty);    
+    rpc forwardOk(Ok) 					returns (google.protobuf.Empty);
+    rpc sendHeartBeat(Heartbeat) 		returns (google.protobuf.Empty);    
 }
 
-message Election{
+message Election {
 	int32 starter = 1;
 	repeated int32 ids = 2;
-	float delay = 3;
 }
 
-message Ok{
+message Ok {
 	int32 starter = 1;
-	float delay = 2;
 }
 
-message Coordinator{
+message Coordinator {
 	int32 starter = 1;
 	int32 coordinator = 2;
-	float delay = 3;
 }
 
 message Heartbeat {
     int32 id = 1;
-	float delay = 2;
 }
