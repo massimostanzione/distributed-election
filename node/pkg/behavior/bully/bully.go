@@ -1,8 +1,8 @@
 package bully
 
 import (
-	. "distributedelection/node/pkg/behavior/monitoring"
 	. "distributedelection/node/pkg/env"
+	. "distributedelection/node/pkg/monitoring"
 	. "distributedelection/node/pkg/net"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"

@@ -15,13 +15,6 @@ import (
 	//"log"
 )
 
-/*
-func StartServiceRegistry() {
-	InitializeNetMW()
-	//go run()
-	Listen()
-}*/
-
 func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
 	for i := range Nodes {
 		if Nodes[i].GetFullAddress() == (host + ":" + fmt.Sprint(port)) {
@@ -79,24 +72,6 @@ func GetAllNodesExecutive(baseId int32) *pb.NodeList {
 	}
 	return &pb.NodeList{List: array}
 }
-
-/*
-func GetAllNodesWithIdGreaterThanExecutive(baseId int32) *pb.NodeList {
-	var array []*pb.Node
-	for i := (baseId + 1); i <= int32(len(Nodes)); i++ {
-		//for _, node := range Nodes {
-		// Oss. only running nodes, by default
-		//      active nodes will check if these nodes are running or not,
-		//      signalling those who are failed
-		//if (forceRunningNodeOnly && !node.ReportedAsFailed) || !forceRunningNodeOnly {
-		//TODO funzione di mappatura/demappatura da grpc.Node a Node di go, locale qui
-		grpcNode := &pb.Node{Id: int32(Nodes[i-1].Id), Host: Nodes[i-1].Host, Port: Nodes[i-1].Port}
-		array = append(array, grpcNode)
-		//}
-	}
-
-	return &pb.NodeList{List: array}
-}*/
 
 func getNewId() int {
 	return len(Nodes) + 1
