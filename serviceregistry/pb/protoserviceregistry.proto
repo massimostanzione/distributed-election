@@ -1,6 +1,6 @@
 // DistGrep Server interface
 syntax = "proto3";
-option go_package = "distributedelection/serviceregistry/pb";
+option go_package = "distributedelection/pb/serviceregistry";
 package distributedelection;
 
 service DistGrep {

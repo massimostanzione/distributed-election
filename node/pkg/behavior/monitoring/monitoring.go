@@ -115,14 +115,14 @@ func acknowledgeHb() {
 func sendHb() {
 	timer.Reset(time.Duration(Cfg.MONITORING_TIMEOUT) * time.Millisecond)
 	allNodesList := AskForAllNodesList()
-	hbMsg := &MsgHeartbeat{Id: Me.GetId()}
+	hbMsg := &MsgHeartbeat{Id: State.NodeInfo.GetId()}
 	smlog.Debug(LOG_UNDEFINED, "SuccessfulHB = %v", SuccessfulHB)
 	if SuccessfulHB == 0 {
 		SuccessfulHB = -1
 	}
 	SuccessfulHB = len(allNodesList) - 1
 	for _, node := range allNodesList {
-		if node.GetFullAddr() != Me.GetFullAddr() {
+		if node.GetFullAddr() != State.NodeInfo.GetFullAddr() {
 			smlog.Info(LOG_MONITORING, "Sending HB to node %d, at %s", node.GetId(), node.GetFullAddr())
 			go SafeHB(ToNetHeartbeatMsg(hbMsg), node)
 		}

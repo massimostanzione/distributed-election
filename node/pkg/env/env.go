@@ -63,13 +63,23 @@ var DEFAULT_CONFIG_ENV = &ConfigEnv{
 
 var Cfg *ConfigEnv = &ConfigEnv{}
 
+type NodeState struct {
+	NodeInfo    *SMNode
+	ServRegAddr string
+	Coordinator int32
+	Participant bool
+}
+
+var State *NodeState = &NodeState{}
+
 // Node knowledge
-var Me *SMNode = &SMNode{}
+//var Me *SMNode = &SMNode{}
 var NextNode *SMNode = &SMNode{}
-var ServRegAddr string
+
+//var ServRegAddr string
 
 // Election
-var CoordId int32 = -1
+//var CoordId int32 = -1
 
 // Monitoring (needed to be global)
 var Heartbeat chan (*MsgHeartbeat)

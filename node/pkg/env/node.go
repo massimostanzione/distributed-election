@@ -1,8 +1,6 @@
 package env
 
 import (
-	. "distributedelection/tools/smlog"
-	smlog "distributedelection/tools/smlog"
 	"fmt"
 )
 
@@ -19,7 +17,6 @@ func (msg *SMNode) SetHost(host string) {
 	msg.Host = host
 }
 func (msg *SMNode) SetPort(portp int32) {
-	smlog.Critical(LOG_UNDEFINED, "%d", portp)
 	msg.Port = portp
 }
 func (msg *SMNode) GetId() int32 {

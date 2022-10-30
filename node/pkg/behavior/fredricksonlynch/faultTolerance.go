@@ -35,7 +35,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 
 	// update local cache the first time a sequential message is sent
 	if NextNode.GetId() == 0 {
-		requested := AskForNodeInfo(Me.GetId() + 1)
+		requested := AskForNodeInfo(State.NodeInfo.GetId() + 1)
 		if requested.GetId() != 1 {
 			NextNode = requested
 			dest = requested
@@ -123,7 +123,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 					smlog.Info(LOG_NETWORK, "Trying next node: %v@%v", nextNode.GetId(), nextNode.GetFullAddr())
 					prossimoId = nextNode.GetId()
 					prossimoAddr = nextNode.GetFullAddr()
-					if prossimoAddr == Me.GetFullAddr() {
+					if prossimoAddr == State.NodeInfo.GetFullAddr() {
 						smlog.InfoU("Sono rimasto solo io")
 						ok = true
 					}

@@ -129,12 +129,13 @@ func loadConfig() {
 }
 
 func setNodeKnowledge() {
-	Me.SetHost(GetOutboundIP())
-	Me.SetPort(int32(Cfg.NODE_PORT))
-	ServRegAddr = Cfg.SERVREG_HOST + ":" + strconv.FormatInt(Cfg.SERVREG_PORT, 10)
+	State.NodeInfo = &SMNode{}
+	State.NodeInfo.SetHost(getOutboundIP())
+	State.NodeInfo.SetPort(int32(Cfg.NODE_PORT))
+	State.ServRegAddr = Cfg.SERVREG_HOST + ":" + strconv.FormatInt(Cfg.SERVREG_PORT, 10)
 }
 
-func GetOutboundIP() string {
+func getOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
 		fmt.Printf("Could not retrieve IP address: %s", err)

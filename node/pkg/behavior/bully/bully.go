@@ -85,7 +85,7 @@ func run() {
 }
 
 func state_joining() {
-	Me = AskForJoining()
+	State.NodeInfo = AskForJoining()
 
 	IsElectionStarted = true
 	for {
@@ -101,23 +101,25 @@ func state_joining() {
 			ElectionTimer.Stop()
 			SetMonitoringState(MONITORING_SEND)
 			SetWaiting(MSG_COORDINATOR, false)
+			State.Participant = false
 			smlog.InfoU("sono il coord, autoproclamato")
-			CoordId = Me.GetId()
+			State.Coordinator = State.NodeInfo.GetId()
 			for _, dest := range AskForAllNodes() {
-				if dest.GetId() != Me.GetId() {
-					go sendCoord(NewCoordinatorMsg(Me.GetId(), Me.GetId()), dest)
+				if dest.GetId() != State.NodeInfo.GetId() {
+					go sendCoord(NewCoordinatorMsg(State.NodeInfo.GetId(), State.NodeInfo.GetId()), dest)
 				}
 			}
 			IsElectionStarted = false
 			break
 		case inp := <-ElectionChannel:
+			State.Participant = true
 			SetMonitoringState(MONITORING_HALT)
 			//electionTimer.Stop()
 			SetWaiting(MSG_COORDINATOR, true)
 			smlog.InfoU("arrivato E")
 			// other elections are occurring
-			if Me.GetId() > inp.GetStarter() {
-				go sendOk(NewOkMsg(Me.GetId()), AskForNodeInfo(inp.GetStarter()))
+			if State.NodeInfo.GetId() > inp.GetStarter() {
+				go sendOk(NewOkMsg(State.NodeInfo.GetId()), AskForNodeInfo(inp.GetStarter()))
 				IsElectionStarted = true
 				//ElectionTimer.Reset(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
 			} else {
@@ -126,6 +128,7 @@ func state_joining() {
 			}
 			break
 		case <-OkChannel:
+			State.Participant = true
 			SetMonitoringState(MONITORING_HALT)
 			//ElectionTimer.Stop()
 			SetWaiting(MSG_COORDINATOR, true)
@@ -139,11 +142,12 @@ func state_joining() {
 			SetMonitoringState(MONITORING_HALT)
 			SetWaiting(MSG_COORDINATOR, false)
 			//electionTimer.Stop()
-			CoordId = inp.GetCoordinator()
+			State.Coordinator = inp.GetCoordinator()
 			smlog.InfoU("arrivato C")
-			if inp.GetCoordinator() != Me.GetId() {
+			if inp.GetCoordinator() != State.NodeInfo.GetId() {
 				smlog.InfoU("nuovo coord è %d", inp.GetCoordinator())
 				SetMonitoringState(MONITORING_LISTEN)
+				State.Participant = false
 			} else {
 				smlog.Fatal(LOG_UNDEFINED, "unreachable")
 			}

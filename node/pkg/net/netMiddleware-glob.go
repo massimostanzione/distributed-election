@@ -27,12 +27,12 @@ var serverConn *grpc.ClientConn
 
 func InitializeNetMW() {
 	// il centrale espone il servizio di identificazione dei nodi
-	serverConn = ConnectToNode(ServRegAddr)
+	serverConn = ConnectToNode(State.ServRegAddr)
 
-	listener, err := net.Listen("tcp", Me.GetFullAddr())
+	listener, err := net.Listen("tcp", State.NodeInfo.GetFullAddr())
 	lis = listener
 	if err != nil {
-		smlog.Fatal(LOG_NETWORK, "Error while trying to listen to port %v:\n%v", Me.GetPort(), err)
+		smlog.Fatal(LOG_NETWORK, "Error while trying to listen to port %v:\n%v", State.NodeInfo.GetPort(), err)
 	}
 	// New server instance and service registering
 	w = grpc.NewServer()
@@ -51,7 +51,7 @@ func ConnectToNode(addr string) *grpc.ClientConn {
 }
 
 func Listen() {
-	smlog.Info(LOG_NETWORK, "Listening on port %v.", Me.GetPort())
+	smlog.Info(LOG_NETWORK, "Listening on port %v.", State.NodeInfo.GetPort())
 	if err := w.Serve(lis); err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while trying to serve request: %v", err)
 	}
@@ -59,7 +59,7 @@ func Listen() {
 
 func contactServiceReg() *grpc.ClientConn {
 	smlog.Trace(LOG_NETWORK, "Contacting service registry")
-	conn := ConnectToNode(ServRegAddr)
+	conn := ConnectToNode(State.ServRegAddr)
 	defer conn.Close() //chiusura, se porta problemi controllare
 	return conn
 }
@@ -67,7 +67,7 @@ func AskForJoining() *SMNode {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
-	node, err := cs.JoinRing(ctx, &pb.NodeAddr{Host: Me.GetHost(), Port: Me.GetPort()})
+	node, err := cs.JoinRing(ctx, &pb.NodeAddr{Host: State.NodeInfo.GetHost(), Port: State.NodeInfo.GetPort()})
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while executing fredricksonlynch:\n%v", err)
 	}

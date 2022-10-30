@@ -9,18 +9,9 @@ service DistGrep {
     rpc getAllNodes(NONE) returns (NodeList);
     rpc forwardElection(Election) returns (NONE);
     rpc forwardCoordinator(Coordinator) returns (NONE);
-    rpc sendHeartBeat(Heartbeat) returns (NONE);
-    
-    
-    
-    rpc getNextRunningNode(NodeId) returns (Node);
-    
+    rpc sendHeartBeat(Heartbeat) returns (NONE);    
     rpc forwardOk(Ok) returns (NONE);
-    rpc getAllRunningNodes(NONE) returns (NodeList);
     rpc getAllNodesWithIdGreaterThan(NodeId) returns (NodeList);
-    
-    
-    
     
 } 
 message Node {

@@ -99,7 +99,7 @@ func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgEl
 					smlog.InfoU("Prossimo: %v presso %v", nextNode.GetId(), nextNode.GetFullAddr())
 					prossimoId = nextNode.GetId()
 					prossimoAddr = nextNode.GetFullAddr()
-					if prossimoAddr == Me.GetFullAddr() {
+					if prossimoAddr == State.NodeInfo.GetFullAddr() {
 						smlog.InfoU("Sono rimasto solo io")
 						ok = true
 					}

@@ -23,13 +23,13 @@ func sendCoord(msg *MsgCoordinator, dest *SMNode) {
 
 func vote(inp *MsgElection) *MsgElection {
 	var ret *MsgElection
-	if !RedudantElectionCheck(Me.GetId(), inp) {
+	if !RedudantElectionCheck(State.NodeInfo.GetId(), inp) {
 		smlog.Trace(LOG_ELECTION, "- voting...")
-		//nextNode := AskForNodeInfo(Me.GetId()+1, true)
-		ret = inp.AddVoter(Me.GetId())
+		//nextNode := AskForNodeInfo(State.NodeInfo.GetId()+1, true)
+		ret = inp.AddVoter(State.NodeInfo.GetId())
 		//spostare fuori il seguente
 		//go sendElection(inp, nextNode)
-		//sendCompiledMessage(Me.GetId(), MSG_ELECTION, nextNode, inp.GetStarter(), inp.GetIds())
+		//sendCompiledMessage(State.NodeInfo.GetId(), MSG_ELECTION, nextNode, inp.GetStarter(), inp.GetIds())
 		//setState(STATE_ELECTION_VOTER)
 	} else {
 		// due opzioni:
@@ -47,15 +47,15 @@ func vote(inp *MsgElection) *MsgElection {
 
 func endElection(coordinatorMsg *MsgCoordinator, forwardMsg bool) {
 	// aggiorna coord
-	CoordId = coordinatorMsg.GetCoordinator()
-	smlog.Info(LOG_ELECTION, "new coordinator is ", CoordId)
+	State.Coordinator = coordinatorMsg.GetCoordinator()
+	smlog.Info(LOG_ELECTION, "new coordinator is ", State.Coordinator)
 	// vedi se C/NC
 	if forwardMsg {
-		//nextNode := AskForNodeInfo(Me.GetId()+1, true)
+		//nextNode := AskForNodeInfo(State.NodeInfo.GetId()+1, true)
 		go sendCoord(coordinatorMsg, NextNode)
 		//go send(MSG_COORDINATOR, starter, nextNode, )
 	}
-	if CoordId == Me.GetId() {
+	if State.Coordinator == State.NodeInfo.GetId() {
 		setState(STATE_COORDINATOR)
 	} else {
 		setState(STATE_NON_COORDINATOR)

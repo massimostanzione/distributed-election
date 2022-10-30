@@ -75,7 +75,7 @@ func initializeWaitingMap() {
 	WaitingMap[MSG_COORDINATOR].Timer.Stop()
 }
 func run() {
-	Me = AskForJoining()
+	State.NodeInfo = AskForJoining()
 	go startElection()
 	//	for {
 	smlog.Info(LOG_STATEMACHINE, "Running state cycle")
@@ -108,32 +108,30 @@ func state_joining() {
 		smlog.Debug(LOG_STATEMACHINE, "Waiting for messages...")
 		select {
 		case in := <-ElectionChannel:
+			State.Participant = true
 			smlog.Debug(LOG_STATEMACHINE, "Handling ELECTION message")
-			smlog.Debug(LOG_STATEMACHINE, "setmonitoringstate to HALT")
-			if in.GetStarter() == Me.GetId() {
+			if in.GetStarter() == State.NodeInfo.GetId() {
 				SetWaiting(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
-				CoordId = coord
-				go sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
+				State.Coordinator = coord
+				go sendCoord(NewCoordinatorMsg(State.NodeInfo.GetId(), State.Coordinator), NextNode)
 				SetWaiting(MSG_COORDINATOR, true)
 			} else {
-				smlog.Debug(LOG_STATEMACHINE, "voting")
 				voted := vote(in)
-				smlog.Debug(LOG_STATEMACHINE, "voted")
 				go sendElection(voted, NextNode)
-				smlog.Debug(LOG_STATEMACHINE, "goroutine sent started")
 			}
 			break
 		case in := <-CoordChannel:
 			smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
 			SetMonitoringState(MONITORING_HALT)
-			if in.GetStarter() == Me.GetId() {
+			if in.GetStarter() == State.NodeInfo.GetId() {
 				SetWaiting(MSG_COORDINATOR, false)
 			} else {
 				go sendCoord(in, NextNode)
 			}
-			CoordId = in.GetCoordinator()
-			if CoordId == Me.GetId() {
+			State.Coordinator = in.GetCoordinator()
+			State.Participant = false
+			if State.Coordinator == State.NodeInfo.GetId() {
 				smlog.Info(LOG_ELECTION, "*** I am the new coordinator ***")
 				SetMonitoringState(MONITORING_SEND)
 			} else {
@@ -154,7 +152,7 @@ func state_joining() {
 		case <-WaitingMap[MSG_COORDINATOR].Timer.C:
 			smlog.Error(LOG_NETWORK, "COORDINATOR message not returned back within time limit. Sending it again...")
 			SetWaiting(MSG_COORDINATOR, false)
-			sendCoord(NewCoordinatorMsg(Me.GetId(), CoordId), NextNode)
+			sendCoord(NewCoordinatorMsg(State.NodeInfo.GetId(), State.Coordinator), NextNode)
 			break
 
 		}
@@ -166,18 +164,19 @@ func startElection() {
 		l'inoltro al successivo è già gestito in safeRMI,
 		difatti il successivo parametro success non serve
 		for {
-			i := Me.GetId() + 1
+			i := State.NodeInfo.GetId() + 1
 			next := AskForNodeInfo(i, false)
-			if next.GetId() == Me.GetId() {
+			if next.GetId() == State.NodeInfo.GetId() {
 				break
 			}
 			//TODO mettere starter implicito
-			success := sendElection(NewElectionMsg(Me.GetId()), next)
+			success := sendElection(NewElectionMsg(State.NodeInfo.GetId()), next)
 			if !success {
 				break
 			}
 			i++
 		}*/
+	State.Participant = true
 	err := sendElection(NewElectionMsg(), NextNode)
 	if !err {
 		SetWaiting(MSG_ELECTION, true)
