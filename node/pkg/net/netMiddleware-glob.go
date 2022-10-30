@@ -23,12 +23,11 @@ var cs pb.DistGrepClient
 
 var w *grpc.Server
 var lis net.Listener
-var serverConn *grpc.ClientConn //server
+var serverConn *grpc.ClientConn
 
 func InitializeNetMW() {
 	// il centrale espone il servizio di identificazione dei nodi
 	serverConn = ConnectToNode(ServRegAddr)
-	//serverConn = conn
 
 	listener, err := net.Listen("tcp", Me.GetFullAddr())
 	lis = listener
@@ -65,7 +64,7 @@ func contactServiceReg() *grpc.ClientConn {
 	return conn
 }
 func AskForJoining() *SMNode {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
 	node, err := cs.JoinRing(ctx, &pb.NodeAddr{Host: Me.GetHost(), Port: Me.GetPort()})
@@ -77,7 +76,7 @@ func AskForJoining() *SMNode {
 
 func AskForNodeInfo(i int32) *SMNode {
 	smlog.Debug(LOG_SERVREG, "Asking servReg for info about node n. %d", i)
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	ret, err := cs.GetNode(ctx, &pb.NodeId{Id: int32(i)})
 	if err != nil {
@@ -92,7 +91,7 @@ func AskForNodeInfo(i int32) *SMNode {
 func AskForAllNodesList() []*SMNode {
 	smlog.Debug(LOG_SERVREG, "Asking servReg for info about all nodes")
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	allNodesList, err := cs.GetAllNodes(ctx, NONE)
 	if err != nil {
@@ -126,7 +125,7 @@ func SafeHB(hb *pb.Heartbeat, node *SMNode) {
 
 func AskForNodesWithGreaterIds(baseId int32, forceRunningNode bool) []*SMNode {
 	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni sui nodi con id > %d", baseId)
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	//	locCtx = ctx
 	defer cancel()
 	if forceRunningNode {
@@ -153,7 +152,7 @@ func AskForNodesWithGreaterIds(baseId int32, forceRunningNode bool) []*SMNode {
 }
 func AskForAllNodes() []*SMNode {
 	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni su TUTTI i nodi")
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	//	locCtx = ctx
 	defer cancel()
 

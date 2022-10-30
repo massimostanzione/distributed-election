@@ -7,7 +7,7 @@ const (
 	LOG_UNDEFINED LogEvent = iota
 	LOG_MSG_SENT
 	LOG_MSG_RECV
-	LOG_HB
+	LOG_MONITORING
 	LOG_NETWORK
 	LOG_SERVREG
 	LOG_STATEMACHINE
@@ -23,8 +23,8 @@ func (event LogEvent) String() string {
 		return "LOG_MSG_SENT"
 	case LOG_MSG_RECV:
 		return "LOG_MSG_RECV"
-	case LOG_HB:
-		return "LOG_HB"
+	case LOG_MONITORING:
+		return "LOG_MONITORING"
 	case LOG_NETWORK:
 		return "LOG_NETWORK"
 	case LOG_SERVREG:
@@ -48,8 +48,8 @@ func (event LogEvent) Short() string {
 		return "MSENT"
 	case LOG_MSG_RECV:
 		return "MRECV"
-	case LOG_HB:
-		return "HB   "
+	case LOG_MONITORING:
+		return "MONIT"
 	case LOG_NETWORK:
 		return "NETWK"
 	case LOG_SERVREG:

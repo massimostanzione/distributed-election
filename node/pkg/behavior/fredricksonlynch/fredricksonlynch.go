@@ -43,25 +43,16 @@ func (state nodeState) Short() string {
 
 func setState(state nodeState) {
 	currentState = state
-	//	smlog.SetState(stateToLogout(currentState))
-	//logger := loggo.GetLogger("")
-	//loggo.ConfigureLoggers("eeeeee")
-	//logger.SetLogLevel(loggo.Debug)
-	//logger.Infof("new state: ", stateToLogout(currentState))
 	smlog.SetStateSMLogger(state.Short())
 	smlog.Info(LOG_STATEMACHINE, "new state: %s", currentState.Short())
 }
 
 func Run() {
-	//	Events = make(chan string, 1)
+	initializeWaitingMap()
 	ElectionChannel = make(chan *MsgElection)
 	CoordChannel = make(chan *MsgCoordinator)
-	MonitoringChannel = make(chan string)
-	InitMonitoring()
-	smlog.InitLogger(false, Cfg.TERMINAL_SMLOG_LEVEL)
 	smlog.InfoU("Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
-	InitializeNetMW()
 
 	setState(STATE_JOINING)
 
@@ -69,6 +60,20 @@ func Run() {
 	Listen()
 }
 
+func initializeWaitingMap() {
+	WaitingMap = map[MsgType]*WaitingStruct{
+		MSG_ELECTION: &WaitingStruct{
+			Waiting: false,
+			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
+		},
+		MSG_COORDINATOR: &WaitingStruct{
+			Waiting: false,
+			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
+		},
+	}
+	WaitingMap[MSG_ELECTION].Timer.Stop()
+	WaitingMap[MSG_COORDINATOR].Timer.Stop()
+}
 func run() {
 	Me = AskForJoining()
 	go startElection()
@@ -129,7 +134,7 @@ func state_joining() {
 			break
 		case in := <-CoordChannel:
 			smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
-			SetMonitoringState(HB_HALT)
+			SetMonitoringState(MONITORING_HALT)
 			if in.GetStarter() == Me.GetId() {
 				setWaiting(MSG_COORDINATOR, false)
 			} else {
@@ -138,14 +143,14 @@ func state_joining() {
 			CoordId = in.GetCoordinator()
 			if CoordId == Me.GetId() {
 				smlog.Info(LOG_ELECTION, "*** I am the new coordinator ***")
-				SetMonitoringState(HB_SEND)
+				SetMonitoringState(MONITORING_SEND)
 			} else {
 				smlog.Trace(LOG_ELECTION, "I am NOT the new coordinator")
-				SetMonitoringState(HB_LISTEN)
+				SetMonitoringState(MONITORING_LISTEN)
 			}
 			break
 		case <-MonitoringChannel:
-			SetMonitoringState(HB_HALT)
+			SetMonitoringState(MONITORING_HALT)
 			smlog.Critical(LOG_ELECTION, "non sento più, ricomincio elez")
 			go startElection()
 			break

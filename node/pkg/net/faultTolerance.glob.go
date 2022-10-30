@@ -32,13 +32,13 @@ func GenerateDelay() int32 {
 		max = 0
 	case NCL_LIGHT:
 		min = 0
-		max = .2 * Cfg.HB_TIMEOUT
+		max = .2 * Cfg.MONITORING_TIMEOUT
 	case NCL_MEDIUM:
-		min = .3 * Cfg.HB_TIMEOUT
-		max = .5 * Cfg.HB_TIMEOUT
+		min = .3 * Cfg.MONITORING_TIMEOUT
+		max = .5 * Cfg.MONITORING_TIMEOUT
 	case NCL_SEVERE:
-		min = .5 * Cfg.HB_TIMEOUT
-		max = 1.5 * Cfg.HB_TIMEOUT
+		min = .5 * Cfg.MONITORING_TIMEOUT
+		max = 1.5 * Cfg.MONITORING_TIMEOUT
 	case NCL_CUSTOM:
 		min = Cfg.NCL_CUSTOM_DELAY_MIN
 		max = Cfg.NCL_CUSTOM_DELAY_MAX

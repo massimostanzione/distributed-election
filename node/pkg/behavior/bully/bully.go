@@ -60,15 +60,12 @@ func setState(state nodeState) {
 }
 
 func Run() {
-	Heartbeat = make(chan *MsgHeartbeat, 1)
-	Events = make(chan string, 1)
 	ElectionChannel = make(chan *MsgElection, 1)
 	OkChannel = make(chan *MsgOk, 1)
 	CoordChannel = make(chan *MsgCoordinator, 1)
-	smlog.InitLogger(false, Cfg.TERMINAL_SMLOG_LEVEL)
+	smlog.Initialize(false, Cfg.TERMINAL_SMLOG_LEVEL)
 	smlog.Info(LOG_UNDEFINED, "Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
-	InitializeNetMW()
 
 	setState(STATE_JOINING)
 	go run()
@@ -86,7 +83,7 @@ func state_joining() {
 	IsElectionStarted = true
 	for {
 		if IsElectionStarted {
-			SetMonitoringState(HB_HALT)
+			SetMonitoringState(MONITORING_HALT)
 			//ELECTION messages alraeady sent in startElection()
 			ElectionTimer = time.NewTimer(time.Duration(Cfg.ELECTION_ESPIRY+Cfg.ELECTION_ESPIRY_TOLERANCE) * time.Millisecond)
 			go startElection()
@@ -95,7 +92,7 @@ func state_joining() {
 		select {
 		case <-ElectionTimer.C:
 			ElectionTimer.Stop()
-			SetMonitoringState(HB_SEND)
+			SetMonitoringState(MONITORING_SEND)
 			smlog.InfoU("sono il coord, autoproclamato")
 			CoordId = Me.GetId()
 			for _, dest := range AskForAllNodes() {
@@ -124,7 +121,7 @@ func state_joining() {
 			smlog.InfoU("qualcuno è più bully di me")
 			//time.Sleep(ELECTION_ESPIRY + ELECTION_ESPIRY_TOLERANCE)
 			ElectionTimer.Stop()
-			SetMonitoringState(HB_HALT)
+			SetMonitoringState(MONITORING_HALT)
 			IsElectionStarted = false
 			break
 		case inp := <-CoordChannel:
@@ -133,7 +130,7 @@ func state_joining() {
 			smlog.InfoU("arrivato C")
 			if inp.GetCoordinator() != Me.GetId() {
 				smlog.InfoU("nuovo coord è %d", inp.GetCoordinator())
-				SetMonitoringState(HB_LISTEN)
+				SetMonitoringState(MONITORING_LISTEN)
 			} else {
 				smlog.Fatal(LOG_UNDEFINED, "unreachable")
 			}

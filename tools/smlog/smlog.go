@@ -17,7 +17,7 @@ func SetStateSMLogger(state string) {
 
 var loggoLogger = loggo.GetLogger("")
 
-func InitLogger(isServRegExec bool, levelParam string) {
+func Initialize(isServRegExec bool, levelParam string) {
 	IsServReg = isServRegExec
 	if IsServReg {
 		fmt.Println("[ServReg] Time     Lvl   Event  Description")

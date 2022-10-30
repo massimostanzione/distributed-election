@@ -10,7 +10,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/go-ini/ini"
 )
@@ -26,7 +25,6 @@ func main() {
 	fmt.Println("Loading configuration environment...")
 	loadConfig()
 	setNodeKnowledge()
-	initializeWaitingMap()
 	fmt.Println("... done. Starting...")
 	runner.Run()
 }
@@ -146,21 +144,6 @@ func GetOutboundIP() string {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 	split := strings.Split(localAddr.String(), ":")
 	return split[0]
-}
-
-func initializeWaitingMap() {
-	WaitingMap = map[MsgType]*WaitingStruct{
-		MSG_ELECTION: &WaitingStruct{
-			Waiting: false,
-			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
-		},
-		MSG_COORDINATOR: &WaitingStruct{
-			Waiting: false,
-			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
-		},
-	}
-	WaitingMap[MSG_ELECTION].Timer.Stop()
-	WaitingMap[MSG_COORDINATOR].Timer.Stop()
 }
 
 func isFlagPassed(name string) bool {

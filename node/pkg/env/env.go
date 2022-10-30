@@ -22,8 +22,8 @@ type ConfigEnv struct {
 	VERBOSE              bool
 
 	// monitoring parameters
-	HB_TIMEOUT   float32
-	HB_TOLERANCE float32
+	MONITORING_TIMEOUT   float32
+	MONITORING_TOLERANCE float32
 
 	// bully-specific parameters
 	ELECTION_ESPIRY           int
@@ -33,9 +33,8 @@ type ConfigEnv struct {
 	RESPONSE_TIME_LIMIT int
 	IDLE_WAIT_LIMIT     int
 
-	// fault tolerange
+	// fault tolerance
 	RMI_RETRY_TOLERANCE int
-	LATE_HB_TOLERANCE   int
 
 	// simulation of network delays
 	NCL_CONGESTION_LEVEL NetCongestionLevel
@@ -57,7 +56,6 @@ var DEFAULT_CONFIG_ENV = &ConfigEnv{
 	1000,                   // RESPONSE_TIME_LIMIT
 	3000,                   // IDLE_WAIT_LIMIT
 	1,                      // RMI_RETRY_TOLERANCE
-	3,                      // LATE_HB_TOLERANCE
 	NCL_ABSENT,             // NCL_CONGESTION_LEVEL
 	0,                      // NCL_CUSTOM_DELAY_MIN
 	500,                    // NCL_CUSTOM_DELAY_MAX
