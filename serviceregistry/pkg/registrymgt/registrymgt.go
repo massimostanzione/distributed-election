@@ -5,60 +5,48 @@ import (
 	pb "distributedelection/serviceregistry/pb"
 	. "distributedelection/serviceregistry/pkg/env"
 	. "distributedelection/serviceregistry/tools"
-	"fmt"
-
-	//	. "distributedelection/tools/smlog"
+	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
-
-	//. "distributedelection/serviceregistry/pkg/net"
-	. "distributedelection/tools/formatting"
-	//"log"
+	"fmt"
+	//	. "distributedelection/tools/formatting"
 )
 
+// Given an hostname and a port, fetch the related NodeRecord if available
+// into the registry, elsewhere generate a new one.
 func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
+	smlog.Trace(LOG_SERVREG, "Request for node with host = %s and port = %d", host, port)
 	for i := range Nodes {
 		if Nodes[i].GetFullAddress() == (host + ":" + fmt.Sprint(port)) {
-			// se l'ho trovato è perché mi ha chiesto di entrare,
-			// quindi o è nato attivo o è stato attivo prima di fallire,
-			// e ora sta rientrando (gli ritorno il posto che aveva prima)
-
-			//Nodes[i].ReportedAsFailed = false
+			// if found, the related node is active or is coming back alive
+			// after a failure, so the previous ID will be returned back
 			return Nodes[i], true
 		}
 	}
-	return NodeRecord{getNewId(), host, port, false}, false
+	return NodeRecord{getNewId(), host, port}, false
 }
 
-func FetchRecordbyId(id int, forceRunningNodeOnly bool) (NodeRecord, bool) {
-	// assunzione che i nodi siano identificati a partire da 1
-	smlog.InfoU("ricevo richiesta di trovare il nodo %d", id)
+// Given a node ID, fetch the related NodeRecord if available
+// into the registry, elsewhere generate a new one.
+func FetchRecordbyId(id int) NodeRecord {
+	// Baseline assumptions:
+	//  i. nodes are identified starting from ID = 1
+	// ii. order in the registry array is based on ID order
+	smlog.Trace(LOG_SERVREG, "Request for node with id = %d", id)
 	i := id
-	searchedNodeWasFailed := false
-	/*normalized := id % len(Nodes)
-	if normalized == 0 {
-		//smlog.InfoU("norm=0")
-		normalized = len(Nodes)
-	}
-	*/
-	//smlog.InfoU("Node vs normalizzato: %d %d", id, normalized)
-	// assumo per ipotesi che l'ordinamento dei nodi nell'array
-	// coincida con l'ordinamento degli indici
-	// ossia: Nodes[i] è il nodo i-esimo
 	for {
-		//i = (i % len(Nodes)==0)?i % len(Nodes):0
 		i = i % len(Nodes)
 		if i == 0 {
 			i = len(Nodes)
 		}
 
-		if (forceRunningNodeOnly && !Nodes[i-1].ReportedAsFailed) || !forceRunningNodeOnly {
-			return Nodes[i-1], searchedNodeWasFailed
-		} else {
-			// whatever node was to be searched, the (first) search
-			// resulted in a failed node
-			i++
-			searchedNodeWasFailed = true
-		}
+		//if (forceRunningNodeOnly && !Nodes[i-1].ReportedAsFailed) || !forceRunningNodeOnly {
+		return Nodes[i-1] //, searchedNodeWasFailed
+		//} else {
+		// whatever node was to be searched, the (first) search
+		// resulted in a failed node
+		//	i++
+		//	searchedNodeWasFailed = true
+		//}
 
 	}
 }
@@ -78,16 +66,10 @@ func getNewId() int {
 }
 
 func PrintRing() {
-	smlog.InfoU("L'anello adesso è fatto così:")
-	smlog.InfoU("id\taddr\t\t\tstatus")
-	smlog.InfoU("---\t-------------------\t---------")
+	smlog.Info(LOG_SERVREG, "Printing registry content:")
+	smlog.Info(LOG_SERVREG, "id\taddr\t\t\tstatus")
+	smlog.Info(LOG_SERVREG, "---\t-------------------\t---------")
 	for _, node := range Nodes {
-		statusStr := "N.D."
-		if node.ReportedAsFailed {
-			statusStr = ColorRed + Bold + "FAILED" + ColorReset
-		} else {
-			statusStr = ColorGreen + Bold + "RUNNING" + ColorReset
-		}
-		smlog.InfoU("%d\t%s\t%s", node.Id, node.GetFullAddress(), statusStr)
+		smlog.Info(LOG_SERVREG, "%d\t%s", node.Id, node.GetFullAddress())
 	}
 }

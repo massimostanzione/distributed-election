@@ -6,12 +6,9 @@ import (
 )
 
 type NodeRecord struct {
-
-	// TODO documentazione: reportedAsFailed in modo da poter riassegnare stesso numero se il falllimento è temporaneo
-	Id               int
-	Host             string
-	Port             int32
-	ReportedAsFailed bool
+	Id   int
+	Host string
+	Port int32
 }
 
 func (record *NodeRecord) GetId() int {
