@@ -158,7 +158,6 @@ func state_joining() {
 		}
 	}
 }
-
 func startElection() {
 	/*
 		l'inoltro al successivo è già gestito in safeRMI,
@@ -176,6 +175,7 @@ func startElection() {
 			}
 			i++
 		}*/
+	DirtyNetList = true
 	State.Participant = true
 	err := sendElection(NewElectionMsg(), NextNode)
 	if !err {

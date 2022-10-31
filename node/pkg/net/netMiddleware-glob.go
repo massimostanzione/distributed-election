@@ -26,6 +26,7 @@ type DGservreg struct {
 
 var cs pbsr.DistrElectServRegClient
 
+var netList []*SMNode
 var w *grpc.Server
 var lis net.Listener
 var serverConn *grpc.ClientConn
@@ -44,6 +45,7 @@ func InitializeNetMW() {
 	pbn.RegisterDistrElectNodeServer(w, &DGnode{})
 	// Defining client interface, to be used to invoke the fredricksonlynch service
 	cs = pbsr.NewDistrElectServRegClient(serverConn)
+	DirtyNetList = true
 }
 
 // Returns a connection with the node whose address is specified by <code>addr</code>
@@ -69,6 +71,7 @@ func contactServiceReg() *grpc.ClientConn {
 	return conn
 }
 func AskForJoining() *SMNode {
+	DirtyNetList = true
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
@@ -94,18 +97,24 @@ func AskForNodeInfo(i int32) *SMNode {
 
 // For monitoring use only
 func AskForAllNodesList() []*SMNode {
-	smlog.Debug(LOG_SERVREG, "Asking servReg for info about all nodes")
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
-	defer cancel()
-	allNodesList, err := cs.GetAllNodes(ctx, new(empty.Empty))
-	if err != nil {
-		smlog.Fatal(LOG_NETWORK, "Error while executing GetAllNodes:\n%v", err)
-	}
 	var ret []*SMNode
-	for _, node := range allNodesList.List {
-		ret = append(ret, ToSMNode(node))
+	smlog.Debug(LOG_SERVREG, "Asking for info about all nodes")
+	if DirtyNetList {
+		smlog.Debug(LOG_SERVREG, "Election has occurred, so net could have changed. Asking to ServReg...")
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
+		defer cancel()
+		allNodesList, err := cs.GetAllNodes(ctx, new(empty.Empty))
+		if err != nil {
+			smlog.Fatal(LOG_NETWORK, "Error while executing GetAllNodes:\n%v", err)
+		}
+		for _, node := range allNodesList.List {
+			ret = append(ret, ToSMNode(node))
+		}
+		netList = ret
+	} else {
+		ret = netList
 	}
+	DirtyNetList = false
 	return ret
 }
 

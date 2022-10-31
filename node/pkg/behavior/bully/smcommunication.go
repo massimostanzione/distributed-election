@@ -94,6 +94,7 @@ func elect(candidates []int32) int32 {
 }
 */
 func startElection() {
+	DirtyNetList = true
 
 	State.Participant = true
 	smlog.InfoU("aaaaaaaa") //TODO gestire quando rimane solo uno, succede anche altrove

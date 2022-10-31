@@ -97,3 +97,7 @@ type WaitingStruct struct {
 }
 
 var WaitingMap = map[MsgType]*WaitingStruct{}
+
+// limit servReg requests if network is not changed,
+// i.e. if no election has occurred
+var DirtyNetList = false
