@@ -126,11 +126,8 @@ func SafeHB(hb *pbn.Heartbeat, node *SMNode) {
 	pbn.RegisterDistrElectNodeServer(nodoServer, &DGnode{})
 	csN := pbn.NewDistrElectNodeClient(connN)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Millisecond)
-	//	locCtx = ctx
 	defer cancel()
-	//netMsg := ToNetHeartbeatMsg(hb)
 	_, errq := csN.SendHeartBeat(ctx, hb)
-	//_, errq := csN.InoltraElezione(ctx, elezione)
 	if errq != nil {
 		smlog.Error(LOG_NETWORK, "error while contacting %v", node.GetFullAddr())
 		smlog.Debug(LOG_NETWORK, "(%s)", errq)
@@ -158,19 +155,15 @@ func AskForNodesWithGreaterIds(baseId int32) []*SMNode {
 func AskForAllNodes() []*SMNode {
 	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni su TUTTI i nodi")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
-	//	locCtx = ctx
 	defer cancel()
-
-	ret, errr := cs.GetAllNodes(ctx, new(empty.Empty))
-	if errr != nil {
+	ret, err := cs.GetAllNodes(ctx, new(empty.Empty))
+	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
 		return nil
-	}
-	//conversion
-	//TODO implementare anche nelle altre chiamate simili
+		
 	var array []*SMNode
 	for _, node := range ret.GetList() {
 		array = append(array, ToSMNode(node))
 	}
-	return array //&SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
+	return array
 }
