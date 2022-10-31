@@ -4,9 +4,9 @@ package net
 import (
 	"context"
 	pbn "distributedelection/node/pb"
-	pbsr "distributedelection/serviceregistry/pb"
-
 	. "distributedelection/node/pkg/env"
+	pbsr "distributedelection/serviceregistry/pb"
+	. "distributedelection/tools/api"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
 	"net"
@@ -75,7 +75,7 @@ func AskForJoining() *SMNode {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
-	node, err := cs.JoinRing(ctx, &pbsr.NodeAddr{Host: State.NodeInfo.GetHost(), Port: State.NodeInfo.GetPort()})
+	node, err := cs.JoinNetwork(ctx, &pbsr.NodeAddr{Host: State.NodeInfo.GetHost(), Port: State.NodeInfo.GetPort()})
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while executing fredricksonlynch:\n%v", err)
 	}

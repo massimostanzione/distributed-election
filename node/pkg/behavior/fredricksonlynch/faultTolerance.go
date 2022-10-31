@@ -3,6 +3,7 @@ package fredricksonlynch
 import (
 	"context"
 	pb "distributedelection/node/pb"
+	. "distributedelection/tools/api"
 
 	//b "distributedelection/node/pkg/behavior/bully"
 	//. "distributedelection/node/pkg/behavior/fredricksonlynch"

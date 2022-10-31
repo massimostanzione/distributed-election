@@ -1,6 +1,8 @@
 // noderecord.go
 package env
 
+/*package env
+
 import (
 	"fmt"
 )
@@ -23,3 +25,4 @@ func (record *NodeRecord) GetPort() int32 {
 func (record *NodeRecord) GetFullAddress() string {
 	return record.Host + ":" + fmt.Sprint(record.Port)
 }
+*/

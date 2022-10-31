@@ -3,7 +3,7 @@ package main
 import (
 	runner "distributedelection/node/pkg/behavior"
 	. "distributedelection/node/pkg/env"
-	. "distributedelection/node/pkg/net"
+	. "distributedelection/tools/api"
 	"flag"
 	"fmt"
 	"net"

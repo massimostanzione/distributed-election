@@ -4,7 +4,7 @@ option go_package = "distributedelection/serviceregistry/pb";
 package distributedelection;
 
 service DistrElectServReg {
-    rpc joinRing(NodeAddr) 						returns (Node);
+    rpc joinNetwork(NodeAddr)					returns (Node);
     rpc getNode(NodeId) 						returns (Node);
     rpc getAllNodes(google.protobuf.Empty) 		returns (NodeList);
     rpc getAllNodesWithIdGreaterThan(NodeId) 	returns (NodeList);

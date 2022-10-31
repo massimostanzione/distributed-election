@@ -4,30 +4,32 @@ package registrymgt
 import (
 	pb "distributedelection/serviceregistry/pb"
 	. "distributedelection/serviceregistry/pkg/env"
-	. "distributedelection/serviceregistry/tools"
+
+	//	. "distributedelection/serviceregistry/tools"
+	. "distributedelection/tools/api"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
 	"fmt"
 	//	. "distributedelection/tools/formatting"
 )
 
-// Given an hostname and a port, fetch the related NodeRecord if available
+// Given an hostname and a port, fetch the related SMNode if available
 // into the registry, elsewhere generate a new one.
-func FetchRecordbyAddr(host string, port int32) (NodeRecord, bool) {
+func FetchRecordbyAddr(host string, port int32) (SMNode, bool) {
 	smlog.Trace(LOG_SERVREG, "Request for node with host = %s and port = %d", host, port)
 	for i := range Nodes {
-		if Nodes[i].GetFullAddress() == (host + ":" + fmt.Sprint(port)) {
+		if Nodes[i].GetFullAddr() == (host + ":" + fmt.Sprint(port)) {
 			// if found, the related node is active or is coming back alive
 			// after a failure, so the previous ID will be returned back
 			return Nodes[i], true
 		}
 	}
-	return NodeRecord{getNewId(), host, port}, false
+	return SMNode{getNewId(), host, port}, false
 }
 
-// Given a node ID, fetch the related NodeRecord if available
+// Given a node ID, fetch the related SMNode if available
 // into the registry, elsewhere generate a new one.
-func FetchRecordbyId(id int) NodeRecord {
+func FetchRecordbyId(id int) SMNode {
 	// Baseline assumptions:
 	//  i. nodes are identified starting from ID = 1
 	// ii. order in the registry array is based on ID order
@@ -61,15 +63,27 @@ func GetAllNodesExecutive(baseId int32) *pb.NodeList {
 	return &pb.NodeList{List: array}
 }
 
-func getNewId() int {
-	return len(Nodes) + 1
+func getNewId() int32 {
+	return int32(len(Nodes)) + 1
 }
 
-func PrintRing() {
+func printRegistry() {
 	smlog.Info(LOG_SERVREG, "Printing registry content:")
 	smlog.Info(LOG_SERVREG, "id\taddr\t\t\tstatus")
 	smlog.Info(LOG_SERVREG, "---\t-------------------\t---------")
 	for _, node := range Nodes {
-		smlog.Info(LOG_SERVREG, "%d\t%s", node.Id, node.GetFullAddress())
+		smlog.Info(LOG_SERVREG, "%d\t%s", node.Id, node.GetFullAddr())
 	}
+}
+func ManageJoining(host string, port int32) SMNode {
+	node, existent := FetchRecordbyAddr(host, port)
+	if existent {
+		smlog.Info(LOG_SERVREG, "Node is already in the registry wth id = %d", node.Id)
+	} else {
+		// register new network node
+		Nodes = append(Nodes, node)
+		smlog.Info(LOG_SERVREG, "Logging new node into the registry with ID = %d", node.Id)
+	}
+	printRegistry()
+	return node
 }

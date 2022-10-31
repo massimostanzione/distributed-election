@@ -1,4 +1,6 @@
 package env
 
-var Nodes []NodeRecord
+import . "distributedelection/tools/api"
+
+var Nodes []SMNode
 var Port int

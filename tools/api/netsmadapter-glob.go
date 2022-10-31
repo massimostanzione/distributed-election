@@ -1,7 +1,6 @@
-package net
+package api
 
 import (
-	. "distributedelection/node/pkg/env"
 	pb "distributedelection/serviceregistry/pb"
 )
 
