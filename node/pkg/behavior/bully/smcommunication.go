@@ -4,6 +4,7 @@ package bully
 
 import (
 	. "distributedelection/node/pkg/env"
+	. "distributedelection/node/pkg/monitoring"
 	. "distributedelection/node/pkg/net"
 	. "distributedelection/tools/api"
 	. "distributedelection/tools/smlog"
@@ -94,7 +95,11 @@ func elect(candidates []int32) int32 {
 	return max
 }
 */
+
+//TODO spostare?
 func startElection() {
+	SetMonitoringState(MONITORING_HALT)
+
 	DirtyNetList = true
 
 	State.Participant = true

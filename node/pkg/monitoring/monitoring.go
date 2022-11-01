@@ -8,6 +8,7 @@ package monitoring
 import (
 	. "distributedelection/node/pkg/env"
 	. "distributedelection/node/pkg/net"
+	. "distributedelection/tools/misc"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
 
@@ -42,10 +43,7 @@ func initialize() {
 	Heartbeat = make(chan *MsgHeartbeat)
 	stateChan = make(chan monitoringState)
 	curMonitoringState = MONITORING_HALT
-
-	// Fictitious initialization, ref.: https://github.com/golang/go/issues/12721
-	timer = time.NewTicker(1 * time.Millisecond)
-	timer.Stop()
+	timer = TickerFictitiousInit(timer)
 	go monitoring()
 }
 

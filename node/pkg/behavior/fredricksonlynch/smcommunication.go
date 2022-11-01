@@ -55,11 +55,6 @@ func endElection(coordinatorMsg *MsgCoordinator, forwardMsg bool) {
 		go sendCoord(coordinatorMsg, NextNode)
 		//go send(MSG_COORDINATOR, starter, nextNode, )
 	}
-	if State.Coordinator == State.NodeInfo.GetId() {
-		setState(STATE_COORDINATOR)
-	} else {
-		setState(STATE_NON_COORDINATOR)
-	}
 }
 
 func elect(candidates []int32) int32 {

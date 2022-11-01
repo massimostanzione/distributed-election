@@ -10,100 +10,34 @@ import (
 	"time"
 )
 
-type nodeState uint8 //TODO spostare altrove?
-
-var currentState = STATE_UNDEFINED
-
-const (
-	STATE_UNDEFINED nodeState = iota
-	STATE_JOINING
-	STATE_ELECTION_STARTER
-	STATE_ELECTION_VOTER
-	STATE_COORDINATOR
-	STATE_NON_COORDINATOR
-)
-
-func (state nodeState) Short() string {
-	switch state {
-	case STATE_UNDEFINED:
-		return "N/A  "
-	case STATE_JOINING:
-		return "JOINI"
-	case STATE_ELECTION_STARTER:
-		return "START"
-	case STATE_ELECTION_VOTER:
-		return "VOTER"
-	case STATE_COORDINATOR:
-		return "COORD"
-	case STATE_NON_COORDINATOR:
-		return "NONCO"
-	}
-	return "err"
-}
-
-func setState(state nodeState) {
-	currentState = state
-	smlog.SetStateSMLogger(state.Short())
-	smlog.Info(LOG_STATEMACHINE, "new state: %s", currentState.Short())
-}
-
 func Run() {
-	initializeWaitingMap()
+	initializeWatchdogs()
 	ElectionChannel = make(chan *MsgElection)
 	CoordChannel = make(chan *MsgCoordinator)
 	smlog.InfoU("Starting SM...")
 	smlog.InfoU("Type CTRL+C to terminate")
 
-	setState(STATE_JOINING)
-
 	go run()
 	Listen()
 }
 
-func initializeWaitingMap() {
-	WaitingMap = map[MsgType]*WaitingStruct{
-		MSG_ELECTION: &WaitingStruct{
+func initializeWatchdogs() {
+	Watchdogs = map[MsgType]*Watchdog{
+		MSG_ELECTION: &Watchdog{
 			Waiting: false,
 			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
 		},
-		MSG_COORDINATOR: &WaitingStruct{
+		MSG_COORDINATOR: &Watchdog{
 			Waiting: false,
 			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
 		},
 	}
-	WaitingMap[MSG_ELECTION].Timer.Stop()
-	WaitingMap[MSG_COORDINATOR].Timer.Stop()
+	Watchdogs[MSG_ELECTION].Timer.Stop()
+	Watchdogs[MSG_COORDINATOR].Timer.Stop()
 }
 func run() {
 	State.NodeInfo = AskForJoining()
 	go startElection()
-	//	for {
-	smlog.Info(LOG_STATEMACHINE, "Running state cycle")
-	//smlog.Println("*** RUNNING STATE: ", (msgType)(currentState))
-	//		switch currentState {
-	//		case STATE_JOINING: // 1
-	state_joining()
-	//			break
-	/*case STATE_ELECTION_STARTER: // 2
-		state_election_starter()
-		break
-	case STATE_ELECTION_VOTER: // 3
-		state_election_voter()
-		break
-	case STATE_COORDINATOR: // 4
-		state_coordinator()
-		break
-	case STATE_NON_COORDINATOR: // 5
-		state_nonCoordinator()
-		break*/
-	//		default:
-	//	break
-	//		}
-	//	}
-}
-
-func state_joining() {
-	// WaitingMap già inizializzata prima
 	for {
 		smlog.Debug(LOG_STATEMACHINE, "Waiting for messages...")
 		select {
@@ -111,11 +45,11 @@ func state_joining() {
 			State.Participant = true
 			smlog.Debug(LOG_STATEMACHINE, "Handling ELECTION message")
 			if in.GetStarter() == State.NodeInfo.GetId() {
-				SetWaiting(MSG_ELECTION, false)
+				SetWatchdog(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
 				State.Coordinator = coord
 				go sendCoord(NewCoordinatorMsg(State.NodeInfo.GetId(), State.Coordinator), NextNode)
-				SetWaiting(MSG_COORDINATOR, true)
+				SetWatchdog(MSG_COORDINATOR, true)
 			} else {
 				voted := vote(in)
 				go sendElection(voted, NextNode)
@@ -125,7 +59,7 @@ func state_joining() {
 			smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
 			SetMonitoringState(MONITORING_HALT)
 			if in.GetStarter() == State.NodeInfo.GetId() {
-				SetWaiting(MSG_COORDINATOR, false)
+				SetWatchdog(MSG_COORDINATOR, false)
 			} else {
 				go sendCoord(in, NextNode)
 			}
@@ -144,14 +78,14 @@ func state_joining() {
 			smlog.Critical(LOG_ELECTION, "non sento più, ricomincio elez")
 			go startElection()
 			break
-		case <-WaitingMap[MSG_ELECTION].Timer.C:
+		case <-Watchdogs[MSG_ELECTION].Timer.C:
 			smlog.Error(LOG_NETWORK, "ELECTION message not returned back within time limit. Starting new election...")
-			SetWaiting(MSG_ELECTION, false)
+			SetWatchdog(MSG_ELECTION, false)
 			startElection()
 			break
-		case <-WaitingMap[MSG_COORDINATOR].Timer.C:
+		case <-Watchdogs[MSG_COORDINATOR].Timer.C:
 			smlog.Error(LOG_NETWORK, "COORDINATOR message not returned back within time limit. Sending it again...")
-			SetWaiting(MSG_COORDINATOR, false)
+			SetWatchdog(MSG_COORDINATOR, false)
 			sendCoord(NewCoordinatorMsg(State.NodeInfo.GetId(), State.Coordinator), NextNode)
 			break
 
@@ -159,26 +93,11 @@ func state_joining() {
 	}
 }
 func startElection() {
-	/*
-		l'inoltro al successivo è già gestito in safeRMI,
-		difatti il successivo parametro success non serve
-		for {
-			i := State.NodeInfo.GetId() + 1
-			next := AskForNodeInfo(i, false)
-			if next.GetId() == State.NodeInfo.GetId() {
-				break
-			}
-			//TODO mettere starter implicito
-			success := sendElection(NewElectionMsg(State.NodeInfo.GetId()), next)
-			if !success {
-				break
-			}
-			i++
-		}*/
+
 	DirtyNetList = true
 	State.Participant = true
 	err := sendElection(NewElectionMsg(), NextNode)
 	if !err {
-		SetWaiting(MSG_ELECTION, true)
+		SetWatchdog(MSG_ELECTION, true)
 	}
 }

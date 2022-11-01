@@ -32,11 +32,11 @@ func GenerateDelay() int32 {
 	ret := (rand.Float32() * (max - min)) + min
 	return int32(ret)
 }
-func SetWaiting(msgType MsgType, active bool) {
-	WaitingMap[msgType].Waiting = active
+func SetWatchdog(msgType MsgType, active bool) {
+	Watchdogs[msgType].Waiting = active
 	if active {
-		WaitingMap[msgType].Timer.Reset(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Millisecond)
+		Watchdogs[msgType].Timer.Reset(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Millisecond)
 	} else {
-		WaitingMap[msgType].Timer.Stop()
+		Watchdogs[msgType].Timer.Stop()
 	}
 }

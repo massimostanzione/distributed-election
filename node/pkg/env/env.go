@@ -74,30 +74,22 @@ type NodeState struct {
 var State *NodeState = &NodeState{}
 
 // Node knowledge
-//var Me *SMNode = &SMNode{}
 var NextNode *SMNode = &SMNode{}
-
-//var ServRegAddr string
-
-// Election
-//var CoordId int32 = -1
 
 // Monitoring (needed to be global)
 var Heartbeat chan (*MsgHeartbeat)
 var SuccessfulHB = -1
 
-// Bully-specific variables (needed to be global)
-var ElectionTimer *time.Timer
-var IsElectionStarted = false
-
-// WaitingMaps
-type WaitingStruct struct {
+// Watchdogs: detect if a message within an election gets lost,
+//            e.g.: a node that is processing a message fails
+//		      during the processing
+type Watchdog struct {
 	Name    MsgType
 	Waiting bool
 	Timer   *time.Timer
 }
 
-var WaitingMap = map[MsgType]*WaitingStruct{}
+var Watchdogs = map[MsgType]*Watchdog{}
 
 // limit servReg requests if network is not changed,
 // i.e. if no election has occurred

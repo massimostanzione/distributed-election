@@ -26,7 +26,7 @@ type DGservreg struct {
 
 var cs pbsr.DistrElectServRegClient
 
-var netList []*SMNode
+var netCache []*SMNode
 var w *grpc.Server
 var lis net.Listener
 var serverConn *grpc.ClientConn
@@ -110,9 +110,9 @@ func AskForAllNodesList() []*SMNode {
 		for _, node := range allNodesList.List {
 			ret = append(ret, ToSMNode(node))
 		}
-		netList = ret
+		netCache = ret
 	} else {
-		ret = netList
+		ret = netCache
 	}
 	DirtyNetList = false
 	return ret
