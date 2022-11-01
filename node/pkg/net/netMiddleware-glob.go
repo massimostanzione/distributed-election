@@ -150,17 +150,17 @@ func AskForNodesWithGreaterIds(baseId int32) []*SMNode {
 		array = append(array, ToSMNode(node))
 	}
 	return array //&SMNode{Id: ret.GetId(), Host: ret.GetHost(), Port: ret.GetPort()}
-
 }
+
 func AskForAllNodes() []*SMNode {
 	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni su TUTTI i nodi")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	ret, err := cs.GetAllNodes(ctx, new(empty.Empty))
 	if err != nil {
-		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", errr)
+		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", err)
 		return nil
-		
+	}
 	var array []*SMNode
 	for _, node := range ret.GetList() {
 		array = append(array, ToSMNode(node))

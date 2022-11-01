@@ -11,3 +11,12 @@ func ToSMNode(net *pb.Node) *SMNode {
 func ToNetNode(sm SMNode) *pb.Node {
 	return &pb.Node{Id: sm.GetId(), Host: sm.GetHost(), Port: int32(sm.GetPort())}
 }
+
+func ToNetNodeList(list []SMNode) *pb.NodeList {
+	var array []*pb.Node
+	for i := 0; i < len(list); i++ {
+		node := list[i]
+		array = append(array, ToNetNode(node))
+	}
+	return &pb.NodeList{List: array}
+}

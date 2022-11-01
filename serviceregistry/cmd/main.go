@@ -1,7 +1,6 @@
 package main
 
 import (
-	. "distributedelection/serviceregistry/pkg/env"
 	. "distributedelection/serviceregistry/pkg/net"
 	smlog "distributedelection/tools/smlog"
 	"flag"
@@ -24,7 +23,7 @@ func main() {
 
 	smlog.Initialize(true, "INFO")
 
-	InitializeNetMW()
+	//InitializeNetMW()
 	Listen("localhost", strconv.FormatInt(int64(Port), 10))
 }
 
