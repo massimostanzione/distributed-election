@@ -5,29 +5,46 @@ type MsgType uint8
 
 const (
 	MSG_UNDEFINED MsgType = iota
-	MSG_ELECTION
+	MSG_ELECTION_BULLY
+	MSG_ELECTION_FL
 	MSG_COORDINATOR
 	MSG_HEARTBEAT
 	MSG_OK
 )
 
-type MsgElection struct {
+type MsgElectionBully struct {
 	Starter int32
 	Voters  []int32
 }
 
-func (msg *MsgElection) GetStarter() int32 {
+func (msg *MsgElectionBully) GetStarter() int32 {
 	return msg.Starter
 }
-func (msg *MsgElection) GetVoters() []int32 {
+
+type MsgElectionFL struct {
+	Starter int32
+	Voters  []int32
+}
+
+func (msg *MsgElectionFL) GetStarter() int32 {
+	return msg.Starter
+}
+
+func (msg *MsgElectionFL) GetVoters() []int32 {
 	return msg.Voters
 }
-func (msg *MsgElection) AddVoter(newVoter int32) *MsgElection {
+
+func (msg *MsgElectionFL) AddVoter(newVoter int32) *MsgElectionFL {
 	msg.Voters = append(msg.Voters, newVoter)
 	return msg
 }
-func NewElectionMsg() *MsgElection {
-	return &MsgElection{Starter: CurState.NodeInfo.GetId(), Voters: []int32{CurState.NodeInfo.GetId()}}
+
+func NewElectionBullyMsg() *MsgElectionBully {
+	return &MsgElectionBully{Starter: CurState.NodeInfo.GetId()}
+}
+
+func NewElectionFLMsg() *MsgElectionFL {
+	return &MsgElectionFL{Starter: CurState.NodeInfo.GetId(), Voters: []int32{CurState.NodeInfo.GetId()}}
 }
 
 type MsgCoordinator struct {

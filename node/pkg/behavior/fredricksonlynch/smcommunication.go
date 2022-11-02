@@ -7,9 +7,9 @@ import (
 	smlog "distributedelection/tools/smlog"
 )
 
-func sendElection(msg *MsgElection, dest *SMNode) bool {
+func sendElection(msg *MsgElectionFL, dest *SMNode) bool {
 	smlog.Trace(LOG_ELECTION, "Sending ELECTION message to the next node")
-	rmiErr := SafeRMI(MSG_ELECTION, dest, true, msg, nil)
+	rmiErr := SafeRMI(MSG_ELECTION_FL, dest, true, msg, nil)
 	return rmiErr
 }
 
@@ -18,8 +18,8 @@ func sendCoord(msg *MsgCoordinator, dest *SMNode) {
 	SafeRMI(MSG_COORDINATOR, dest, true, nil, msg)
 }
 
-func vote(inp *MsgElection) *MsgElection {
-	var ret *MsgElection
+func vote(inp *MsgElectionFL) *MsgElectionFL {
+	var ret *MsgElectionFL
 	if !RedudantElectionCheck(CurState.NodeInfo.GetId(), inp) {
 		smlog.Trace(LOG_ELECTION, "- voting...")
 		//nextNode := AskForNodeInfo(State.NodeInfo.GetId()+1, true)

@@ -17,7 +17,7 @@ var ElectionTimer *time.Timer
 func Run() {
 	initWatchdogs()
 	ElectionTimer = TimerFictitiousInit(ElectionTimer)
-	ElectionChannel = make(chan *MsgElection)
+	ElectionChannel_bully = make(chan *MsgElectionBully)
 	OkChannel = make(chan *MsgOk)
 	CoordChannel = make(chan *MsgCoordinator)
 
@@ -56,7 +56,7 @@ func run() {
 				}
 			}
 			break
-		case inp := <-ElectionChannel:
+		case inp := <-ElectionChannel_bully:
 			smlog.Debug(LOG_ELECTION, "Handling ELECTION message")
 			SetMonitoringState(MONITORING_HALT)
 			CurState.Participant = true

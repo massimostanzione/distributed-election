@@ -14,9 +14,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *DEANode) ForwardElection(ctx context.Context, in *pb.Election) (*empty.Empty, error) {
+func (s *DEANode) ForwardElectionBully(ctx context.Context, in *pb.ElectionBully) (*empty.Empty, error) {
 	smlog.Info(LOG_MSG_RECV, ColorBlkBckgrYellow+BoldBlack+"RECEIVED ELECTION %v"+ColorReset, in)
-	ElectionChannel <- ToSMElectionMsg(in)
+	ElectionChannel_bully <- ToSMElectionBullyMsg(in)
+	return new(empty.Empty), status.New(codes.OK, "").Err()
+}
+
+func (s *DEANode) ForwardElectionFL(ctx context.Context, in *pb.ElectionFL) (*empty.Empty, error) {
+	smlog.Info(LOG_MSG_RECV, ColorBlkBckgrYellow+BoldBlack+"RECEIVED ELECTION %v"+ColorReset, in)
+	ElectionChannel_fl <- ToSMElectionFLMsg(in)
 	return new(empty.Empty), status.New(codes.OK, "").Err()
 }
 

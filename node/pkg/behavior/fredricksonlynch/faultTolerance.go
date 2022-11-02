@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
+func RedudantElectionCheck(voter int32, electionMsg *MsgElectionFL) bool {
 	for _, i := range electionMsg.GetVoters() {
 		if i == voter {
 			return true
@@ -34,7 +34,7 @@ func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 // - FL-specific: if next node is the election starter and it is failed, stop forwarding its
 //   message, to avoid making it turn the ring more than once. The starter will eventually
 //   start another election by itself.
-func SafeRMI(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electionMsg *MsgElection, coordMsg *MsgCoordinator) (failedNodeExistence bool) {
+func SafeRMI(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electionMsg *MsgElectionFL, coordMsg *MsgCoordinator) (failedNodeExistence bool) {
 
 	// update local cache the first time a sequential message is sent
 	if NextNode.GetId() == 0 {
@@ -71,11 +71,11 @@ func SafeRMI(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electionMsg 
 			attempts++
 			// Do the actual RMI invocation, based on the message type
 			switch msgType {
-			case MSG_ELECTION:
+			case MSG_ELECTION_FL:
 				starter = electionMsg.GetStarter()
-				netMsg := ToNetElectionMsg(electionMsg)
+				netMsg := ToNetElectionFLMsg(electionMsg)
 				smlog.Info(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, nextAddr)
-				_, rmiErr = nodeClient.ForwardElection(ctx, netMsg)
+				_, rmiErr = nodeClient.ForwardElectionFL(ctx, netMsg)
 				break
 			case MSG_COORDINATOR:
 				starter = coordMsg.GetStarter()

@@ -7,8 +7,12 @@ import (
 // ---------------------------------------------------------------------------
 // From internal to gRPC
 
-func ToNetElectionMsg(sm *MsgElection) *pb.Election {
-	return &pb.Election{Starter: sm.GetStarter(), Ids: sm.GetVoters()}
+func ToNetElectionBullyMsg(sm *MsgElectionBully) *pb.ElectionBully {
+	return &pb.ElectionBully{Starter: sm.GetStarter()}
+}
+
+func ToNetElectionFLMsg(sm *MsgElectionFL) *pb.ElectionFL {
+	return &pb.ElectionFL{Starter: sm.GetStarter(), Ids: sm.GetVoters()}
 }
 
 func ToNetCoordinatorMsg(sm *MsgCoordinator) *pb.Coordinator {
@@ -26,8 +30,12 @@ func ToNetHeartbeatMsg(sm *MsgHeartbeat) *pb.Heartbeat {
 // ---------------------------------------------------------------------------
 // From gRPC to internal
 
-func ToSMElectionMsg(net *pb.Election) *MsgElection {
-	return &MsgElection{Starter: net.GetStarter(), Voters: net.GetIds()}
+func ToSMElectionBullyMsg(net *pb.ElectionBully) *MsgElectionBully {
+	return &MsgElectionBully{Starter: net.GetStarter()}
+}
+
+func ToSMElectionFLMsg(net *pb.ElectionFL) *MsgElectionFL {
+	return &MsgElectionFL{Starter: net.GetStarter(), Voters: net.GetIds()}
 }
 
 func ToSMCoordinatorMsg(net *pb.Coordinator) *MsgCoordinator {

@@ -20,7 +20,7 @@ import (
 // This is done for fault tolerance, trying to avoid new election when not strictly necessary.
 // - an RMI invocation is tried RMI_RETRY_TOLERANCE times, to address temporary failures due to,
 //   e.g., temporary node overload
-func SafeRMI(msgType MsgType, dest *SMNode, electMsg *MsgElection, okMsg *MsgOk, coordMsg *MsgCoordinator) (failedNodeExistence bool) { //opt ...interface{}) {
+func SafeRMI(msgType MsgType, dest *SMNode, electMsg *MsgElectionBully, okMsg *MsgOk, coordMsg *MsgCoordinator) (failedNodeExistence bool) { //opt ...interface{}) {
 	attempts := 0
 	nextNode := dest
 	nextAddr := nextNode.GetFullAddr()
@@ -42,10 +42,10 @@ func SafeRMI(msgType MsgType, dest *SMNode, electMsg *MsgElection, okMsg *MsgOk,
 		attempts++
 		// Do the actual RMI invocation, based on the message type
 		switch msgType {
-		case MSG_ELECTION:
-			netMsg := ToNetElectionMsg(electMsg)
+		case MSG_ELECTION_BULLY:
+			netMsg := ToNetElectionBullyMsg(electMsg)
 			smlog.Warn(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, nextAddr)
-			_, rmiErr = nodeClient.ForwardElection(ctx, netMsg)
+			_, rmiErr = nodeClient.ForwardElectionBully(ctx, netMsg)
 			break
 		case MSG_OK:
 			netMsg := ToNetOkMsg(okMsg)

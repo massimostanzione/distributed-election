@@ -12,12 +12,14 @@ import (
 	"time"
 )
 
-func sendElection(msg *MsgElection, dest *SMNode) {
-	SafeRMI(MSG_ELECTION, dest, msg, nil, nil)
+func sendElection(msg *MsgElectionBully, dest *SMNode) {
+	SafeRMI(MSG_ELECTION_BULLY, dest, msg, nil, nil)
 }
+
 func sendOk(msg *MsgOk, dest *SMNode) {
 	SafeRMI(MSG_OK, dest, nil, msg, nil)
 }
+
 func sendCoord(msg *MsgCoordinator, dest *SMNode) {
 	SafeRMI(MSG_COORDINATOR, dest, nil, nil, msg)
 }
@@ -36,7 +38,7 @@ func startElection() {
 	for _, nextNode := range nodes {
 		if nextNode.GetId() != CurState.NodeInfo.GetId() {
 			smlog.Error(LOG_ELECTION, "invio a %s", nextNode.GetId())
-			go sendElection(NewElectionMsg(), nextNode)
+			go sendElection(NewElectionBullyMsg(), nextNode)
 		}
 	}
 	ElectionTimer.Reset(time.Duration(Cfg.ELECTION_ESPIRY+Cfg.ELECTION_ESPIRY_TOLERANCE) * time.Millisecond)

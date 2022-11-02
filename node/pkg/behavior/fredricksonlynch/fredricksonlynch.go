@@ -12,7 +12,7 @@ import (
 
 func Run() {
 	initializeWatchdogs()
-	ElectionChannel = make(chan *MsgElection)
+	ElectionChannel_fl = make(chan *MsgElectionFL)
 	CoordChannel = make(chan *MsgCoordinator)
 
 	go run()
@@ -21,7 +21,7 @@ func Run() {
 
 func initializeWatchdogs() {
 	Watchdogs = map[MsgType]*Watchdog{
-		MSG_ELECTION: &Watchdog{
+		MSG_ELECTION_FL: &Watchdog{
 			Waiting: false,
 			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
 		},
@@ -30,7 +30,7 @@ func initializeWatchdogs() {
 			Timer:   time.NewTimer(time.Duration(Cfg.IDLE_WAIT_LIMIT) * time.Second),
 		},
 	}
-	Watchdogs[MSG_ELECTION].Timer.Stop()
+	Watchdogs[MSG_ELECTION_FL].Timer.Stop()
 	Watchdogs[MSG_COORDINATOR].Timer.Stop()
 }
 
@@ -39,11 +39,11 @@ func run() {
 	go startElection()
 	for {
 		select {
-		case in := <-ElectionChannel:
+		case in := <-ElectionChannel_fl:
 			smlog.Debug(LOG_ELECTION, "Handling ELECTION message")
 			CurState.Participant = true
 			if in.GetStarter() == CurState.NodeInfo.GetId() {
-				SetWatchdog(MSG_ELECTION, false)
+				SetWatchdog(MSG_ELECTION_FL, false)
 				coord := elect(in.GetVoters())
 				CurState.Coordinator = coord
 				go sendCoord(NewCoordinatorMsg(CurState.NodeInfo.GetId(), CurState.Coordinator), NextNode)
@@ -76,9 +76,9 @@ func run() {
 			SetMonitoringState(MONITORING_HALT)
 			go startElection()
 			break
-		case <-Watchdogs[MSG_ELECTION].Timer.C:
+		case <-Watchdogs[MSG_ELECTION_FL].Timer.C:
 			smlog.Error(LOG_NETWORK, "ELECTION message not returned back within time limit. Starting new election...")
-			SetWatchdog(MSG_ELECTION, false)
+			SetWatchdog(MSG_ELECTION_FL, false)
 			startElection()
 			break
 		case <-Watchdogs[MSG_COORDINATOR].Timer.C:
@@ -94,8 +94,8 @@ func startElection() {
 
 	DirtyNetList = true
 	CurState.Participant = true
-	err := sendElection(NewElectionMsg(), NextNode)
+	err := sendElection(NewElectionFLMsg(), NextNode)
 	if !err {
-		SetWatchdog(MSG_ELECTION, true)
+		SetWatchdog(MSG_ELECTION_FL, true)
 	}
 }

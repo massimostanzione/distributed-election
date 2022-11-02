@@ -4,13 +4,18 @@ option go_package = "distributedelection/node/pb";
 package distributedelection;
 
 service DistrElectNode {
-    rpc forwardElection(Election) 		returns (google.protobuf.Empty);
-    rpc forwardCoordinator(Coordinator) returns (google.protobuf.Empty);
-    rpc forwardOk(Ok) 					returns (google.protobuf.Empty);
-    rpc sendHeartBeat(Heartbeat) 		returns (google.protobuf.Empty);    
+    rpc forwardElectionBully(ElectionBully)	returns (google.protobuf.Empty);
+    rpc forwardElectionFL(ElectionFL)		returns (google.protobuf.Empty);
+    rpc forwardCoordinator(Coordinator) 	returns (google.protobuf.Empty);
+    rpc forwardOk(Ok) 						returns (google.protobuf.Empty);
+    rpc sendHeartBeat(Heartbeat) 			returns (google.protobuf.Empty);    
 }
 
-message Election {
+message ElectionBully {
+	int32 starter = 1;
+}
+
+message ElectionFL {
 	int32 starter = 1;
 	repeated int32 ids = 2;
 }
