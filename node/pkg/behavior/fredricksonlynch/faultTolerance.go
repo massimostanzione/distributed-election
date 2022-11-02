@@ -3,21 +3,14 @@ package fredricksonlynch
 import (
 	"context"
 	pb "distributedelection/node/pb"
-	. "distributedelection/tools/api"
-
-	//b "distributedelection/node/pkg/behavior/bully"
-	//. "distributedelection/node/pkg/behavior/fredricksonlynch"
 	. "distributedelection/node/pkg/env"
+	. "distributedelection/tools/api"
 	. "distributedelection/tools/formatting"
 
-	//	"math/rand"
 	"time"
-
-	//"distributedelection/node/pkg/statemachine"
 
 	. "distributedelection/node/pkg/net"
 
-	//"distributedelection/node/pkg/net"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
 
@@ -32,115 +25,130 @@ func RedudantElectionCheck(voter int32, electionMsg *MsgElection) bool {
 	}
 	return false
 }
-func SafeRMI(tipo MsgType, dest *SMNode, tryNextWhenFailed bool, elezione *MsgElection, coord *MsgCoordinator) (failedNodeExistence bool) { //opt ...interface{}) {
+
+// Unique point of RMI invocation for sending message purposes.
+// This is done for fault tolerance, trying to avoid new election when not strictly necessary.
+// - an RMI invocation is tried RMI_RETRY_TOLERANCE times, to address temporary failures due to,
+//   e.g., temporary node overload
+// - FL-specific: if next node in the ring is failed, try with the next one
+// - FL-specific: if next node is the election starter and it is failed, stop forwarding its
+//   message, to avoid making it turn the ring more than once. The starter will eventually
+//   start another election by itself.
+func SafeRMI(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electionMsg *MsgElection, coordMsg *MsgCoordinator) (failedNodeExistence bool) {
 
 	// update local cache the first time a sequential message is sent
 	if NextNode.GetId() == 0 {
-		requested := AskForNodeInfo(State.NodeInfo.GetId() + 1)
-		if requested.GetId() != 1 {
-			NextNode = requested
-			dest = requested
-			smlog.Debug(LOG_UNDEFINED, "NextNode initialized.", NextNode)
-		}
+		dest = updateLocalCache()
 	}
 
-	attempts := 0
 	nextNode := dest
-	prossimoId := nextNode.GetId()
-	prossimoAddr := nextNode.GetFullAddr()
-	failedNodeExistence = false
-	//TODO funzione unica "connetti a..." con paramtero addr, qui e altrove
-	//	smlog.Printf("il nodo NON sono io, quindi provo a contattarlo")
-	// L'ALTRO NODO FUNGE DA SERVER NEI MIEI CONFRONTI
-	var errq error
+	nextId := nextNode.GetId()
+	nextAddr := nextNode.GetFullAddr()
+
+	var rmiErr error
 	var starter int32
 	time.Sleep(time.Duration(GenerateDelay()) * time.Millisecond)
 	for {
-		starter = -1
-		errq = nil
-		connN := ConnectToNode(prossimoAddr)
-		defer connN.Close()
-		// New server instance and service registering
-		nodoServer := grpc.NewServer()
-		pb.RegisterDistrElectNodeServer(nodoServer, &DGnode{})
-		csN := pb.NewDistrElectNodeClient(connN)
+
+		// Connect to the next node and register it as gRPC server for the service
+		conn := ConnectToNode(nextAddr)
+		defer conn.Close()
+		serverNode := grpc.NewServer()
+		pb.RegisterDistrElectNodeServer(serverNode, &DEANode{})
+		nodeClient := pb.NewDistrElectNodeClient(conn)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Millisecond)
-		//	locCtx = ctx
 		defer cancel()
-		ok := false
+
+		escape := false
 		if !tryNextWhenFailed {
-			ok = true
+			escape = true
 		}
-		attempts++
+		attempts := 0
+		starter = -1
+		failedNodeExistence = false
+		for {
+			rmiErr = nil
+			attempts++
+			// Do the actual RMI invocation, based on the message type
+			switch msgType {
+			case MSG_ELECTION:
+				starter = electionMsg.GetStarter()
+				netMsg := ToNetElectionMsg(electionMsg)
+				smlog.Info(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, nextAddr)
+				_, rmiErr = nodeClient.ForwardElection(ctx, netMsg)
+				break
+			case MSG_COORDINATOR:
+				starter = coordMsg.GetStarter()
+				netMsg := ToNetCoordinatorMsg(coordMsg)
+				smlog.Info(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING COORD %v to %s"+ColorReset, netMsg, nextAddr)
+				_, rmiErr = nodeClient.ForwardCoordinator(ctx, netMsg)
+				break
+			default:
+				break
+			}
 
-		switch tipo {
-		case MSG_ELECTION:
-			starter = elezione.GetStarter()
-			netMsg := ToNetElectionMsg(elezione)
+			// Adapt behavior based on the returned error
+			if rmiErr != nil {
+				if attempts != Cfg.RMI_RETRY_TOLERANCE {
+					// failed node detected, but we can try again
+					smlog.Warn(LOG_NETWORK, "Failed attempt n. %d to contact %v, trying again...", attempts, nextAddr)
+					smlog.Debug(LOG_NETWORK, "(%s)", rmiErr)
+				} else {
+					// no more attempts are planned for nextNode: it is for sure failed
+					smlog.Error(LOG_NETWORK, "Could not invoke RMI on %v", nextAddr)
+					smlog.Debug(LOG_NETWORK, "(%s)", rmiErr)
+					failedNodeExistence = true
 
-			//smlog.Println("\033[42m\033[1;30mSENDING ELECTION [", elezione, "] to ", prossimoAddr, "\033[0m")
-			smlog.Info(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, prossimoAddr)
-			_, errq = csN.ForwardElection(ctx, netMsg)
-			break
-		case MSG_COORDINATOR:
-			starter = coord.GetStarter()
-			netMsg := ToNetCoordinatorMsg(coord)
-			//smlog.Println("\033[42m\033[1;30mSENDING COORDINATOR [", coord, "] to ", prossimoAddr, "\033[0m")
-			smlog.Info(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING COORD %v to %s"+ColorReset, netMsg, prossimoAddr)
-			//	log.Printf("\033[42m\033[1;30mSENDING COORD %[1]v to %[2]s \033[0m", coord, prossimoAddr)
-			_, errq = csN.ForwardCoordinator(ctx, netMsg)
-			break
-		default:
-			break
-		}
-		//_, errq := csN.InoltraElezione(ctx, elezione)
-		if errq != nil {
-			if attempts != Cfg.RMI_RETRY_TOLERANCE {
-				smlog.Warn(LOG_NETWORK, "Failed attempt n. %d to contact %v, trying again...", attempts, prossimoAddr)
-				smlog.Debug(LOG_NETWORK, "(%s)", errq)
+					// if starter is failed, stop letting the message to be forwarded a second time
+					// into the ring, the election starter will eventually start a new election
+					// by itself
+					//escape, tryNextWhenFailed = checkForStarterFailure(nextId, starter)
+					if nextId == starter {
+						smlog.Error(LOG_NETWORK, "Election starter failed! Stopping forwarding...")
+						smlog.Debug(LOG_NETWORK, "(%s)", rmiErr)
+						escape = true
+						tryNextWhenFailed = false
+					}
 
-			} else {
-				if (tipo == MSG_ELECTION || tipo == MSG_COORDINATOR) && prossimoId == starter {
-					// lo starter è fallito, smetto di far circolare una seconda volta il messaggio
-					// ci penserà quando tornerà in piedi a far ripartire elezione
-					// così tolgo messaggi inutili dalla rete
+					if msgType == MSG_HEARTBEAT {
+						SuccessfulHB--
+					}
 
-					smlog.Error(LOG_NETWORK, "Election starter failed! Stopping forwarding...")
-					smlog.Debug(LOG_NETWORK, "(%s)", errq)
-					ok = true
-					tryNextWhenFailed = false
-				}
-				if tipo == MSG_HEARTBEAT {
-					SuccessfulHB--
-				}
-				//DeclareNodeState(nextNode, false)
-				failedNodeExistence = true
-				smlog.Error(LOG_NETWORK, "Could not invoke RMI on %v", prossimoAddr)
-				smlog.Debug(LOG_NETWORK, "(%s)", errq)
-
-				if tryNextWhenFailed {
-					//nextNode = AskForNodeInfo(nextNode.GetId()+1, true)
-					nextNode = AskForNodeInfo(nextNode.GetId() + 1)
-					smlog.Info(LOG_NETWORK, "Trying next node: %v@%v", nextNode.GetId(), nextNode.GetFullAddr())
-					prossimoId = nextNode.GetId()
-					prossimoAddr = nextNode.GetFullAddr()
-					if prossimoAddr == State.NodeInfo.GetFullAddr() {
-						smlog.InfoU("Sono rimasto solo io")
-						ok = true
+					if tryNextWhenFailed {
+						nextNode = AskForNodeInfo(nextNode.GetId() + 1)
+						smlog.Info(LOG_NETWORK, "Trying next node: %v@%v", nextNode.GetId(), nextNode.GetFullAddr())
+						nextId = nextNode.GetId()
+						nextAddr = nextNode.GetFullAddr()
+						if nextAddr == CurState.NodeInfo.GetFullAddr() {
+							smlog.InfoU("Sono rimasto solo io")
+							escape = true
+						}
 					}
 				}
-				//break
+			} else {
+				// no error occurred
+				smlog.Trace(LOG_NETWORK, "RMI invoked correctly, exiting from SafeRMI...")
+				escape = true
 			}
-		} else {
-			smlog.Trace(LOG_NETWORK, "RMI invoked correctly, exiting from SafeRMI...")
-			ok = true
+			if failedNodeExistence || (!failedNodeExistence && escape) {
+				break
+			}
+			// try again with another attempt
 		}
-		if ok {
-			//smlog.Critical(LOG_NETWORK, "esco...")
+		if escape {
 			break
 		}
+		// try again with another node
 		attempts = 0
-		///smlog.Critical(LOG_NETWORK, "torno nel ciclo col prossimo nodo...")
 	}
 	return failedNodeExistence
+}
+
+func updateLocalCache() *SMNode {
+	requested := AskForNodeInfo(CurState.NodeInfo.GetId() + 1)
+	if requested.GetId() != 1 {
+		NextNode = requested
+		smlog.Debug(LOG_UNDEFINED, "NextNode initialized.", NextNode)
+	}
+	return requested
 }

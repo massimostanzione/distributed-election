@@ -27,13 +27,15 @@ func Initialize(isServRegExec bool, levelParam string) {
 		fmt.Println("[SM] Time     Lvl   Prtcp Event  Description")
 		fmt.Println("[SM] -------- ----- ----- ------ ---------------")
 	}
-
 	level, _ := loggo.ParseLevel(levelParam)
 	loggoLogger.SetLogLevel(level)
+	Info(LOG_UNDEFINED, "Starting...")
+	Info(LOG_UNDEFINED, "Type CTRL+C to terminate")
+	Info(LOG_UNDEFINED, "------------------------")
 }
 
 func participantToString() string {
-	if State.Participant {
+	if CurState.Participant {
 		return "yes  "
 	}
 	return "no   "

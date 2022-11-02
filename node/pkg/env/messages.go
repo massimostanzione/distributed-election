@@ -27,7 +27,7 @@ func (msg *MsgElection) AddVoter(newVoter int32) *MsgElection {
 	return msg
 }
 func NewElectionMsg() *MsgElection {
-	return &MsgElection{Starter: State.NodeInfo.GetId(), Voters: []int32{State.NodeInfo.GetId()}}
+	return &MsgElection{Starter: CurState.NodeInfo.GetId(), Voters: []int32{CurState.NodeInfo.GetId()}}
 }
 
 type MsgCoordinator struct {

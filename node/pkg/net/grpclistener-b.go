@@ -14,25 +14,25 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *DGnode) ForwardElection(ctx context.Context, in *pb.Election) (*empty.Empty, error) {
+func (s *DEANode) ForwardElection(ctx context.Context, in *pb.Election) (*empty.Empty, error) {
 	smlog.Info(LOG_MSG_RECV, ColorBlkBckgrYellow+BoldBlack+"RECEIVED ELECTION %v"+ColorReset, in)
 	ElectionChannel <- ToSMElectionMsg(in)
 	return new(empty.Empty), status.New(codes.OK, "").Err()
 }
 
-func (s *DGnode) ForwardOk(ctx context.Context, in *pb.Ok) (*empty.Empty, error) {
+func (s *DEANode) ForwardOk(ctx context.Context, in *pb.Ok) (*empty.Empty, error) {
 	smlog.Info(LOG_MSG_RECV, ColorBlkBckgrYellow+BoldBlack+"RECEIVED OK %v\033[0m"+ColorReset, in)
 	OkChannel <- ToSMOkMsg(in)
 	return new(empty.Empty), status.New(codes.OK, "").Err()
 }
 
-func (s *DGnode) ForwardCoordinator(ctx context.Context, in *pb.Coordinator) (*empty.Empty, error) {
+func (s *DEANode) ForwardCoordinator(ctx context.Context, in *pb.Coordinator) (*empty.Empty, error) {
 	smlog.Info(LOG_MSG_RECV, ColorBlkBckgrYellow+BoldBlack+"RECEIVED COORDINATOR %v\033[0m"+ColorReset, in)
 	CoordChannel <- ToSMCoordinatorMsg(in)
 	return new(empty.Empty), status.New(codes.OK, "").Err()
 }
 
-func (s *DGnode) SendHeartBeat(ctx context.Context, in *pb.Heartbeat) (*empty.Empty, error) {
+func (s *DEANode) SendHeartBeat(ctx context.Context, in *pb.Heartbeat) (*empty.Empty, error) {
 	smlog.Info(LOG_MSG_RECV, "Received HB from node %d", in.GetId())
 	Heartbeat <- ToSMHeartbeat(in)
 	return new(empty.Empty), status.New(codes.OK, "").Err()

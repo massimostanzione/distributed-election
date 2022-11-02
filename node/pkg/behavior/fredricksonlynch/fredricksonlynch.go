@@ -14,8 +14,6 @@ func Run() {
 	initializeWatchdogs()
 	ElectionChannel = make(chan *MsgElection)
 	CoordChannel = make(chan *MsgCoordinator)
-	smlog.InfoU("Starting SM...")
-	smlog.InfoU("Type CTRL+C to terminate")
 
 	go run()
 	Listen()
@@ -35,20 +33,20 @@ func initializeWatchdogs() {
 	Watchdogs[MSG_ELECTION].Timer.Stop()
 	Watchdogs[MSG_COORDINATOR].Timer.Stop()
 }
+
 func run() {
-	State.NodeInfo = AskForJoining()
+	CurState.NodeInfo = AskForJoining()
 	go startElection()
 	for {
-		smlog.Debug(LOG_STATEMACHINE, "Waiting for messages...")
 		select {
 		case in := <-ElectionChannel:
-			State.Participant = true
-			smlog.Debug(LOG_STATEMACHINE, "Handling ELECTION message")
-			if in.GetStarter() == State.NodeInfo.GetId() {
+			smlog.Debug(LOG_ELECTION, "Handling ELECTION message")
+			CurState.Participant = true
+			if in.GetStarter() == CurState.NodeInfo.GetId() {
 				SetWatchdog(MSG_ELECTION, false)
 				coord := elect(in.GetVoters())
-				State.Coordinator = coord
-				go sendCoord(NewCoordinatorMsg(State.NodeInfo.GetId(), State.Coordinator), NextNode)
+				CurState.Coordinator = coord
+				go sendCoord(NewCoordinatorMsg(CurState.NodeInfo.GetId(), CurState.Coordinator), NextNode)
 				SetWatchdog(MSG_COORDINATOR, true)
 			} else {
 				voted := vote(in)
@@ -58,14 +56,14 @@ func run() {
 		case in := <-CoordChannel:
 			smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
 			SetMonitoringState(MONITORING_HALT)
-			if in.GetStarter() == State.NodeInfo.GetId() {
+			if in.GetStarter() == CurState.NodeInfo.GetId() {
 				SetWatchdog(MSG_COORDINATOR, false)
 			} else {
 				go sendCoord(in, NextNode)
 			}
-			State.Coordinator = in.GetCoordinator()
-			State.Participant = false
-			if State.Coordinator == State.NodeInfo.GetId() {
+			CurState.Coordinator = in.GetCoordinator()
+			CurState.Participant = false
+			if CurState.Coordinator == CurState.NodeInfo.GetId() {
 				smlog.Info(LOG_ELECTION, "*** I am the new coordinator ***")
 				SetMonitoringState(MONITORING_SEND)
 			} else {
@@ -74,8 +72,8 @@ func run() {
 			}
 			break
 		case <-MonitoringChannel:
+			smlog.Critical(LOG_ELECTION, "Coordinator failed!")
 			SetMonitoringState(MONITORING_HALT)
-			smlog.Critical(LOG_ELECTION, "non sento più, ricomincio elez")
 			go startElection()
 			break
 		case <-Watchdogs[MSG_ELECTION].Timer.C:
@@ -86,7 +84,7 @@ func run() {
 		case <-Watchdogs[MSG_COORDINATOR].Timer.C:
 			smlog.Error(LOG_NETWORK, "COORDINATOR message not returned back within time limit. Sending it again...")
 			SetWatchdog(MSG_COORDINATOR, false)
-			sendCoord(NewCoordinatorMsg(State.NodeInfo.GetId(), State.Coordinator), NextNode)
+			go sendCoord(NewCoordinatorMsg(CurState.NodeInfo.GetId(), CurState.Coordinator), NextNode)
 			break
 
 		}
@@ -95,7 +93,7 @@ func run() {
 func startElection() {
 
 	DirtyNetList = true
-	State.Participant = true
+	CurState.Participant = true
 	err := sendElection(NewElectionMsg(), NextNode)
 	if !err {
 		SetWatchdog(MSG_ELECTION, true)

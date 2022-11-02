@@ -129,10 +129,10 @@ func loadConfig() {
 }
 
 func setNodeKnowledge() {
-	State.NodeInfo = &SMNode{}
-	State.NodeInfo.SetHost(getOutboundIP())
-	State.NodeInfo.SetPort(int32(Cfg.NODE_PORT))
-	State.ServRegAddr = Cfg.SERVREG_HOST + ":" + strconv.FormatInt(Cfg.SERVREG_PORT, 10)
+	CurState.NodeInfo = &SMNode{}
+	CurState.NodeInfo.SetHost(getOutboundIP())
+	CurState.NodeInfo.SetPort(int32(Cfg.NODE_PORT))
+	CurState.ServRegAddr = Cfg.SERVREG_HOST + ":" + strconv.FormatInt(Cfg.SERVREG_PORT, 10)
 }
 
 func getOutboundIP() string {

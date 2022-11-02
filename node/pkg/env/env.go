@@ -71,7 +71,7 @@ type NodeState struct {
 	Participant bool
 }
 
-var State *NodeState = &NodeState{}
+var CurState *NodeState = &NodeState{}
 
 // Node knowledge
 var NextNode *SMNode = &SMNode{}

@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type DGnode struct {
+type DEANode struct {
 	pbn.UnimplementedDistrElectNodeServer
 }
 type DGservreg struct {
@@ -33,16 +33,16 @@ var serverConn *grpc.ClientConn
 
 func InitializeNetMW() {
 	// il centrale espone il servizio di identificazione dei nodi
-	serverConn = ConnectToNode(State.ServRegAddr)
+	serverConn = ConnectToNode(CurState.ServRegAddr)
 
-	listener, err := net.Listen("tcp", State.NodeInfo.GetFullAddr())
+	listener, err := net.Listen("tcp", CurState.NodeInfo.GetFullAddr())
 	lis = listener
 	if err != nil {
-		smlog.Fatal(LOG_NETWORK, "Error while trying to listen to port %v:\n%v", State.NodeInfo.GetPort(), err)
+		smlog.Fatal(LOG_NETWORK, "Error while trying to listen to port %v:\n%v", CurState.NodeInfo.GetPort(), err)
 	}
 	// New server instance and service registering
 	w = grpc.NewServer()
-	pbn.RegisterDistrElectNodeServer(w, &DGnode{})
+	pbn.RegisterDistrElectNodeServer(w, &DEANode{})
 	// Defining client interface, to be used to invoke the fredricksonlynch service
 	cs = pbsr.NewDistrElectServRegClient(serverConn)
 	DirtyNetList = true
@@ -58,7 +58,7 @@ func ConnectToNode(addr string) *grpc.ClientConn {
 }
 
 func Listen() {
-	smlog.Info(LOG_NETWORK, "Listening on port %v.", State.NodeInfo.GetPort())
+	smlog.Info(LOG_NETWORK, "Listening on port %v.", CurState.NodeInfo.GetPort())
 	if err := w.Serve(lis); err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while trying to serve request: %v", err)
 	}
@@ -66,7 +66,7 @@ func Listen() {
 
 func contactServiceReg() *grpc.ClientConn {
 	smlog.Trace(LOG_NETWORK, "Contacting service registry")
-	conn := ConnectToNode(State.ServRegAddr)
+	conn := ConnectToNode(CurState.ServRegAddr)
 	defer conn.Close() //chiusura, se porta problemi controllare
 	return conn
 }
@@ -75,7 +75,7 @@ func AskForJoining() *SMNode {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
-	node, err := cs.JoinNetwork(ctx, &pbsr.NodeAddr{Host: State.NodeInfo.GetHost(), Port: State.NodeInfo.GetPort()})
+	node, err := cs.JoinNetwork(ctx, &pbsr.NodeAddr{Host: CurState.NodeInfo.GetHost(), Port: CurState.NodeInfo.GetPort()})
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while executing fredricksonlynch:\n%v", err)
 	}
@@ -123,7 +123,7 @@ func SafeHB(hb *pbn.Heartbeat, node *SMNode) {
 	defer connN.Close()
 	// New server instance and service registering
 	nodoServer := grpc.NewServer()
-	pbn.RegisterDistrElectNodeServer(nodoServer, &DGnode{})
+	pbn.RegisterDistrElectNodeServer(nodoServer, &DEANode{})
 	csN := pbn.NewDistrElectNodeClient(connN)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Millisecond)
 	defer cancel()
