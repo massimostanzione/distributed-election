@@ -1,3 +1,4 @@
+// Conversion tools between gRPC structures and internal (SM) ones.
 package env
 
 import (

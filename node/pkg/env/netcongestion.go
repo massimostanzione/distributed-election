@@ -1,6 +1,9 @@
 // netcongestion
 package env
 
+// Network congestion simulator.
+// Further details in netMW.
+
 type NetCongestionLevel uint8
 
 const (

@@ -1,4 +1,5 @@
-// Messages
+// Internal message structures and related functions.
+// Conversion from/to gRPC structures are done in netMW.
 package env
 
 type MsgType uint8
@@ -12,6 +13,9 @@ const (
 	MSG_OK
 )
 
+//-------------------------------------------------------------
+// ELECTION (bully-specific)
+
 type MsgElectionBully struct {
 	Starter int32
 	Voters  []int32
@@ -20,6 +24,13 @@ type MsgElectionBully struct {
 func (msg *MsgElectionBully) GetStarter() int32 {
 	return msg.Starter
 }
+
+func NewElectionBullyMsg() *MsgElectionBully {
+	return &MsgElectionBully{Starter: CurState.NodeInfo.GetId()}
+}
+
+//-------------------------------------------------------------
+// ELECTION (FL-specific)
 
 type MsgElectionFL struct {
 	Starter int32
@@ -39,13 +50,12 @@ func (msg *MsgElectionFL) AddVoter(newVoter int32) *MsgElectionFL {
 	return msg
 }
 
-func NewElectionBullyMsg() *MsgElectionBully {
-	return &MsgElectionBully{Starter: CurState.NodeInfo.GetId()}
-}
-
 func NewElectionFLMsg() *MsgElectionFL {
 	return &MsgElectionFL{Starter: CurState.NodeInfo.GetId(), Voters: []int32{CurState.NodeInfo.GetId()}}
 }
+
+//-------------------------------------------------------------
+// COORDINATOR (common to bully and FL)
 
 type MsgCoordinator struct {
 	Starter     int32
@@ -63,6 +73,9 @@ func NewCoordinatorMsg(Starter int32, elected int32) *MsgCoordinator {
 	return &MsgCoordinator{Starter: Starter, Coordinator: elected}
 }
 
+//-------------------------------------------------------------
+// OK (bully-specific)
+
 type MsgOk struct {
 	Starter int32
 }
@@ -73,6 +86,9 @@ func (msg *MsgOk) GetStarter() int32 {
 func NewOkMsg(Starter int32) *MsgOk {
 	return &MsgOk{Starter: Starter}
 }
+
+//-------------------------------------------------------------
+// HEARTBEAT (for monitoing purpose only)
 
 type MsgHeartbeat struct {
 	Id int32

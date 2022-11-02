@@ -1,4 +1,4 @@
-// algorithms.go
+// Algorithms involved in the application and utility functions.
 package env
 
 type DEAlgorithm uint8
