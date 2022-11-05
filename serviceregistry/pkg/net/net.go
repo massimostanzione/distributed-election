@@ -14,14 +14,6 @@ import (
 // Port to be listening to. No need to put it on an "env" package.
 var Port int
 
-func ConnectToNode(addr string) *grpc.ClientConn {
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
-	if err != nil {
-		smlog.Fatal(LOG_NETWORK, "Error while contacting server on %v:\n %v", addr, err)
-	}
-	return conn
-}
-
 func Listen(host string, port string) {
 	listener, err := net.Listen("tcp", "localhost:"+strconv.FormatInt(int64(Port), 10))
 	if err != nil {
