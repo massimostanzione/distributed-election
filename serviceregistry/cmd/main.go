@@ -28,7 +28,7 @@ func main() {
 }
 
 func loadConfig() {
-	nodeport := flag.Int("p", 40049, "listening port")
+	nodeport := flag.Int("p", 40042, "listening port")
 	help := flag.Bool("help", false, "show this message")
 	flag.Parse()
 	Port = *nodeport
