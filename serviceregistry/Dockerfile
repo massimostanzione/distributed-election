@@ -2,7 +2,7 @@
 FROM golang:1.19
 
 # update dependencies
-RUN yum update
+RUN apt-get update
 
 # copia la *intera* repo, per le interdipendenze
 WORKDIR /

@@ -7,7 +7,13 @@
          name: git
          state: present
          update_cache: yes
-
+         
+    - name: install docker0
+      become: yes
+      yum:
+         name: docker
+         state: present
+         update_cache: yes
 
     - name: install docker1
       ansible.builtin.command:
