@@ -4,22 +4,28 @@ ADD . /app
 WORKDIR /app
 COPY . .
 
-RUN apk add protobuf curl
+EXPOSE 40042
+RUN apk add protobuf curl bash
+#CMD ["./teardown.sh"]
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 #RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
 #PB_REL="https://github.com/protocolbuffers/protobuf/releases"
 RUN curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip
 RUN unzip protoc-3.15.8-linux-x86_64.zip -d $HOME/.local
 RUN export PATH="$PATH:$HOME/.local/bin"
-RUN protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative serviceregistry/pb/protoserviceregistry.proto
 
+RUN protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative serviceregistry/pb/protoserviceregistry.proto
+RUN protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative node/pb/protonode.proto
 RUN go mod init distributedelection
 RUN go mod tidy
 
 
-#RUN go mod download
-RUN cd serviceregistry/cmd
-RUN go build -v -o ../../bin/serviceregistry
-ENTRYPOINT ["/home/app/bin/serviceregistry"]
+WORKDIR /app/serviceregistry/cmd
+#RUN cd serviceregistry/cmd
+RUN go build -v -o ./../../bin/serviceregistry
+WORKDIR /app/bin
+ENTRYPOINT ["./serviceregistry"]
 
 
 
