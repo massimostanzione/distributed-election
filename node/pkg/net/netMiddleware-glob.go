@@ -12,7 +12,7 @@ import (
 	"net"
 	"time"
 
-	empty "github.com/golang/protobuf/ptypes/empty"
+	//empty "github.com/golang/protobuf/ptypes/empty"
 
 	"google.golang.org/grpc"
 )
@@ -103,7 +103,7 @@ func AskForAllNodesList() []*SMNode {
 		smlog.Debug(LOG_SERVREG, "Election has occurred, so net could have changed. Asking to ServReg...")
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 		defer cancel()
-		allNodesList, err := cs.GetAllNodes(ctx, new(empty.Empty))
+		allNodesList, err := cs.GetAllNodes(ctx, new(pbsr.EMPTY_SR))
 		if err != nil {
 			smlog.Fatal(LOG_NETWORK, "Error while executing GetAllNodes:\n%v", err)
 		}
@@ -156,7 +156,7 @@ func AskForAllNodes() []*SMNode {
 	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni su TUTTI i nodi")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
-	ret, err := cs.GetAllNodes(ctx, new(empty.Empty))
+	ret, err := cs.GetAllNodes(ctx, new(pbsr.EMPTY_SR))
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", err)
 		return nil
