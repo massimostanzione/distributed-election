@@ -15,7 +15,7 @@ import (
 var Port int
 
 func Listen(host string, port string) {
-	listener, err := net.Listen("tcp", "localhost:"+strconv.FormatInt(int64(Port), 10))
+	listener, err := net.Listen("tcp", "0.0.0.0:"+strconv.FormatInt(int64(Port), 10))
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while trying to listen to port %v:\n%v", Port, err)
 	}
