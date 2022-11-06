@@ -37,10 +37,10 @@
       ansible.builtin.command:
         cmd: "sudo chmod -R 777 /home/ec2-user/distributed-election"
 
-    - name: compile
-      ansible.builtin.command:
-        cmd: "cd distributed-election && ./setup.sh"
-
+#    - name: compile
+#      ansible.builtin.command:
+#        cmd: "cd distributed-election && ./setup.sh"
+#
     - name: copy systemd unit file
       become: yes
       copy:

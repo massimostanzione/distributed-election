@@ -11,4 +11,4 @@ COPY    . .
 # build
 RUN ./../setup.sh
 
-ENTRYPOINT["./../bin/node", "-a", "b"]
+CMD ["./../bin/node", "-a", "b"]

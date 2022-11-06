@@ -11,4 +11,4 @@ COPY    . .
 # build
 RUN ./../setup.sh
 
-ENTRYPOINT["./../bin/serviceregistry"]
+CMD ["./../bin/serviceregistry"]
