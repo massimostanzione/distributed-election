@@ -5,10 +5,11 @@ FROM golang:1.19
 RUN apt-get update
 
 # copia la *intera* repo, per le interdipendenze
+ADD .
 WORKDIR /
-COPY    . .
+COPY    .. /APP
 
 # build
-RUN ./../setup.sh
+#RUN ./../setup.sh
 
-CMD ["./../bin/node", "-a", "b"]
+#CMD ["./../bin/node", "-a", "b"]
