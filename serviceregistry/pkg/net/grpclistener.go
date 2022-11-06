@@ -9,7 +9,10 @@ import (
 
 	pb "distributedelection/serviceregistry/pb"
 
-	//empty "github.com/golang/protobuf/ptypes/empty"
+	// following import is replaced with EMPTY_NODE message,
+	// ref. https://github.com/massimostanzione/distributed-election/issues/88
+	// empty "github.com/golang/protobuf/ptypes/empty"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

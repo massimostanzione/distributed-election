@@ -1,5 +1,9 @@
 syntax = "proto3";
-//import "google/protobuf/empty.proto";
+
+// following import is replaced with EMPTY_NODE message,
+// ref. https://github.com/massimostanzione/distributed-election/issues/88
+// import "google/protobuf/empty.proto";
+
 option go_package = "distributedelection/node/pb";
 package distributedelection;
 
