@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM golang:1.19-alpine
-ADD . .
-WORKDIR /
+ADD . /app
+WORKDIR /app
 COPY . .
 
 EXPOSE 40042
@@ -60,3 +60,4 @@ ENTRYPOINT ["./serviceregistry"]
 #RUN chmod +x -R serviceregistry
 #RUN ./serviceregistry
 #CMD ["./serviceregistry"]#, "-a", "b"]
+
