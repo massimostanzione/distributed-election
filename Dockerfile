@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM golang:1.19-alpine
-ADD . /app
-WORKDIR /app
+ADD . .
+WORKDIR /
 COPY . .
 
 EXPOSE 40042

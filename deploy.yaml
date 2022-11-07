@@ -30,7 +30,8 @@
     - name: remove if exist
       ansible.builtin.command:
         cmd: "rm -rf $HOME/distributed-election"
-
+        
+# TODO rimuovere --branch deploy una volta effettuato il merge
     - name: clone repository
       ansible.builtin.command:
         cmd: "git clone https://github.com/massimostanzione/distributed-election.git --branch deploy"
