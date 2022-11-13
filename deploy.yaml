@@ -8,6 +8,10 @@
          state: present
          update_cache: true
          
+    - name: teardown
+      ansible.builtin.command:
+        cmd: "rm -rf $HOME/distributed-election $HOME/.docker"
+        
     - name: install docker0
       become: true
       yum:
@@ -27,9 +31,6 @@
       ansible.builtin.command:
         cmd: "sudo chmod +x $HOME/.docker/cli-plugins/docker-compose"
 
-    - name: remove if exist
-      ansible.builtin.command:
-        cmd: "rm -rf $HOME/distributed-election"
         
 # TODO rimuovere --branch deploy una volta effettuato il merge
     - name: clone repository
