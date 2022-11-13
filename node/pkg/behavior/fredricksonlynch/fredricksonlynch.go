@@ -36,7 +36,7 @@ func initializeWatchdogs() {
 
 func run() {
 	CurState.NodeInfo = AskForJoining()
-	go startElection()
+	startElection()
 	for {
 		select {
 		case in := <-ElectionChannel_fl:
