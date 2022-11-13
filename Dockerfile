@@ -4,7 +4,7 @@ ADD . /app
 WORKDIR /app
 COPY . .
 
-EXPOSE 40042
+#EXPOSE 40042
 RUN apk add protobuf curl bash
 #CMD ["./teardown.sh"]
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest

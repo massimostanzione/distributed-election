@@ -46,7 +46,15 @@
 #    - name: dockerd
 #      ansible.builtin.command:
 #        cmd: "sudo dockerd"
- 
+
+    - name: Enable docker.service
+      become: true
+      systemd:
+        name: docker.service
+        daemon_reload: true
+        state: restarted
+        enabled: true
+        
     - name: permission
       ansible.builtin.command:
         cmd: "sudo chmod 666 /var/run/docker.sock"

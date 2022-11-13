@@ -7,17 +7,19 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
+    ports:
+      - 40042
     stdin_open: true
     tty: true
 
-  node:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - serviceregistry
-    stdin_open: true
-    tty: true
-    deploy: 
-      mode: replicated
-      replicas: 4
+#  node:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - serviceregistry
+#    stdin_open: true
+#    tty: true
+#    deploy: 
+#      mode: replicated
+#      replicas: 4
