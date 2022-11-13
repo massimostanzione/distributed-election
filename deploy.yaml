@@ -2,18 +2,18 @@
 - hosts: all
   tasks:
     - name: Install git
-      become: yes
+      become: true
       yum:
          name: git
          state: present
-         update_cache: yes
+         update_cache: true
          
     - name: install docker0
-      become: yes
+      become: true
       yum:
          name: docker
          state: present
-         update_cache: yes
+         update_cache: true
 
     - name: install docker1
       ansible.builtin.command:
@@ -65,15 +65,20 @@
 #        cmd: "cd distributed-election && ./setup.sh"
 #
     - name: copy systemd unit file
-      become: yes
+      become: true
       copy:
            src: "app.service"
            dest: "/etc/systemd/system/"
+           
+    - name: permission
+      become: true
+      ansible.builtin.command:
+        cmd: "chmod 777 /etc/systemd/system/app.service"
 
     - name: enable and start systemd service
-      become: yes
+      become: true
       systemd:
-           daemon_reload: yes
+           daemon_reload: true
            state: restarted
            name: "app.service"
-           enabled: yes
+           enabled: true
