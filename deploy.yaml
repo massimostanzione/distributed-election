@@ -43,9 +43,9 @@
     - name: permission
       ansible.builtin.command:
         cmd: "sudo chmod -R 777 /home/ec2-user/distributed-election"
-    - name: dockerd
-      ansible.builtin.command:
-        cmd: "sudo dockerd"
+#    - name: dockerd
+#      ansible.builtin.command:
+#        cmd: "sudo dockerd"
  
     - name: permission
       ansible.builtin.command:
