@@ -5,15 +5,15 @@ services:
     hostname: serviceregistry
     container_name: serviceregistry
     build: 
-      context: ./serviceregistry
-      dockerfile: serviceregistry/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     stdin_open: true
     tty: true
 
   node:
     build:
-      context: ./node
-      dockerfile: node/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - serviceregistry
     stdin_open: true

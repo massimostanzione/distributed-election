@@ -43,7 +43,15 @@
     - name: permission
       ansible.builtin.command:
         cmd: "sudo chmod -R 777 /home/ec2-user/distributed-election"
+    - name: dockerd
+      ansible.builtin.command:
+        cmd: "sudo dockerd"
+ 
+    - name: permission
+      ansible.builtin.command:
+        cmd: "sudo chmod 666 /var/run/docker.sock"
 
+   
 #    - name: compile
 #      ansible.builtin.command:
 #        cmd: "cd distributed-election && ./setup.sh"
