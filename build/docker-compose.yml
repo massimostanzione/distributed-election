@@ -2,19 +2,16 @@ version: "3.9"
 
 services:
   serviceregistry:
-#    hostname: serviceregistry
-#    container_name: serviceregistry
     build: 
       context: ..
-      dockerfile: build/serviceregistry.Dockerfile
+      dockerfile: build/docker/serviceregistry.Dockerfile
     stdin_open: true
     tty: true     
 
   node:
-#    container_name: node
     build:
       context: ..
-      dockerfile: build/node.Dockerfile
+      dockerfile: build/docker/node.Dockerfile
     depends_on:
       serviceregistry:
          condition: service_started
