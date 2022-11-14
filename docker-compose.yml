@@ -2,8 +2,8 @@ version: "3.9"
 
 services:
   serviceregistry:
-    hostname: serviceregistry
-    container_name: serviceregistry
+#    hostname: serviceregistry
+#    container_name: serviceregistry
     build: 
       context: .
       dockerfile: serviceregistry.Dockerfile
@@ -11,7 +11,7 @@ services:
     tty: true     
 
   node:
-    container_name: node
+#    container_name: node
     build:
       context: .
       dockerfile: node.Dockerfile
@@ -20,8 +20,8 @@ services:
          condition: service_started
     stdin_open: true
     tty: true
-#    deploy: 
-#      mode: replicated
-#      replicas: 4
+    deploy: 
+      mode: replicated
+      replicas: 4
 
 
