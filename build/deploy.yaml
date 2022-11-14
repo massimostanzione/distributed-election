@@ -1,0 +1,92 @@
+---
+- hosts: all
+  tasks:
+    - name: Install git
+      become: true
+      yum:
+         name: git
+         state: present
+         update_cache: true
+         
+    - name: teardown
+      become: true
+      ansible.builtin.command:
+        cmd: "rm -rf $HOME/distributed-election $HOME/.docker"
+        
+    - name: install docker0
+      become: true
+      yum:
+         name: docker
+         state: present
+         update_cache: true
+
+    - name: install docker1
+      become: true
+      ansible.builtin.command:
+        cmd: "mkdir -p $HOME/.docker/cli-plugins"
+
+    - name: install docker2
+      become: true
+      ansible.builtin.command:
+        cmd: "curl -SL https://github.com/docker/compose/releases/download/v2.11.1/docker-compose-linux-x86_64 -o $HOME/.docker/cli-plugins/docker-compose"
+
+    - name: install docker3
+      become: true
+      ansible.builtin.command:
+        cmd: "chmod +x $HOME/.docker/cli-plugins/docker-compose"
+
+        
+# TODO rimuovere --branch deploy una volta effettuato il merge
+    - name: clone repository
+      ansible.builtin.command:
+        cmd: "git clone https://github.com/massimostanzione/distributed-election.git --branch deploy"
+
+    - name: permission
+      become: true
+      ansible.builtin.command:
+        cmd: "chmod 777 /home/ec2-user/.docker"
+        
+    - name: permission
+      become: true
+      ansible.builtin.command:
+        cmd: "chmod -R 777 /home/ec2-user/distributed-election"
+#    - name: dockerd
+#      ansible.builtin.command:
+#        cmd: "sudo dockerd"
+
+    - name: Enable docker.service
+      become: true
+      systemd:
+        name: docker.service
+        daemon_reload: true
+        state: restarted
+        enabled: true
+        
+    - name: permission
+      become: true
+      ansible.builtin.command:
+        cmd: "chmod 666 /var/run/docker.sock"
+
+   
+#    - name: compile
+#      ansible.builtin.command:
+#        cmd: "cd distributed-election && ./setup.sh"
+#
+    - name: copy systemd unit file
+      become: true
+      copy:
+           src: "app.service"
+           dest: "/etc/systemd/system/"
+           
+    - name: permission
+      become: true
+      ansible.builtin.command:
+        cmd: "chmod 777 /etc/systemd/system/app.service"
+
+    - name: enable and start systemd service
+      become: true
+      systemd:
+           daemon_reload: true
+           state: restarted
+           name: "app.service"
+           enabled: true

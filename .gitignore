@@ -1,7 +1,6 @@
 go.mod
 go.sum
 
-hosts.ini
 
 bin/
 node/cmd/cmd

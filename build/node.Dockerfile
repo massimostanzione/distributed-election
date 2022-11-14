@@ -4,7 +4,7 @@ ADD . /app
 WORKDIR /app
 COPY . .
 
-EXPOSE 40042
+#EXPOSE 40043
 RUN apk add protobuf curl bash
 #CMD ["./teardown.sh"]
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
@@ -21,11 +21,12 @@ RUN go mod init distributedelection
 RUN go mod tidy
 
 
-WORKDIR /app/serviceregistry/cmd
+WORKDIR /app/node/cmd
 #RUN cd serviceregistry/cmd
-RUN go build -v -o ./../../bin/serviceregistry
+RUN go build -v -o ./../../bin/node
 WORKDIR /app/bin
-ENTRYPOINT ["./serviceregistry"]
+#RUN chmod +x node
+ENTRYPOINT ["./node", "-sh", "serviceregistry"]
 
 
 
@@ -60,3 +61,4 @@ ENTRYPOINT ["./serviceregistry"]
 #RUN chmod +x -R serviceregistry
 #RUN ./serviceregistry
 #CMD ["./serviceregistry"]#, "-a", "b"]
+
