@@ -122,6 +122,7 @@ func sendHb() {
 	for _, node := range allNodesList {
 		if node.GetFullAddr() != CurState.NodeInfo.GetFullAddr() {
 			smlog.Info(LOG_MONITORING, "Sending HB to node %d, at %s", node.GetId(), node.GetFullAddr())
+			time.Sleep(time.Duration(GenerateDelay()) * time.Millisecond)
 			go SafeHB(ToNetHeartbeatMsg(hbMsg), node)
 		}
 	}
