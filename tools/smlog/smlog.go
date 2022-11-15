@@ -84,15 +84,6 @@ func sendToLoggo(level loggo.Level, typee LogEvent, message string, args ...inte
 
 		loggoLogger.Logf(level, " "+typee.Short()+" "+message, args...)
 		loggo.ReplaceDefaultWriter(NewSMColorWriter(os.Stderr))
-		/*str := time.Now().Format("HH:mm:ss") + " " + typee.Short() + " " + fmt.Sprintf(message, args...) + "\n"
-		str = strings.ReplaceAll(str, ColorBlkBckgrYellow, "")
-		str = strings.ReplaceAll(str, ColorBlkBckgrGreen, "")
-		str = strings.ReplaceAll(str, BoldBlack, "")
-		str = strings.ReplaceAll(str, ColorReset, "")*/
-		/*		_, err2 := f.WriteString(str)
-				if err2 != nil {
-					fmt.Println(err2)
-				}*/
 	}
 	if IsServReg {
 		loggoLogger.Logf(level, " "+typee.Short()+" "+message, args...)
