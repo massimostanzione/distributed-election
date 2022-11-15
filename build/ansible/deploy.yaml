@@ -29,7 +29,6 @@
         curl -SL https://github.com/docker/compose/releases/download/v2.11.1/docker-compose-linux-x86_64 -o $HOME/.docker/cli-plugins/docker-compose
         chmod +x -R $HOME/.docker/cli-plugins/docker-compose
 
-# TODO rimuovere --branch deploy una volta effettuato il merge
     - name: clone project repository
       shell: |
         git clone https://github.com/massimostanzione/distributed-election.git --branch deploy
