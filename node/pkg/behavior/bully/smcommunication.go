@@ -24,15 +24,10 @@ func sendCoord(msg *MsgCoordinator, dest *SMNode) {
 	SafeRMI(MSG_COORDINATOR, dest, nil, nil, msg)
 }
 
-//TODO spostare?
 func startElection() {
 	SetMonitoringState(MONITORING_HALT)
-
 	DirtyNetList = true
-
 	CurState.Participant = true
-	smlog.InfoU("aaaaaaaa") //TODO gestire quando rimane solo uno, succede anche altrove
-
 	nodes := AskForNodesWithGreaterIds(CurState.NodeInfo.GetId())
 	smlog.InfoU("ricevo: %s", nodes)
 	for _, nextNode := range nodes {
@@ -42,5 +37,4 @@ func startElection() {
 		}
 	}
 	ElectionTimer.Reset(time.Duration(Cfg.ELECTION_ESPIRY+Cfg.ELECTION_ESPIRY_TOLERANCE) * time.Millisecond)
-
 }
