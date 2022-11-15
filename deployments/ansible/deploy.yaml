@@ -31,7 +31,7 @@
 
     - name: clone project repository
       shell: |
-        git clone https://github.com/massimostanzione/distributed-election.git --branch deploy
+        git clone https://github.com/massimostanzione/distributed-election.git
         chmod -R 777 /home/ec2-user/distributed-election
 
     # setup docker service
