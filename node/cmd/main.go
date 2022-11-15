@@ -3,13 +3,12 @@ package main
 import (
 	runner "distributedelection/node/pkg/behavior"
 	. "distributedelection/node/pkg/env"
+	. "distributedelection/node/pkg/net"
 	. "distributedelection/tools/api"
 	"flag"
 	"fmt"
-	"net"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/go-ini/ini"
 )
@@ -130,21 +129,9 @@ func loadConfig() {
 
 func setNodeKnowledge() {
 	CurState.NodeInfo = &SMNode{}
-	CurState.NodeInfo.SetHost(getOutboundIP())
+	CurState.NodeInfo.SetHost(GetOutboundIP())
 	CurState.NodeInfo.SetPort(int32(Cfg.NODE_PORT))
 	CurState.ServRegAddr = Cfg.SERVREG_HOST + ":" + strconv.FormatInt(Cfg.SERVREG_PORT, 10)
-}
-
-func getOutboundIP() string {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		fmt.Printf("Could not retrieve IP address: %s", err)
-		os.Exit(1)
-	}
-	defer conn.Close()
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	split := strings.Split(localAddr.String(), ":")
-	return split[0]
 }
 
 func isFlagPassed(name string) bool {

@@ -9,7 +9,10 @@ import (
 	. "distributedelection/tools/api"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
+	"fmt"
 	"net"
+	"os"
+	"strings"
 	"time"
 
 	// following import is replaced with EMPTY_NODE message,
@@ -60,10 +63,22 @@ func ConnectToNode(addr string) *grpc.ClientConn {
 }
 
 func Listen() {
-	smlog.Info(LOG_NETWORK, "Listening on port %v.", CurState.NodeInfo.GetPort())
+	smlog.Info(LOG_NETWORK, "Listening at %s:%v", GetOutboundIP(), CurState.NodeInfo.GetPort())
 	if err := w.Serve(lis); err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while trying to serve request: %v", err)
 	}
+}
+
+func GetOutboundIP() string {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		fmt.Printf("Could not retrieve IP address: %s", err)
+		os.Exit(1)
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	split := strings.Split(localAddr.String(), ":")
+	return split[0]
 }
 
 func contactServiceReg() *grpc.ClientConn {
