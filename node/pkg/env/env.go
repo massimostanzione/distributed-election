@@ -46,7 +46,7 @@ type ConfigEnv struct {
 var DEFAULT_CONFIG_ENV = &ConfigEnv{
 	DE_ALGORITHM_UNDEFINED, // ALGORITHM
 	40043,                  // NODE_PORT
-	"localhost",            // SERVERG_HOST
+	"0.0.0.0",              // SERVERG_HOST
 	40042,                  // SERVERG_PORT
 	"INFO",                 // TERMINAL_LOG_LEVEL
 	false,                  // VERBOSE

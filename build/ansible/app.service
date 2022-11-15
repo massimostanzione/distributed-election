@@ -1,0 +1,11 @@
+[Unit]
+Description = Distributed election algorithms (SDCC project)
+
+[Service]
+Type                = simple
+WorkingDirectory    = /home/ec2-user/distributed-election/build
+ExecStart           = /home/ec2-user/.docker/cli-plugins/docker-compose up --build --force-recreate
+ExecStop            = /bin/kill -TERM $MAINPID
+
+[Install]
+WantedBy = multi-user.target

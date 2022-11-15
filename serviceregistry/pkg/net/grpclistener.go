@@ -9,7 +9,10 @@ import (
 
 	pb "distributedelection/serviceregistry/pb"
 
-	empty "github.com/golang/protobuf/ptypes/empty"
+	// following import is replaced with EMPTY_NODE message,
+	// ref. https://github.com/massimostanzione/distributed-election/issues/88
+	// empty "github.com/golang/protobuf/ptypes/empty"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -28,7 +31,7 @@ func (s *DEAServer) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error
 	return FetchRecordById(in.GetId()), status.New(codes.OK, "").Err()
 }
 
-func (s *DEAServer) GetAllNodes(ctx context.Context, in *empty.Empty) (*pb.NodeList, error) {
+func (s *DEAServer) GetAllNodes(ctx context.Context, in *pb.EMPTY_SR) (*pb.NodeList, error) {
 	smlog.Info(LOG_MSG_RECV, "GetAllNodes")
 	return GetAllNodesExecutive(0), status.New(codes.OK, "").Err()
 }

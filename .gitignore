@@ -1,6 +1,8 @@
 go.mod
 go.sum
 
+build/ansible/hosts.ini
+
 bin/
 node/cmd/cmd
 node/pb/*.go

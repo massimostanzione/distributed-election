@@ -1,14 +1,18 @@
 syntax = "proto3";
-import "google/protobuf/empty.proto";
+
+// following import is replaced with EMPTY_NODE message,
+// ref. https://github.com/massimostanzione/distributed-election/issues/88
+// import "google/protobuf/empty.proto";
+
 option go_package = "distributedelection/node/pb";
 package distributedelection;
 
 service DistrElectNode {
-    rpc forwardElectionBully(ElectionBully)	returns (google.protobuf.Empty);
-    rpc forwardElectionFL(ElectionFL)		returns (google.protobuf.Empty);
-    rpc forwardCoordinator(Coordinator) 	returns (google.protobuf.Empty);
-    rpc forwardOk(Ok) 						returns (google.protobuf.Empty);
-    rpc sendHeartBeat(Heartbeat) 			returns (google.protobuf.Empty);    
+    rpc forwardElectionBully(ElectionBully)	returns (EMPTY_NODE);
+    rpc forwardElectionFL(ElectionFL)		returns (EMPTY_NODE);
+    rpc forwardCoordinator(Coordinator) 	returns (EMPTY_NODE);
+    rpc forwardOk(Ok) 						returns (EMPTY_NODE);
+    rpc sendHeartBeat(Heartbeat) 			returns (EMPTY_NODE);    
 }
 
 message ElectionBully {
@@ -32,3 +36,5 @@ message Coordinator {
 message Heartbeat {
     int32 id = 1;
 }
+
+message EMPTY_NODE{}

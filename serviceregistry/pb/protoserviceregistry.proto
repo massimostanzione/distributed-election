@@ -1,12 +1,16 @@
 syntax = "proto3";
-import "google/protobuf/empty.proto";
+
+// following import is replaced with EMPTY_NODE message,
+// ref. https://github.com/massimostanzione/distributed-election/issues/88
+// import "google/protobuf/empty.proto";
+
 option go_package = "distributedelection/serviceregistry/pb";
 package distributedelection;
 
 service DistrElectServReg {
     rpc joinNetwork(NodeAddr)					returns (Node);
     rpc getNode(NodeId) 						returns (Node);
-    rpc getAllNodes(google.protobuf.Empty) 		returns (NodeList);
+    rpc getAllNodes(EMPTY_SR) 					returns (NodeList);
     rpc getAllNodesWithIdGreaterThan(NodeId) 	returns (NodeList);
 }
 
@@ -28,3 +32,5 @@ message NodeId {
 message NodeList {
     repeated Node list = 1;
 }
+
+message EMPTY_SR{}

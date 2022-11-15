@@ -36,7 +36,7 @@ func loadConfig() {
 	algorithm := flag.String("a", "UNDEFINED", "distributed election algorithm to be run, accepted values: [BULLY b FREDRICKSONLYNCH fl]")
 	iniPath := flag.String("c", "./../config.ini", "path of a INI file containing environment configuration")
 	nodeport := flag.Int("p", 40043, "target port")
-	servicereghost := flag.String("sh", "localhost", "host of the service registry, e.g. \"localhost\", 127.0.0.1 or whatever IP address")
+	servicereghost := flag.String("sh", "0.0.0.0", "host of the service registry, e.g. \"localhost\", 127.0.0.1 or whatever IP address")
 	serviceregport := flag.Int64("sp", 40042, "target port of the service registry")
 	ncl := flag.String("ncl", "ABSENT", "network congestion level: ABSENT, LIGHT, MEDIUM, SEVERE, CUSTOM. If custom, please specify flags -nclmin and -nclmax")
 	nclmin := flag.Int64("nclmin", 0, "minimum network delay, valid only if -ncl CUSTOM is set")
