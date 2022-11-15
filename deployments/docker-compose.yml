@@ -4,14 +4,14 @@ services:
   serviceregistry:
     build: 
       context: ..
-      dockerfile: build/docker/serviceregistry.Dockerfile
+      dockerfile: build/serviceregistry.Dockerfile
     stdin_open: true
     tty: true     
 
   node:
     build:
       context: ..
-      dockerfile: build/docker/node.Dockerfile
+      dockerfile: build/node.Dockerfile
     depends_on:
       serviceregistry:
          condition: service_started
