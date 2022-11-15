@@ -3,7 +3,7 @@ go.sum
 
 verbose*.txt
 
-build/ansible/hosts.ini
+deployments/ansible/hosts.ini
 
 bin/
 node/cmd/cmd
