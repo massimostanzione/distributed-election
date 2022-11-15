@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io"
 
-	//	"path/filepath"
-
 	"github.com/juju/ansiterm"
 	"github.com/juju/loggo"
 )

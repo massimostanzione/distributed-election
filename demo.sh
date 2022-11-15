@@ -37,7 +37,7 @@ for i in $(seq 1 $workersno)
 do
 # inserisco ritardo random per evitare che tutti si connettano insieme (TODO risolvere)
 #sleep  $[ ( $RANDOM % 1 )  + 1 ]s
-    $detected_term -T "NODO n. $i"    -e "bash -c './bin/node -c config.ini -a b -ncl LIGHT -p $(($base_addr_space + $i));bash'"    
+    $detected_term -T "NODO n. $i"    -e "bash -c './bin/node -c config.ini -a b -ncl ABSENT -p $(($base_addr_space + $i));bash'"    
 done
 # run client
 #$detected_term -T "ServReg" -e "bash -c 'echo -E In order to run the client please run:;echo -E ./client;echo -E or see:;echo -E ./#client -help;echo -E for all the available flags;cd client/bin;bash'"

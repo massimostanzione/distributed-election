@@ -74,13 +74,13 @@ func SafeRMI(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electionMsg 
 			case MSG_ELECTION_FL:
 				starter = electionMsg.GetStarter()
 				netMsg := ToNetElectionFLMsg(electionMsg)
-				smlog.Info(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, nextAddr)
+				smlog.Info(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"ELECT %v to %s"+ColorReset, netMsg, nextAddr)
 				_, rmiErr = nodeClient.ForwardElectionFL(ctx, netMsg)
 				break
 			case MSG_COORDINATOR:
 				starter = coordMsg.GetStarter()
 				netMsg := ToNetCoordinatorMsg(coordMsg)
-				smlog.Info(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING COORD %v to %s"+ColorReset, netMsg, nextAddr)
+				smlog.Info(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"COORD %v to %s"+ColorReset, netMsg, nextAddr)
 				_, rmiErr = nodeClient.ForwardCoordinator(ctx, netMsg)
 				break
 			default:

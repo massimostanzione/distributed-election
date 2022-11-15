@@ -1,6 +1,8 @@
 go.mod
 go.sum
 
+verbose*.txt
+
 build/ansible/hosts.ini
 
 bin/

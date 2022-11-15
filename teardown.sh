@@ -1,7 +1,7 @@
 #!/bin/bash
 # run this script if something goes wrong
 echo -E "Cleaning up..."
-sudo rm -f go.mod go.sum
+sudo rm -f go.mod go.sum verbose*
 
 modules=( node serviceregistry )
 

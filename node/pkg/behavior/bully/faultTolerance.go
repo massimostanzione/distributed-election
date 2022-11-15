@@ -44,17 +44,17 @@ func SafeRMI(msgType MsgType, dest *SMNode, electMsg *MsgElectionBully, okMsg *M
 		switch msgType {
 		case MSG_ELECTION_BULLY:
 			netMsg := ToNetElectionBullyMsg(electMsg)
-			smlog.Warn(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"SENDING ELECT %v to %s"+ColorReset, netMsg, nextAddr)
+			smlog.Warn(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"ELECT %v to %s"+ColorReset, netMsg, nextAddr)
 			_, rmiErr = nodeClient.ForwardElectionBully(ctx, netMsg)
 			break
 		case MSG_OK:
 			netMsg := ToNetOkMsg(okMsg)
-			smlog.Warn(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING OK %v to %s"+ColorReset, netMsg, nextAddr)
+			smlog.Warn(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"OK %v to %s"+ColorReset, netMsg, nextAddr)
 			_, rmiErr = nodeClient.ForwardOk(ctx, netMsg)
 			break
 		case MSG_COORDINATOR:
 			netMsg := ToNetCoordinatorMsg(coordMsg)
-			smlog.Warn(LOG_MSG_RECV, ColorBlkBckgrGreen+BoldBlack+"SENDING COORD %v to %s"+ColorReset, netMsg, nextAddr)
+			smlog.Warn(LOG_MSG_SENT, ColorBlkBckgrGreen+BoldBlack+"COORDINATOR %v to %s"+ColorReset, netMsg, nextAddr)
 			_, rmiErr = nodeClient.ForwardCoordinator(ctx, netMsg)
 			break
 		default:
