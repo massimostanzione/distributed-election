@@ -1,72 +1,87 @@
 ---
-- hosts: all
+- hosts: deployment
   tasks:
     # reset the environment
-    - name: teardown
-      become: true      
-      ansible.builtin.command:
-        cmd: "rm -rf $HOME/distributed-election $HOME/.docker"
+    - name:     teardown
+      become:   true      
+      ansible.builtin.shell: |
+        rm -rf  /home/ec2-user/distributed-election \
+                /home/ec2-user/.docker              \
+                /etc/systemd/system/app.service
        
-    # install dependencies    
-    - name: install git
-      become: true
+    # install docker and docker-compose plugin, and enable docker service
+    - name:     install docker
+      become:   true
       yum:
-         name: git
-         state: present
-         update_cache: true
-             
-    - name: install docker
-      become: true
-      yum:
-         name: docker
-         state: present
-         update_cache: true
+         name:          docker
+         state:         present
+         update_cache:  true
 
-    - name: install docker-compose plugin
-      become: true      
-      ansible.builtin.command:
-        cmd: "curl -SL https://github.com/docker/compose/releases/download/v2.11.1/docker-compose-linux-x86_64 -o /home/ec2-user/.docker/cli-plugins/docker-compose --create-dirs"
+    - name:     docker post-inst    # as per docker post-install guide
+      become:   true
+      ansible.builtin.user:
+        name:   ec2-user
+        groups: docker
+        append: true
         
-    - name: permissions docker-compose plugin
-      become: true      
-      ansible.builtin.command:
-        cmd: "chmod +x -R /home/ec2-user/.docker/cli-plugins/docker-compose"
+    - name:     make user changes available to all users (ssh reset)
+      become:   true
+      ansible.builtin.meta:
+        reset_connection        
 
-    - name: clone project repository
-      shell: |
+    - name:     install docker-compose plugin
+      become:   true
+      ansible.builtin.shell: |
+          curl  -SL https://github.com/docker/compose/releases/download/v2.11.1/docker-compose-linux-x86_64    \
+                -o /home/ec2-user/.docker/cli-plugins/docker-compose                                           \
+                --create-dirs
+          chmod 777 -R /home/ec2-user/.docker/
+          
+    - name:     enable docker.service
+      become:   true
+      systemd:
+        name:           docker.service
+        daemon_reload:  true
+        state:          restarted
+        enabled:        true
+        
+    - name:     permissions on docker.sock   # for debugging purpose, mainly
+      become:   true
+      ansible.builtin.command:
+        cmd:        "chmod 766 /var/run/docker.sock"
+        
+    # install git and clone project repository
+    - name:     install git
+      become:   true
+      yum:
+         name:          git
+         state:         present
+         update_cache:  true
+                 
+    - name:     clone project repository
+      ansible.builtin.shell: |
         git clone https://github.com/massimostanzione/distributed-election.git
-        chmod -R 777 /home/ec2-user/distributed-election
-
-    # setup docker service
-    - name: enable docker.service
-      become: true
-      systemd:
-        name: docker.service
-        daemon_reload: true
-        state: restarted
-        enabled: true
+        chmod -R 766 /home/ec2-user/distributed-election
         
-    - name: docker.sock permission
-      become: true
-      ansible.builtin.command:
-        cmd: "chmod 666 /var/run/docker.sock"
-       
     # setup project service
-    - name: copy systemd unit file
-      become: true
+    - name:     copy systemd unit file
+      become:   true
       copy:
-           src: "app.service"
-           dest: "/etc/systemd/system/"
+           src:     "app.service"
+           dest:    "/etc/systemd/system/"
            
-    - name: app.service permission
-      become: true
+    - name:     app.service permission
+      become:   true
       ansible.builtin.command:
-        cmd: "chmod 777 /etc/systemd/system/app.service"
-
-    - name: restart systemd service
-      become: true
+        cmd:        "chmod 766 /etc/systemd/system/app.service"
+        
+    - name:     restart systemd service
+      become:   true
       systemd:
-           daemon_reload: true
-           state: restarted
-           name: "app.service"
-           enabled: true
+           daemon_reload:   true
+           state:           restarted
+           name:            "app.service"
+           enabled:         true
+           
+    - debug:
+        msg: "*** NOTICE: containers builtup could take several minutes! Relax and be patient. (About 3 minutes, empirically...)"
