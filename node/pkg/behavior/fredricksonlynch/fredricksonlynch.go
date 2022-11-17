@@ -56,6 +56,7 @@ func run() {
 		case in := <-CoordChannel:
 			smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
 			SetMonitoringState(MONITORING_HALT)
+			SetWatchdog(MSG_ELECTION_FL, false)
 			if in.GetStarter() == CurState.NodeInfo.GetId() {
 				SetWatchdog(MSG_COORDINATOR, false)
 			} else {
