@@ -28,7 +28,7 @@ cd scripts
 ... and you are done! Now you can run a [local run](#local-run) or see the [deployment](#deployment) in action:
 
 ### Local run
-Some *ready-to-use* scripts are available into the [`docs`](https://github.com/massimostanzione/distributed-election/tree/main/docs) folder. Just launch the algorithm you want:
+Some *ready-to-use* scripts are available into the [`examples`](https://github.com/massimostanzione/distributed-election/tree/main/examples) folder. Just launch the algorithm you want:
 ```
 cd ../examples
 
