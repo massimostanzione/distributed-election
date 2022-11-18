@@ -53,7 +53,7 @@ func (w *colorWriter) Write(entry loggo.Entry) {
 		fmt.Fprintf(w.writer, "%s ", ts)
 
 	} else {
-		fmt.Fprintf(w.writer, "[SM] ")
+		fmt.Fprintf(w.writer, "[Node] ")
 		fmt.Fprintf(w.writer, "%s ", ts)
 	}
 	SeverityColor[entry.Level].Fprintf(w.writer, entry.Level.Short())

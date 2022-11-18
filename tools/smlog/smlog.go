@@ -18,8 +18,13 @@ var verboseFile *os.File
 
 func Initialize(isServRegExec bool, levelParam string) {
 	if Cfg.VERBOSE {
+		fmt.Println("Verbose log will be placed in distributed-election/docs/verbose folder.")
 		str := CurState.NodeInfo.GetFullAddr()
-		a, err := os.OpenFile("verbose"+str+".txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+		err := os.MkdirAll("../docs/verbose", 0666)
+		if err != nil {
+			fmt.Println(err)
+		}
+		a, err := os.OpenFile("../docs/verbose/verbose"+str+".txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 		verboseFile = a
 		if err != nil {
 			fmt.Println(err)
@@ -31,8 +36,8 @@ func Initialize(isServRegExec bool, levelParam string) {
 		fmt.Println("[ServReg] Time     Lvl   Event  Description")
 		fmt.Println("[ServReg] -------- ----- ------ ---------------")
 	} else {
-		fmt.Println("[SM] Time     Lvl   Prtcp Event  Description")
-		fmt.Println("[SM] -------- ----- ----- ------ ---------------")
+		fmt.Println("[Node] Time     Lvl   Prtcp Event  Description")
+		fmt.Println("[Node] -------- ----- ----- ------ ---------------")
 	}
 	level, _ := loggo.ParseLevel(levelParam)
 	loggoLogger.SetLogLevel(level)
