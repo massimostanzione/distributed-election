@@ -80,7 +80,8 @@ Now, to see what is running, connect to your *Amazon EC2* instance:
 ssh -i "PATH/TO/KEYS.pem" AMAZON_EC2_USERNAME@HOST-IP-ADDRESS
 
 # Verify if containers are up and running
-# **NOTICE:** Containers can take several (about 3, empirically) minutes before made up and running! Be patient....
+# ***NOTICE:*** Containers can take several (about 3, empirically) minutes before
+# being made up and running! Be patient....
 docker ps
 
 # Inspect logs for all the containers
