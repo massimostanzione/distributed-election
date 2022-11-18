@@ -81,7 +81,7 @@ ssh -i "PATH/TO/KEYS.pem" AMAZON_EC2_USERNAME@HOST-IP-ADDRESS
 
 # Verify if containers are up and running
 # ***NOTICE:*** Containers can take several (about 3, empirically) minutes before
-# being made up and running! Be patient....
+# being made up and running! Be patient...
 docker ps
 
 # Inspect logs for all the containers
