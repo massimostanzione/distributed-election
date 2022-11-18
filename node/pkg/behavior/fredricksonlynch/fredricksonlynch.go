@@ -41,6 +41,7 @@ func run() {
 		select {
 		case in := <-ElectionChannel_fl:
 			smlog.Debug(LOG_ELECTION, "Handling ELECTION message")
+			SetMonitoringState(MONITORING_HALT)
 			CurState.Participant = true
 			if in.GetStarter() == CurState.NodeInfo.GetId() {
 				SetWatchdog(MSG_ELECTION_FL, false)
@@ -91,8 +92,9 @@ func run() {
 		}
 	}
 }
-func startElection() {
 
+func startElection() {
+	SetMonitoringState(MONITORING_HALT)
 	DirtyNetList = true
 	CurState.Participant = true
 	err := sendElection(NewElectionFLMsg(), NextNode)
