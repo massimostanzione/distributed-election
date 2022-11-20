@@ -16,7 +16,7 @@ type DGservreg struct {
 }
 
 func AskForJoining() *SMNode {
-	DirtyNetCache = true
+	CurState.DirtyNetCache = true
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
 	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
@@ -27,15 +27,22 @@ func AskForJoining() *SMNode {
 	return ToSMNode(node)
 }
 
-func AskForNodeInfo(i int32) *SMNode {
-	smlog.Debug(LOG_SERVREG, "Asking for info about node n. %d", i)
-	if !DirtyNetCache {
-		return NetCache[(int(i)%len(NetCache))-1]
+func AskForNodeInfo(id int32) *SMNode {
+	smlog.Info(LOG_SERVREG, "Asking for info about node n. %d", id)
+	if !CurState.DirtyNetCache {
+		i := int(id)
+		for {
+			i = i % len(NetCache)
+			if i == 0 {
+				i = len(NetCache)
+			}
+			return NetCache[i-1]
+		}
 	}
-	smlog.Debug(LOG_SERVREG, "NetCache is dirty - now asking servReg for info about node n. %d", i)
+	smlog.Debug(LOG_SERVREG, "NetCache is dirty - now asking servReg for info about node n. %d", id)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
-	ret, err := cs.GetNode(ctx, &pbsr.NodeId{Id: int32(i)})
+	ret, err := cs.GetNode(ctx, &pbsr.NodeId{Id: int32(id)})
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while executing GetNode:\n%v", err)
 		return nil
@@ -47,13 +54,13 @@ func AskForNodeInfo(i int32) *SMNode {
 func AskForAllNodesList() []*SMNode {
 	var ret []*SMNode
 	smlog.Debug(LOG_SERVREG, "Asking for info about all nodes")
-	if DirtyNetCache {
+	if CurState.DirtyNetCache {
 		ret = updateNetCache()
 		NetCache = ret
 	} else {
 		ret = NetCache
 	}
-	DirtyNetCache = false
+	CurState.DirtyNetCache = false
 	return ret
 }
 

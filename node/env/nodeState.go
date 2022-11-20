@@ -7,6 +7,10 @@ type NodeState struct {
 	NodeInfo    *SMNode
 	Coordinator int32
 	Participant bool
+
+	// limit servReg requests if network is not changed,
+	// i.e. if no election has occurred
+	DirtyNetCache bool
 }
 
 var CurState *NodeState = &NodeState{}
@@ -15,7 +19,3 @@ var CurState *NodeState = &NodeState{}
 var NextNode *SMNode = &SMNode{}
 
 var NetCache []*SMNode
-
-// limit servReg requests if network is not changed,
-// i.e. if no election has occurred
-var DirtyNetCache = false

@@ -54,5 +54,5 @@ func InitializeNetMW() {
 	cs = pbsr.NewDistrElectServRegClient(serverConn)
 
 	// Initialize NetCache
-	DirtyNetCache = true
+	CurState.DirtyNetCache = true
 }

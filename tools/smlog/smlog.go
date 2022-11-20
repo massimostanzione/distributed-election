@@ -12,9 +12,11 @@ import (
 
 var curState = ""
 var IsServReg bool
-
 var loggoLogger = loggo.GetLogger("")
+var verboseLogger = loggo.GetLogger("verbose")
 var verboseFile *os.File
+var verboseWriter loggo.Writer
+var consoleWriter = NewSMColorWriter(os.Stderr)
 
 func Initialize(isServRegExec bool, levelParam string) {
 	if Cfg.VERBOSE {
@@ -29,7 +31,12 @@ func Initialize(isServRegExec bool, levelParam string) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		//defer f.Close()
+		verboseFile.WriteString("[Node] Time     Lvl   Prtcp Event  Description\n")
+		verboseFile.WriteString("[Node] -------- ----- ----- ------ ---------------")
+		verboseWriter = NewWriter(verboseFile)
+		//defer f.Close() - this file will not be closed
+
+		loggo.DefaultContext().AddWriter("verbose", verboseWriter)
 	}
 	IsServReg = isServRegExec
 	if IsServReg {
@@ -79,16 +86,11 @@ func Fatal(typee LogEvent, message string, args ...interface{}) {
 	os.Exit(1)
 }
 func sendToLoggo(level loggo.Level, typee LogEvent, message string, args ...interface{}) {
-	if Cfg.VERBOSE && (typee == LOG_MSG_SENT || typee == LOG_MSG_RECV) {
-
-		loggo.ReplaceDefaultWriter(NewWriter(verboseFile))
+	if Cfg.VERBOSE {
 		message = strings.ReplaceAll(message, ColorBlkBckgrYellow, "")
 		message = strings.ReplaceAll(message, ColorBlkBckgrGreen, "")
 		message = strings.ReplaceAll(message, BoldBlack, "")
 		message = strings.ReplaceAll(message, ColorReset, "")
-
-		loggoLogger.Logf(level, " "+typee.Short()+" "+message, args...)
-		loggo.ReplaceDefaultWriter(NewSMColorWriter(os.Stderr))
 	}
 	if IsServReg {
 		loggoLogger.Logf(level, " "+typee.Short()+" "+message, args...)
@@ -97,5 +99,5 @@ func sendToLoggo(level loggo.Level, typee LogEvent, message string, args ...inte
 	}
 }
 func init() {
-	loggo.ReplaceDefaultWriter(NewSMColorWriter(os.Stderr))
+	loggo.ReplaceDefaultWriter(consoleWriter)
 }

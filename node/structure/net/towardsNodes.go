@@ -40,7 +40,7 @@ func updateLocalCache() *SMNode {
 // - FL-specific: if next node is the election starter and it is failed, stop forwarding its
 //   message, to avoid making it turn the ring more than once. The starter will eventually
 //   start another election by itself.
-func SafeRMI_Ring(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electionMsg *MsgElectionFL, coordMsg *MsgCoordinator) (failedNodeExistence bool) {
+func SafeRMI_Ring(msgType MsgType, dest *SMNode, electionMsg *MsgElectionFL, coordMsg *MsgCoordinator) (failedNodeExistence bool) {
 	// update local cache the first time a sequential message is sent
 	if NextNode.GetId() == 0 {
 		dest = updateLocalCache()
@@ -60,6 +60,12 @@ func SafeRMI_Ring(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electio
 		}
 		nextId := actualDest.GetId()
 		nextAddr := actualDest.GetFullAddr()
+
+		// if I am the next node, I am the only node into the ring
+		if nextAddr == CurState.NodeInfo.GetFullAddr() {
+			smlog.InfoU("No other nodes found in the ring.")
+			break
+		}
 
 		// connect to the next node
 		conn := ConnectToNode(nextAddr)
@@ -99,23 +105,22 @@ func SafeRMI_Ring(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electio
 				break
 			}
 
-			if rmiErr == nil || (rmiErr != nil && attempts >= Cfg.RMI_RETRY_TOLERANCE) {
+			if rmiErr == nil {
 				break
 			}
-			// failed node detected, but we can try again
-			smlog.Warn(LOG_NETWORK, "Failed attempt n. %d to contact %d@%v, trying again...", attempts, nextId, nextAddr)
+			// failed node detected
+			if attempts >= Cfg.RMI_RETRY_TOLERANCE {
+				break
+			}
+			// ... but we can try again
+			smlog.Warn(LOG_NETWORK, "Failed attempt n. %d to contact %d@%v.", attempts, nextId, nextAddr)
 			smlog.Debug(LOG_NETWORK, "(%s)", rmiErr)
+			smlog.Debug(LOG_NETWORK, "Trying again...", attempts, nextId, nextAddr)
 		}
 		if rmiErr == nil {
 			// no error occurred
 			smlog.Trace(LOG_NETWORK, "RMI invoked correctly, exiting from SafeRMI...")
 			success = true
-			break
-		}
-
-		// if I am the next node, I am the only node into the ring
-		if nextAddr == CurState.NodeInfo.GetFullAddr() {
-			smlog.InfoU("No other nodes found in the ring.")
 			break
 		}
 
@@ -130,7 +135,6 @@ func SafeRMI_Ring(msgType MsgType, dest *SMNode, tryNextWhenFailed bool, electio
 			smlog.Error(LOG_NETWORK, "Election starter failed! Stopping forwarding...")
 			break
 		}
-
 	}
 	return !success
 }
@@ -150,14 +154,15 @@ func SafeRMI(msgType MsgType, dest *SMNode, electMsg *MsgElectionBully, okMsg *M
 	defer conn.Close()
 	nodeClient := pb.NewDistrElectNodeClient(conn)
 
+	//ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Millisecond)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Millisecond)
-	defer cancel()
 
 	// attempt to send message
 	for {
 		rmiErr = error(nil)
 		attempts++
 		ncl.SimulateDelay()
+
 		// Do the actual RMI invocation, based on the message type
 		switch msgType {
 		case MSG_ELECTION_BULLY:
@@ -188,12 +193,20 @@ func SafeRMI(msgType MsgType, dest *SMNode, electMsg *MsgElectionBully, okMsg *M
 			smlog.Fatal(LOG_UNDEFINED, "Invalid/not handled msg type in SafeRMI")
 			break
 		}
-		if rmiErr == nil || (rmiErr != nil && attempts >= Cfg.RMI_RETRY_TOLERANCE) {
+		defer cancel()
+
+		if rmiErr == nil {
 			break
 		}
-		// failed node detected, but we can try again
-		smlog.Warn(LOG_NETWORK, "Failed attempt n. %d to contact %d@%v, trying again...", attempts, nextId, nextAddr)
+		// failed node detected
+		if attempts >= Cfg.RMI_RETRY_TOLERANCE {
+			break
+		}
+
+		// ... but we can try again
+		smlog.Warn(LOG_NETWORK, "Failed attempt n. %d to contact %d@%v.", attempts, nextId, nextAddr)
 		smlog.Debug(LOG_NETWORK, "(%s)", rmiErr)
+		smlog.Warn(LOG_NETWORK, "Trying again...", attempts, nextId, nextAddr)
 	}
 	if rmiErr == nil {
 		// no error occurred

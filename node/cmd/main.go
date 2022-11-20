@@ -131,6 +131,7 @@ func setNodeKnowledge() {
 	CurState.NodeInfo = &SMNode{}
 	CurState.NodeInfo.SetHost(ip.GetOutboundIP())
 	CurState.NodeInfo.SetPort(int32(Cfg.NODE_PORT))
+	CurState.DirtyNetCache = false
 }
 
 func isFlagPassed(name string) bool {

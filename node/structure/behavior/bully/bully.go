@@ -19,7 +19,7 @@ func Run() {
 	ElectionTimer = TimerFictitiousInit(ElectionTimer)
 	ElectionChannel_bully = make(chan *MsgElectionBully)
 	OkChannel = make(chan *MsgOk)
-	CoordChannel = make(chan *MsgCoordinator)
+	CoordChIn = make(chan *MsgCoordinator)
 
 	go run()
 	ListenToIncomingRMI()
@@ -50,6 +50,7 @@ func run() {
 			ElectionTimer.Stop()
 			CurState.Coordinator = CurState.NodeInfo.GetId()
 			CurState.Participant = false
+			CurState.DirtyNetCache = true
 			for _, dest := range AskForAllNodes() {
 				if dest.GetId() != CurState.NodeInfo.GetId() {
 					go sendCoord(NewCoordinatorMsg(CurState.NodeInfo.GetId(), CurState.NodeInfo.GetId()), dest)
@@ -73,7 +74,7 @@ func run() {
 			CurState.Participant = true
 			ElectionTimer.Stop()
 			break
-		case inp := <-CoordChannel:
+		case inp := <-CoordChIn:
 			smlog.Debug(LOG_ELECTION, "Handling COORDINATOR message")
 			SetMonitoringState(MONITORING_HALT)
 			SetWatchdog(MSG_COORDINATOR, false)
@@ -103,7 +104,7 @@ func run() {
 
 func startElection() {
 	SetMonitoringState(MONITORING_HALT)
-	DirtyNetCache = true
+	CurState.DirtyNetCache = true
 	CurState.Participant = true
 	nodes := AskForNodesWithGreaterIds(CurState.NodeInfo.GetId())
 	for _, nextNode := range nodes {
