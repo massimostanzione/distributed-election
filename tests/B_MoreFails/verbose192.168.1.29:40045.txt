@@ -1,0 +1,36 @@
+[Node] Time     Lvl   Prtcp Event  Description
+[Node] -------- ----- ----- ------ ---------------[Node] 23:44:26 INFO  no    N/D   Starting...
+[Node] 23:44:26 INFO  no    N/D   Type CTRL+C to terminate
+[Node] 23:44:26 INFO  no    N/D   ------------------------
+[Node] 23:44:26 INFO  no    NETWK Listening at 192.168.1.29:40045
+[Node] 23:44:26 INFO  no    SVREG asking for joining the ring...
+[Node] 23:44:27 INFO  yes   MRECV COORD starter:1 coordinator:1 
+[Node] 23:44:27 INFO  yes   ELECT New coordinator: 1
+[Node] 23:44:27 INFO  no    MRECV COORD starter:2 coordinator:2 
+[Node] 23:44:27 INFO  no    ELECT New coordinator: 2
+[Node] 23:44:27 INFO  no    ELECT *** I declare myself as the new coordinator ***
+[Node] 23:44:27 INFO  no    MSENT COORD starter:3 coordinator:3  to 4@192.168.1.29:40046
+[Node] 23:44:27 INFO  no    MSENT COORD starter:3 coordinator:3  to 1@192.168.1.29:40043
+[Node] 23:44:27 INFO  no    MSENT COORD starter:3 coordinator:3  to 2@192.168.1.29:40044
+[Node] 23:44:27 INFO  no    MRECV COORD starter:4 coordinator:4 
+[Node] 23:44:27 INFO  no    ELECT New coordinator: 4
+[Node] 23:44:28 INFO  no    MRECV HB from node 4
+[Node] 23:44:29 INFO  no    MRECV HB from node 4
+[Node] 23:44:30 INFO  no    MRECV HB from node 4
+[Node] 23:44:31 INFO  no    MRECV HB from node 4
+[Node] 23:44:32 INFO  no    MRECV HB from node 4
+[Node] 23:44:33 INFO  no    MRECV HB from node 4
+[Node] 23:44:34 INFO  no    MRECV HB from node 4
+[Node] 23:44:35 INFO  no    MRECV HB from node 4
+[Node] 23:44:36 INFO  no    MRECV HB from node 4
+[Node] 23:44:37 INFO  no    MRECV HB from node 4
+[Node] 23:44:38 INFO  no    MRECV HB from node 4
+[Node] 23:44:39 INFO  no    MRECV HB from node 4
+[Node] 23:44:40 INFO  no    MRECV HB from node 4
+[Node] 23:44:41 INFO  no    MRECV HB from node 4
+[Node] 23:44:42 INFO  no    MRECV HB from node 4
+[Node] 23:44:43 INFO  no    MRECV HB from node 4
+[Node] 23:44:44 INFO  no    MRECV HB from node 4
+[Node] 23:44:45 INFO  no    MRECV HB from node 4
+[Node] 23:44:46 INFO  no    MRECV HB from node 4
+[Node] 23:44:47 INFO  no    MRECV HB from node 4

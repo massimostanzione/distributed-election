@@ -1,0 +1,136 @@
+[Node] Time     Lvl   Prtcp Event  Description
+[Node] -------- ----- ----- ------ ---------------[Node] 23:43:29 INFO  no    N/D   Starting...
+[Node] 23:43:29 INFO  no    N/D   Type CTRL+C to terminate
+[Node] 23:43:29 INFO  no    N/D   ------------------------
+[Node] 23:43:29 INFO  no    NETWK Listening at 192.168.1.29:40046
+[Node] 23:43:29 INFO  no    SVREG asking for joining the ring...
+[Node] 23:43:30 INFO  yes   MRECV COORD starter:1 coordinator:1 
+[Node] 23:43:30 INFO  yes   ELECT New coordinator: 1
+[Node] 23:43:30 INFO  no    MRECV COORD starter:2 coordinator:2 
+[Node] 23:43:30 INFO  no    ELECT New coordinator: 2
+[Node] 23:43:30 INFO  no    MRECV COORD starter:3 coordinator:3 
+[Node] 23:43:30 INFO  no    ELECT New coordinator: 3
+[Node] 23:43:30 INFO  no    ELECT *** I declare myself as the new coordinator ***
+[Node] 23:43:30 INFO  no    MSENT COORD starter:4 coordinator:4  to 2@192.168.1.29:40044
+[Node] 23:43:30 INFO  no    MSENT COORD starter:4 coordinator:4  to 1@192.168.1.29:40043
+[Node] 23:43:30 INFO  no    MSENT COORD starter:4 coordinator:4  to 3@192.168.1.29:40045
+[Node] 23:43:31 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:31 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:31 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:32 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:32 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:32 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:33 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:33 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:33 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:34 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:34 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:34 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:35 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:35 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:35 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:36 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:36 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:36 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:37 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:37 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:37 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:38 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:38 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:38 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:39 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:39 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:39 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:40 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:40 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:40 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:41 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:41 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:41 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:42 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:42 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:42 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:43 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:43 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:43 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:44 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:44 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:44 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:45 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:45 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:45 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:46 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:46 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:46 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:47 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:47 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:47 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:48 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:48 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:48 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:49 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:49 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:49 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:50 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:50 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 23:43:50 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:51 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:51 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:51 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:52 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:52 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:52 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:53 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:53 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:53 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:54 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:54 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:54 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:55 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:55 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:55 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:56 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:56 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:56 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:57 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:57 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:57 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:58 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:58 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:43:58 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:59 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:43:59 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:43:59 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:00 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:00 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:00 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:01 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:01 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:01 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:02 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:02 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:02 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:03 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:03 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:03 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:04 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:04 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:04 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:05 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:05 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:05 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:06 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:06 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:06 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:07 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:07 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:07 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:08 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:08 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:08 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:09 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:09 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:09 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 23:44:10 ERROR no    NETWK error while contacting 1@192.168.1.29:40043
+[Node] 23:44:10 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 23:44:10 INFO  no    MSENT HB to 2@192.168.1.29:40044

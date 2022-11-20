@@ -1,0 +1,69 @@
+[Node] Time     Lvl   Prtcp Event  Description
+[Node] -------- ----- ----- ------ ---------------[Node] 23:42:32 INFO  no    N/D   Starting...
+[Node] 23:42:32 INFO  no    N/D   Type CTRL+C to terminate
+[Node] 23:42:32 INFO  no    N/D   ------------------------
+[Node] 23:42:32 INFO  no    NETWK Listening at 192.168.1.29:40044
+[Node] 23:42:32 INFO  no    SVREG asking for joining the ring...
+[Node] 23:42:33 INFO  yes   MRECV COORD starter:1 coordinator:1 
+[Node] 23:42:33 INFO  yes   ELECT New coordinator: 1
+[Node] 23:42:33 INFO  no    ELECT *** I declare myself as the new coordinator ***
+[Node] 23:42:33 INFO  no    MSENT COORD starter:2 coordinator:2  to 1@192.168.1.29:40043
+[Node] 23:42:33 INFO  no    MSENT COORD starter:2 coordinator:2  to 4@192.168.1.29:40046
+[Node] 23:42:33 INFO  no    MSENT COORD starter:2 coordinator:2  to 3@192.168.1.29:40045
+[Node] 23:42:33 INFO  no    MRECV COORD starter:3 coordinator:3 
+[Node] 23:42:33 INFO  no    ELECT New coordinator: 3
+[Node] 23:42:33 INFO  no    MRECV COORD starter:4 coordinator:4 
+[Node] 23:42:33 INFO  no    ELECT New coordinator: 4
+[Node] 23:42:34 INFO  no    MRECV HB from node 4
+[Node] 23:42:35 INFO  no    MRECV HB from node 4
+[Node] 23:42:36 INFO  no    MRECV HB from node 4
+[Node] 23:42:37 INFO  no    MRECV HB from node 4
+[Node] 23:42:38 INFO  no    MRECV HB from node 4
+[Node] 23:42:39 INFO  no    MRECV HB from node 4
+[Node] 23:42:40 INFO  no    MRECV HB from node 4
+[Node] 23:42:41 INFO  no    MRECV HB from node 4
+[Node] 23:42:42 INFO  no    MRECV HB from node 4
+[Node] 23:42:43 INFO  no    MRECV HB from node 4
+[Node] 23:42:44 INFO  no    MRECV HB from node 4
+[Node] 23:42:45 INFO  no    MRECV HB from node 4
+[Node] 23:42:46 INFO  no    MRECV HB from node 4
+[Node] 23:42:47 INFO  no    MRECV HB from node 4
+[Node] 23:42:48 INFO  no    MRECV HB from node 4
+[Node] 23:42:49 INFO  no    MRECV HB from node 4
+[Node] 23:42:50 INFO  no    MRECV HB from node 4
+[Node] 23:42:51 INFO  no    MRECV HB from node 4
+[Node] 23:42:52 INFO  no    MRECV HB from node 4
+[Node] 23:42:53 INFO  no    MRECV HB from node 4
+[Node] 23:42:55 CRITC no    MONIT Monitoring timer expired!
+[Node] 23:42:55 CRITC no    ELECT Coordinator failed!
+[Node] 23:42:55 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
+[Node] 23:42:55 INFO  yes   MSENT ELECT starter:2  to 3@192.168.1.29:40045
+[Node] 23:42:55 INFO  yes   MRECV ELECT starter:1 
+[Node] 23:42:55 INFO  yes   SVREG Asking for info about node n. 1
+[Node] 23:42:55 INFO  yes   MRECV OK starter:3 
+[Node] 23:42:55 INFO  yes   MSENT OK starter:2  to 1@192.168.1.29:40043
+[Node] 23:42:55 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
+[Node] 23:42:55 INFO  yes   MSENT ELECT starter:2  to 3@192.168.1.29:40045
+[Node] 23:42:55 INFO  yes   MRECV OK starter:3 
+[Node] 23:42:55 INFO  yes   MRECV COORD starter:3 coordinator:3 
+[Node] 23:42:55 INFO  yes   ELECT New coordinator: 3
+[Node] 23:42:56 INFO  no    MRECV HB from node 3
+[Node] 23:42:57 INFO  no    MRECV HB from node 3
+[Node] 23:42:58 INFO  no    MRECV HB from node 3
+[Node] 23:42:59 INFO  no    MRECV HB from node 3
+[Node] 23:43:00 INFO  no    MRECV HB from node 3
+[Node] 23:43:01 INFO  no    MRECV HB from node 3
+[Node] 23:43:02 INFO  no    MRECV HB from node 3
+[Node] 23:43:03 INFO  no    MRECV HB from node 3
+[Node] 23:43:04 INFO  no    MRECV HB from node 3
+[Node] 23:43:05 INFO  no    MRECV HB from node 3
+[Node] 23:43:06 INFO  no    MRECV HB from node 3
+[Node] 23:43:07 INFO  no    MRECV HB from node 3
+[Node] 23:43:08 INFO  no    MRECV HB from node 3
+[Node] 23:43:09 INFO  no    MRECV HB from node 3
+[Node] 23:43:10 INFO  no    MRECV HB from node 3
+[Node] 23:43:11 INFO  no    MRECV HB from node 3
+[Node] 23:43:12 INFO  no    MRECV HB from node 3
+[Node] 23:43:13 INFO  no    MRECV HB from node 3
+[Node] 23:43:14 INFO  no    MRECV HB from node 3
+[Node] 23:43:15 INFO  no    MRECV HB from node 3
