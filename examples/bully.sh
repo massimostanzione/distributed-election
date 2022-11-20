@@ -38,5 +38,5 @@ $detected_term -T "ServReg" -e "bash -c './../bin/serviceregistry;bash'"
 #run nodes
 for i in $(seq 1 $NODES_NO)
 do
-    $detected_term -T "Node n. $i" -e "bash -c './../bin/node -c config.ini -a b -ncl ABSENT -p $(($BASE_ADDRESS + $i));bash'"    
+    $detected_term -T "Node n. $i" -e "bash -c './../bin/node -c ../configs/config.ini -a b -ncl ABSENT -p $(($BASE_ADDRESS + $i));bash'"    
 done

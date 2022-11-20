@@ -2,10 +2,10 @@
 package behavior
 
 import (
-	bully "distributedelection/node/pkg/behavior/bully"
-	fredricksonlynch "distributedelection/node/pkg/behavior/fredricksonlynch"
-	. "distributedelection/node/pkg/env"
-	net "distributedelection/node/pkg/net"
+	. "distributedelection/node/env"
+	bully "distributedelection/node/structure/behavior/bully"
+	fredricksonlynch "distributedelection/node/structure/behavior/fredricksonlynch"
+	net "distributedelection/node/structure/net"
 	smlog "distributedelection/tools/smlog"
 	"fmt"
 	"os"
@@ -22,6 +22,6 @@ func Run() {
 	if Cfg.ALGORITHM == DE_ALGORITHM_FREDRICKSONLYNCH {
 		fredricksonlynch.Run()
 	}
-	fmt.Println("Unreachable code while trying to running algorithm %s, something is really odd", Cfg.ALGORITHM)
+	fmt.Printf("Unreachable code while trying to run algorithm %s, something is really odd\n", Cfg.ALGORITHM)
 	os.Exit(1)
 }

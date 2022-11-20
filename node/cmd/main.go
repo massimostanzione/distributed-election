@@ -1,14 +1,14 @@
 package main
 
 import (
-	runner "distributedelection/node/pkg/behavior"
-	. "distributedelection/node/pkg/env"
-	. "distributedelection/node/pkg/net"
+	. "distributedelection/node/env"
+	runner "distributedelection/node/structure/behavior"
+	ncl "distributedelection/node/tools/ncl"
 	. "distributedelection/tools/api"
+	ip "distributedelection/tools/ip"
 	"flag"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/go-ini/ini"
 )
@@ -37,7 +37,7 @@ func loadConfig() {
 	nodeport := flag.Int("p", 40043, "target port")
 	servicereghost := flag.String("sh", "0.0.0.0", "host of the service registry, e.g. \"localhost\", 127.0.0.1 or whatever IP address")
 	serviceregport := flag.Int64("sp", 40042, "target port of the service registry")
-	ncl := flag.String("ncl", "ABSENT", "network congestion level: ABSENT, LIGHT, MEDIUM, SEVERE, CUSTOM. If custom, please specify flags -nclmin and -nclmax")
+	nclParam := flag.String("ncl", "ABSENT", "network congestion level: ABSENT, LIGHT, MEDIUM, SEVERE, CUSTOM. If custom, please specify flags -nclmin and -nclmax")
 	nclmin := flag.Int64("nclmin", 0, "minimum network delay, valid only if -ncl CUSTOM is set")
 	nclmax := flag.Int64("nclmax", 500, "maximum network delay, valid only if -ncl CUSTOM is set")
 	logLevel := flag.String("l", "INFO", "log level: CRITICAL, ERROR, WARNING, INFO, DEBUG, TRACE")
@@ -66,7 +66,7 @@ func loadConfig() {
 		key, _ := iniFile.Section("algorithm").GetKey("ALGORITHM")
 		Cfg.ALGORITHM = ParseDEAlgorithm(key.String())
 		key, _ = iniFile.Section("delay-conf").GetKey("NCL_CONGESTION_LEVEL")
-		Cfg.NCL_CONGESTION_LEVEL = ToNCL(key.String())
+		Cfg.NCL_CONGESTION_LEVEL = key.String()
 		if Cfg.NCL_CUSTOM_DELAY_MIN > Cfg.NCL_CUSTOM_DELAY_MAX {
 			fmt.Println("[ERROR] Cannot consider min delay > max delay! Falling back to default value.")
 			Cfg.NCL_CUSTOM_DELAY_MIN = 0
@@ -92,11 +92,11 @@ func loadConfig() {
 	}
 
 	if isFlagPassed("ncl") {
-		parsed := ToNCL(*ncl)
-		if parsed == NCL_CUSTOM {
+		parsed := ncl.ToNCL(*nclParam)
+		if parsed == ncl.NCL_CUSTOM {
 			if isFlagPassed("nclmin") && isFlagPassed("nclmax") {
 				if *nclmin <= *nclmax {
-					Cfg.NCL_CONGESTION_LEVEL = NCL_CUSTOM
+					Cfg.NCL_CONGESTION_LEVEL = "CUSTOM"
 					Cfg.NCL_CUSTOM_DELAY_MIN = float32(*nclmin)
 					Cfg.NCL_CUSTOM_DELAY_MAX = float32(*nclmax)
 				} else {
@@ -106,7 +106,7 @@ func loadConfig() {
 				fmt.Println("[ERROR] CUSTOM specified as net congestion level but without -nclmin and -nclmax. Falling back to default parameters.")
 			}
 		} else {
-			Cfg.NCL_CONGESTION_LEVEL = parsed
+			Cfg.NCL_CONGESTION_LEVEL = *nclParam
 		}
 	}
 	if isFlagPassed("sh") {
@@ -129,9 +129,8 @@ func loadConfig() {
 
 func setNodeKnowledge() {
 	CurState.NodeInfo = &SMNode{}
-	CurState.NodeInfo.SetHost(GetOutboundIP())
+	CurState.NodeInfo.SetHost(ip.GetOutboundIP())
 	CurState.NodeInfo.SetPort(int32(Cfg.NODE_PORT))
-	CurState.ServRegAddr = Cfg.SERVREG_HOST + ":" + strconv.FormatInt(Cfg.SERVREG_PORT, 10)
 }
 
 func isFlagPassed(name string) bool {

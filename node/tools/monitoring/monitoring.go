@@ -6,12 +6,12 @@
 package monitoring
 
 import (
-	. "distributedelection/node/pkg/env"
-	. "distributedelection/node/pkg/net"
+	. "distributedelection/node/env"
+	net "distributedelection/node/structure/net"
+	sa "distributedelection/node/tools/structadapter"
 	. "distributedelection/tools/misc"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
-
 	"time"
 )
 
@@ -60,7 +60,7 @@ func monitoring() {
 		select {
 		case curMonitoringState = <-stateChan:
 			smlog.Debug(LOG_MONITORING, "new state: %d", curMonitoringState)
-			updateTimer()
+			go updateTimer()
 			break
 		case <-Heartbeat:
 			smlog.Trace(LOG_MONITORING, "HB received")
@@ -70,7 +70,7 @@ func monitoring() {
 			break
 		case <-timer.C:
 			smlog.Trace(LOG_MONITORING, "ticker expired")
-			handleTickerExpiry()
+			go handleTickerExpiry()
 			break
 		}
 	}
@@ -106,24 +106,19 @@ func handleTickerExpiry() {
 		break
 	}
 }
+
 func acknowledgeHb() {
 	timer.Reset(time.Duration(Cfg.MONITORING_TIMEOUT+Cfg.MONITORING_TOLERANCE) * time.Millisecond)
 }
 
 func sendHb() {
 	timer.Reset(time.Duration(Cfg.MONITORING_TIMEOUT) * time.Millisecond)
-	allNodesList := AskForAllNodesList()
+	allNodesList := net.AskForAllNodesList()
 	hbMsg := &MsgHeartbeat{Id: CurState.NodeInfo.GetId()}
-	smlog.Debug(LOG_UNDEFINED, "SuccessfulHB = %v", SuccessfulHB)
-	if SuccessfulHB == 0 {
-		SuccessfulHB = -1
-	}
-	SuccessfulHB = len(allNodesList) - 1
 	for _, node := range allNodesList {
 		if node.GetFullAddr() != CurState.NodeInfo.GetFullAddr() {
-			smlog.Info(LOG_MSG_SENT, "HB to node %d, at %s", node.GetId(), node.GetFullAddr())
-			time.Sleep(time.Duration(GenerateDelay()) * time.Millisecond)
-			go SafeHB(ToNetHeartbeatMsg(hbMsg), node)
+			smlog.Debug(LOG_MONITORING, "(from monitoring) HB to node %d, at %s", node.GetId(), node.GetFullAddr())
+			go net.SafeHB(sa.ToNetHeartbeatMsg(hbMsg), node)
 		}
 	}
 }

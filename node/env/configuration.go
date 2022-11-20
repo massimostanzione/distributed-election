@@ -1,10 +1,5 @@
 package env
 
-import (
-	. "distributedelection/tools/api"
-	"time"
-)
-
 // Environment variables specifying all the parameters that define
 // the configuration for the execution of the program.
 type ConfigEnv struct {
@@ -38,7 +33,7 @@ type ConfigEnv struct {
 	RMI_RETRY_TOLERANCE int
 
 	// simulation of network delays
-	NCL_CONGESTION_LEVEL NetCongestionLevel
+	NCL_CONGESTION_LEVEL string
 	NCL_CUSTOM_DELAY_MIN float32
 	NCL_CUSTOM_DELAY_MAX float32
 }
@@ -57,40 +52,9 @@ var DEFAULT_CONFIG_ENV = &ConfigEnv{
 	1000,                   // RESPONSE_TIME_LIMIT
 	3000,                   // IDLE_WAIT_LIMIT
 	1,                      // RMI_RETRY_TOLERANCE
-	NCL_ABSENT,             // NCL_CONGESTION_LEVEL
+	"ABSENT",               // NCL_CONGESTION_LEVEL
 	0,                      // NCL_CUSTOM_DELAY_MIN
 	500,                    // NCL_CUSTOM_DELAY_MAX
 }
 
 var Cfg *ConfigEnv = &ConfigEnv{}
-
-type NodeState struct {
-	NodeInfo    *SMNode
-	ServRegAddr string
-	Coordinator int32
-	Participant bool
-}
-
-var CurState *NodeState = &NodeState{}
-
-// Node knowledge
-var NextNode *SMNode = &SMNode{}
-
-// Monitoring (needed to be global)
-var Heartbeat chan (*MsgHeartbeat)
-var SuccessfulHB = -1
-
-// Watchdogs: detect if a message within an election gets lost,
-//            e.g.: a node that is processing a message fails
-//		      during the processing
-type Watchdog struct {
-	Name    MsgType
-	Waiting bool
-	Timer   *time.Timer
-}
-
-var Watchdogs = map[MsgType]*Watchdog{}
-
-// limit servReg requests if network is not changed,
-// i.e. if no election has occurred
-var DirtyNetList = false

@@ -9,6 +9,9 @@ import (
 
 	pb "distributedelection/serviceregistry/pb"
 
+	reg "distributedelection/serviceregistry/pkg/behavior"
+	api "distributedelection/tools/api"
+
 	// following import is replaced with EMPTY_NODE message,
 	// ref. https://github.com/massimostanzione/distributed-election/issues/88
 	// empty "github.com/golang/protobuf/ptypes/empty"
@@ -23,20 +26,24 @@ type DEAServer struct {
 
 func (s *DEAServer) JoinNetwork(ctx context.Context, in *pb.NodeAddr) (*pb.Node, error) {
 	smlog.Info(LOG_MSG_RECV, "JoinNetwork [%v]", in)
-	return ManageJoining(in.GetHost(), in.GetPort()), status.New(codes.OK, "").Err()
+	//return ManageJoining(in.GetHost(), in.GetPort()), status.New(codes.OK, "").Err()
+	return api.ToNetNode(reg.RegisterNewNode(in.GetHost(), in.GetPort())), status.New(codes.OK, "").Err()
 }
 
 func (s *DEAServer) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error) {
 	smlog.Info(LOG_MSG_RECV, "GetAllNodesWithIdGreaterThan [%v]", in)
-	return FetchRecordById(in.GetId()), status.New(codes.OK, "").Err()
+	//return FetchRecordById(in.GetId()), status.New(codes.OK, "").Err()
+	return api.ToNetNode(reg.FetchRecordById(int(in.GetId()))), status.New(codes.OK, "").Err()
 }
 
 func (s *DEAServer) GetAllNodes(ctx context.Context, in *pb.EMPTY_SR) (*pb.NodeList, error) {
 	smlog.Info(LOG_MSG_RECV, "GetAllNodes")
-	return GetAllNodesExecutive(0), status.New(codes.OK, "").Err()
+	//return GetAllNodesExecutive(0), status.New(codes.OK, "").Err()
+	return api.ToNetNodeList(reg.GetNodesWithBaseId(0)), status.New(codes.OK, "").Err()
 }
 
 func (s *DEAServer) GetAllNodesWithIdGreaterThan(ctx context.Context, in *pb.NodeId) (*pb.NodeList, error) {
 	smlog.Info(LOG_MSG_RECV, "GetAllNodesWithIdGreaterThan [%v]", in)
-	return GetAllNodesExecutive(in.GetId()), status.New(codes.OK, "").Err()
+	//return GetAllNodesExecutive(in.GetId()), status.New(codes.OK, "").Err()
+	return api.ToNetNodeList(reg.GetNodesWithBaseId(int32(in.GetId()))), status.New(codes.OK, "").Err()
 }

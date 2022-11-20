@@ -1,7 +1,7 @@
 package smlog
 
 import (
-	. "distributedelection/node/pkg/env"
+	. "distributedelection/node/env"
 	. "distributedelection/tools/formatting"
 	"fmt"
 	"os"

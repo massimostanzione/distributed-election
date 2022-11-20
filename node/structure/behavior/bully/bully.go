@@ -2,9 +2,9 @@
 package bully
 
 import (
-	. "distributedelection/node/pkg/env"
-	. "distributedelection/node/pkg/monitoring"
-	. "distributedelection/node/pkg/net"
+	. "distributedelection/node/env"
+	. "distributedelection/node/structure/net"
+	. "distributedelection/node/tools/monitoring"
 	. "distributedelection/tools/misc"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
@@ -22,7 +22,7 @@ func Run() {
 	CoordChannel = make(chan *MsgCoordinator)
 
 	go run()
-	Listen()
+	ListenToIncomingRMI()
 }
 
 func initWatchdogs() {
@@ -67,7 +67,7 @@ func run() {
 			}
 			break
 		case <-OkChannel:
-			smlog.Info(LOG_ELECTION, "Handling OK message - someone is bullier than me...")
+			smlog.Debug(LOG_ELECTION, "Handling OK message - someone is bullier than me...")
 			SetMonitoringState(MONITORING_HALT)
 			SetWatchdog(MSG_COORDINATOR, true)
 			CurState.Participant = true
@@ -99,4 +99,17 @@ func run() {
 			break
 		}
 	}
+}
+
+func startElection() {
+	SetMonitoringState(MONITORING_HALT)
+	DirtyNetCache = true
+	CurState.Participant = true
+	nodes := AskForNodesWithGreaterIds(CurState.NodeInfo.GetId())
+	for _, nextNode := range nodes {
+		if nextNode.GetId() != CurState.NodeInfo.GetId() {
+			go sendElection(NewElectionBullyMsg(), nextNode)
+		}
+	}
+	ElectionTimer.Reset(time.Duration(Cfg.ELECTION_ESPIRY+Cfg.ELECTION_ESPIRY_TOLERANCE) * time.Millisecond)
 }

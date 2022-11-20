@@ -1,7 +1,8 @@
 // Conversion tools between gRPC structures and internal (SM) ones.
-package env
+package structadapter
 
 import (
+	. "distributedelection/node/env"
 	pb "distributedelection/node/pb"
 )
 

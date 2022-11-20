@@ -1,10 +1,10 @@
 package fredricksonlynch
 
 import (
-	. "distributedelection/node/pkg/env"
-	. "distributedelection/node/pkg/monitoring"
+	. "distributedelection/node/env"
+	. "distributedelection/node/tools/monitoring"
 
-	. "distributedelection/node/pkg/net"
+	. "distributedelection/node/structure/net"
 	. "distributedelection/tools/smlog"
 	smlog "distributedelection/tools/smlog"
 	"time"
@@ -16,7 +16,7 @@ func Run() {
 	CoordChannel = make(chan *MsgCoordinator)
 
 	go run()
-	Listen()
+	ListenToIncomingRMI()
 }
 
 func initializeWatchdogs() {
@@ -81,7 +81,7 @@ func run() {
 		case <-Watchdogs[MSG_ELECTION_FL].Timer.C:
 			smlog.Error(LOG_NETWORK, "ELECTION message not returned back within time limit. Starting new election...")
 			SetWatchdog(MSG_ELECTION_FL, false)
-			startElection()
+			go startElection()
 			break
 		case <-Watchdogs[MSG_COORDINATOR].Timer.C:
 			smlog.Error(LOG_NETWORK, "COORDINATOR message not returned back within time limit. Sending it again...")
@@ -95,10 +95,44 @@ func run() {
 
 func startElection() {
 	SetMonitoringState(MONITORING_HALT)
-	DirtyNetList = true
+	DirtyNetCache = true
 	CurState.Participant = true
-	err := sendElection(NewElectionFLMsg(), NextNode)
-	if !err {
+	success := sendElection(NewElectionFLMsg(), NextNode)
+	// if message was not sent, don't start the watchdog
+	if !success {
 		SetWatchdog(MSG_ELECTION_FL, true)
 	}
+}
+
+func vote(inp *MsgElectionFL) *MsgElectionFL {
+	var ret *MsgElectionFL
+	if !RedudantElectionCheck(CurState.NodeInfo.GetId(), inp) {
+		smlog.Trace(LOG_ELECTION, "- voting...")
+		ret = inp.AddVoter(CurState.NodeInfo.GetId())
+	} else {
+		// this case should be already managed in SafeRMI
+		// if this else is reached, something is wrong
+		smlog.Fatal(LOG_ELECTION, "already voted! something is wrong")
+	}
+	return ret
+}
+
+func elect(candidates []int32) int32 {
+	max := candidates[0]
+	for _, val := range candidates {
+		if val > max {
+			max = val
+		}
+	}
+	smlog.Trace(LOG_ELECTION, "Elected node no. %d", max)
+	return max
+}
+
+func RedudantElectionCheck(voter int32, electionMsg *MsgElectionFL) bool {
+	for _, i := range electionMsg.GetVoters() {
+		if i == voter {
+			return true
+		}
+	}
+	return false
 }
