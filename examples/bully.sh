@@ -1,7 +1,7 @@
 #!/bin/bash
 # a quick, ready-to-use demo
 
-NODES_NO=12
+NODES_NO=25
 BASE_ADDRESS=40042
 
 echo "*** distributed-election demo ***"

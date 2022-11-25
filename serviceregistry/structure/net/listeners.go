@@ -9,7 +9,7 @@ import (
 
 	pb "distributedelection/serviceregistry/pb"
 
-	reg "distributedelection/serviceregistry/pkg/behavior"
+	reg "distributedelection/serviceregistry/structure/behavior"
 	api "distributedelection/tools/api"
 
 	// following import is replaced with EMPTY_NODE message,

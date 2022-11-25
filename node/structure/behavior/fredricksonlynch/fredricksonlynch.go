@@ -44,6 +44,7 @@ func initializeWatchdogs() {
 
 func run() {
 	CurState.NodeInfo = AskForJoining()
+	smlog.Info(LOG_UNDEFINED, "Assigned ID = %d from the Service Registry", CurState.NodeInfo.GetId())
 	startElection()
 	for {
 		select {
@@ -124,7 +125,7 @@ func startElection() {
 func vote(inp *MsgElectionFL) *MsgElectionFL {
 	var ret *MsgElectionFL
 	if !RedudantElectionCheck(CurState.NodeInfo.GetId(), inp) {
-		smlog.Info(LOG_ELECTION, "Voted")
+		smlog.Debug(LOG_ELECTION, "Voted")
 		ret = inp.AddVoter(CurState.NodeInfo.GetId())
 	} else {
 		// this case should be already managed in SafeRMI

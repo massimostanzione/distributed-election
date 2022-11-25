@@ -115,6 +115,7 @@ func sendHb() {
 	timer.Reset(time.Duration(Cfg.MONITORING_TIMEOUT) * time.Millisecond)
 	allNodesList := net.AskForAllNodesList()
 	hbMsg := &MsgHeartbeat{Id: CurState.NodeInfo.GetId()}
+	smlog.Info(LOG_MONITORING, "* Sending HB simultaneoutsly to all nodes...")
 	for _, node := range allNodesList {
 		if node.GetFullAddr() != CurState.NodeInfo.GetFullAddr() {
 			smlog.Debug(LOG_MONITORING, "(from monitoring) HB to node %d, at %s", node.GetId(), node.GetFullAddr())

@@ -32,7 +32,7 @@ func Initialize(isServRegExec bool, levelParam string) {
 			fmt.Println(err)
 		}
 		verboseFile.WriteString("[Node] Time     Lvl   Prtcp Event  Description\n")
-		verboseFile.WriteString("[Node] -------- ----- ----- ------ ---------------")
+		verboseFile.WriteString("[Node] -------- ----- ----- ------ ---------------\n")
 		verboseWriter = NewWriter(verboseFile)
 		//defer f.Close() - this file will not be closed
 

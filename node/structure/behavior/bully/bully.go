@@ -40,6 +40,7 @@ func initWatchdogs() {
 
 func run() {
 	CurState.NodeInfo = AskForJoining()
+	smlog.Info(LOG_UNDEFINED, "Assigned ID = %d from the Service Registry", CurState.NodeInfo.GetId())
 	go startElection()
 	for {
 		select {

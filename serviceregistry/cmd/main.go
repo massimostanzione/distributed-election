@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "distributedelection/serviceregistry/pkg/net"
+	. "distributedelection/serviceregistry/structure/net"
 	smlog "distributedelection/tools/smlog"
 	"flag"
 	"fmt"
