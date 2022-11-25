@@ -1,115 +1,137 @@
 [Node] Time     Lvl   Prtcp Event  Description
-[Node] -------- ----- ----- ------ ---------------[Node] 23:42:33 INFO  no    N/D   Starting...
-[Node] 23:42:33 INFO  no    N/D   Type CTRL+C to terminate
-[Node] 23:42:33 INFO  no    N/D   ------------------------
-[Node] 23:42:33 INFO  no    NETWK Listening at 192.168.1.29:40045
-[Node] 23:42:33 INFO  no    SVREG asking for joining the ring...
-[Node] 23:42:33 INFO  yes   MRECV COORD starter:1 coordinator:1 
-[Node] 23:42:33 INFO  yes   ELECT New coordinator: 1
-[Node] 23:42:33 INFO  no    ELECT New coordinator: 2
-[Node] 23:42:33 INFO  no    MRECV COORD starter:2 coordinator:2 
-[Node] 23:42:33 INFO  no    ELECT *** I declare myself as the new coordinator ***
-[Node] 23:42:33 INFO  no    MSENT COORD starter:3 coordinator:3  to 1@192.168.1.29:40043
-[Node] 23:42:33 INFO  no    MSENT COORD starter:3 coordinator:3  to 4@192.168.1.29:40046
-[Node] 23:42:33 INFO  no    MSENT COORD starter:3 coordinator:3  to 2@192.168.1.29:40044
-[Node] 23:42:33 INFO  no    MRECV COORD starter:4 coordinator:4 
-[Node] 23:42:33 INFO  no    ELECT New coordinator: 4
-[Node] 23:42:34 INFO  no    MRECV HB from node 4
-[Node] 23:42:35 INFO  no    MRECV HB from node 4
-[Node] 23:42:36 INFO  no    MRECV HB from node 4
-[Node] 23:42:37 INFO  no    MRECV HB from node 4
-[Node] 23:42:38 INFO  no    MRECV HB from node 4
-[Node] 23:42:39 INFO  no    MRECV HB from node 4
-[Node] 23:42:40 INFO  no    MRECV HB from node 4
-[Node] 23:42:41 INFO  no    MRECV HB from node 4
-[Node] 23:42:42 INFO  no    MRECV HB from node 4
-[Node] 23:42:43 INFO  no    MRECV HB from node 4
-[Node] 23:42:44 INFO  no    MRECV HB from node 4
-[Node] 23:42:45 INFO  no    MRECV HB from node 4
-[Node] 23:42:46 INFO  no    MRECV HB from node 4
-[Node] 23:42:47 INFO  no    MRECV HB from node 4
-[Node] 23:42:48 INFO  no    MRECV HB from node 4
-[Node] 23:42:49 INFO  no    MRECV HB from node 4
-[Node] 23:42:50 INFO  no    MRECV HB from node 4
-[Node] 23:42:51 INFO  no    MRECV HB from node 4
-[Node] 23:42:52 INFO  no    MRECV HB from node 4
-[Node] 23:42:53 INFO  no    MRECV HB from node 4
-[Node] 23:42:55 CRITC no    MONIT Monitoring timer expired!
-[Node] 23:42:55 CRITC no    ELECT Coordinator failed!
-[Node] 23:42:55 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
-[Node] 23:42:55 INFO  yes   MRECV ELECT starter:2 
-[Node] 23:42:55 INFO  yes   SVREG Asking for info about node n. 2
-[Node] 23:42:55 INFO  yes   MRECV ELECT starter:1 
-[Node] 23:42:55 INFO  yes   MSENT OK starter:3  to 2@192.168.1.29:40044
-[Node] 23:42:55 INFO  yes   SVREG Asking for info about node n. 1
-[Node] 23:42:55 INFO  yes   MRECV ELECT starter:2 
-[Node] 23:42:55 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
-[Node] 23:42:55 INFO  yes   MSENT OK starter:3  to 1@192.168.1.29:40043
-[Node] 23:42:55 INFO  yes   SVREG Asking for info about node n. 2
-[Node] 23:42:55 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
-[Node] 23:42:55 INFO  yes   MSENT OK starter:3  to 2@192.168.1.29:40044
-[Node] 23:42:55 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
-[Node] 23:42:55 INFO  yes   ELECT *** I declare myself as the new coordinator ***
-[Node] 23:42:55 ERROR no    NETWK Could not invoke RMI on 4@192.168.1.29:40046
-[Node] 23:42:55 INFO  no    MSENT COORD starter:3 coordinator:3  to 2@192.168.1.29:40044
-[Node] 23:42:55 INFO  no    MSENT COORD starter:3 coordinator:3  to 1@192.168.1.29:40043
-[Node] 23:42:56 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:42:56 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:56 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:57 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:42:57 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:57 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:58 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:42:58 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:58 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:59 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:42:59 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:59 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:00 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:00 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:00 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:01 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:01 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:01 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:02 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:02 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:02 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:03 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:03 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:03 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:04 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:04 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:04 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:05 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:05 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:05 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:06 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:06 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:06 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:07 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:07 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:07 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:08 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:08 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:08 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:09 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:09 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:09 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:10 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:10 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:10 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:11 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:11 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:11 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:12 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:12 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:12 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:13 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:13 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:13 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:14 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:14 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:14 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:43:15 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
-[Node] 23:43:15 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:43:15 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] -------- ----- ----- ------ ---------------
+[Node] 16:44:06 INFO  no    N/D   Starting...
+[Node] 16:44:06 INFO  no    N/D   Type CTRL+C to terminate
+[Node] 16:44:06 INFO  no    N/D   ------------------------
+[Node] 16:44:06 INFO  no    NETWK Listening at 192.168.1.29:40045
+[Node] 16:44:06 INFO  no    SVREG asking for joining the ring...
+[Node] 16:44:06 INFO  no    N/D   Assigned ID = 3 from the Service Registry
+[Node] 16:44:06 INFO  yes   ELECT New coordinator: 1
+[Node] 16:44:06 INFO  yes   MRECV COORD starter:1 coordinator:1 
+[Node] 16:44:06 INFO  no    MRECV COORD starter:2 coordinator:2 
+[Node] 16:44:06 INFO  no    ELECT New coordinator: 2
+[Node] 16:44:07 INFO  no    ELECT *** I declare myself as the new coordinator ***
+[Node] 16:44:07 INFO  no    MSENT COORD starter:3 coordinator:3  to 4@192.168.1.29:40046
+[Node] 16:44:07 INFO  no    MSENT COORD starter:3 coordinator:3  to 1@192.168.1.29:40043
+[Node] 16:44:07 INFO  no    MSENT COORD starter:3 coordinator:3  to 2@192.168.1.29:40044
+[Node] 16:44:07 INFO  no    MRECV COORD starter:4 coordinator:4 
+[Node] 16:44:07 INFO  no    ELECT New coordinator: 4
+[Node] 16:44:08 INFO  no    MRECV HB from node 4
+[Node] 16:44:09 INFO  no    MRECV HB from node 4
+[Node] 16:44:10 INFO  no    MRECV HB from node 4
+[Node] 16:44:11 INFO  no    MRECV HB from node 4
+[Node] 16:44:12 INFO  no    MRECV HB from node 4
+[Node] 16:44:13 INFO  no    MRECV HB from node 4
+[Node] 16:44:14 INFO  no    MRECV HB from node 4
+[Node] 16:44:15 INFO  no    MRECV HB from node 4
+[Node] 16:44:16 INFO  no    MRECV HB from node 4
+[Node] 16:44:17 INFO  no    MRECV HB from node 4
+[Node] 16:44:18 INFO  no    MRECV HB from node 4
+[Node] 16:44:19 INFO  no    MRECV HB from node 4
+[Node] 16:44:20 INFO  no    MRECV HB from node 4
+[Node] 16:44:21 INFO  no    MRECV HB from node 4
+[Node] 16:44:22 INFO  no    MRECV HB from node 4
+[Node] 16:44:23 INFO  no    MRECV HB from node 4
+[Node] 16:44:24 INFO  no    MRECV HB from node 4
+[Node] 16:44:25 INFO  no    MRECV HB from node 4
+[Node] 16:44:26 INFO  no    MRECV HB from node 4
+[Node] 16:44:27 INFO  no    MRECV HB from node 4
+[Node] 16:44:28 CRITC no    MONIT Monitoring timer expired!
+[Node] 16:44:28 CRITC no    ELECT Coordinator failed!
+[Node] 16:44:28 INFO  yes   MRECV ELECT starter:1 
+[Node] 16:44:28 INFO  yes   MRECV ELECT starter:2 
+[Node] 16:44:28 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
+[Node] 16:44:28 INFO  yes   SVREG Asking for info about node n. 1
+[Node] 16:44:28 INFO  yes   MRECV ELECT starter:2 
+[Node] 16:44:28 INFO  yes   MSENT OK starter:3  to 1@192.168.1.29:40043
+[Node] 16:44:28 INFO  yes   SVREG Asking for info about node n. 2
+[Node] 16:44:28 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
+[Node] 16:44:28 INFO  yes   MSENT OK starter:3  to 2@192.168.1.29:40044
+[Node] 16:44:28 INFO  yes   SVREG Asking for info about node n. 2
+[Node] 16:44:28 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
+[Node] 16:44:28 INFO  yes   MSENT OK starter:3  to 2@192.168.1.29:40044
+[Node] 16:44:28 ERROR yes   NETWK Could not invoke RMI on 4@192.168.1.29:40046
+[Node] 16:44:29 INFO  yes   ELECT *** I declare myself as the new coordinator ***
+[Node] 16:44:29 ERROR no    NETWK Could not invoke RMI on 4@192.168.1.29:40046
+[Node] 16:44:29 INFO  no    MSENT COORD starter:3 coordinator:3  to 1@192.168.1.29:40043
+[Node] 16:44:29 INFO  no    MSENT COORD starter:3 coordinator:3  to 2@192.168.1.29:40044
+[Node] 16:44:30 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:30 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:30 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:30 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:31 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:31 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:31 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:31 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:32 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:32 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:32 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:32 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:33 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:33 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:33 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:33 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:34 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:34 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:34 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:34 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:35 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:35 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:35 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:35 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:36 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:36 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:36 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:36 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:37 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:37 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:37 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:37 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:38 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:38 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:38 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:38 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:39 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:39 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:39 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:39 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:40 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:40 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:40 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:40 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:41 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:41 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:41 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:41 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:42 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:42 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:42 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:42 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:43 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:43 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:43 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:43 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:44 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:44 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:44 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:44 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:45 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:45 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:45 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:45 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:46 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:46 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:46 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:46 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:47 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:47 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:47 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:47 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:48 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:48 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:48 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:48 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:49 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:49 ERROR no    NETWK error while contacting 4@192.168.1.29:40046
+[Node] 16:44:49 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:49 INFO  no    MSENT HB to 1@192.168.1.29:40043

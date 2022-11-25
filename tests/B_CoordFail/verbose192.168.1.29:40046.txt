@@ -1,76 +1,98 @@
 [Node] Time     Lvl   Prtcp Event  Description
-[Node] -------- ----- ----- ------ ---------------[Node] 23:42:33 INFO  no    N/D   Starting...
-[Node] 23:42:33 INFO  no    N/D   Type CTRL+C to terminate
-[Node] 23:42:33 INFO  no    N/D   ------------------------
-[Node] 23:42:33 INFO  no    NETWK Listening at 192.168.1.29:40046
-[Node] 23:42:33 INFO  no    SVREG asking for joining the ring...
-[Node] 23:42:33 INFO  yes   MRECV COORD starter:1 coordinator:1 
-[Node] 23:42:33 INFO  yes   ELECT New coordinator: 1
-[Node] 23:42:33 INFO  no    MRECV COORD starter:2 coordinator:2 
-[Node] 23:42:33 INFO  no    ELECT New coordinator: 2
-[Node] 23:42:33 INFO  no    MRECV COORD starter:3 coordinator:3 
-[Node] 23:42:33 INFO  no    ELECT New coordinator: 3
-[Node] 23:42:33 INFO  no    ELECT *** I declare myself as the new coordinator ***
-[Node] 23:42:33 INFO  no    MSENT COORD starter:4 coordinator:4  to 1@192.168.1.29:40043
-[Node] 23:42:33 INFO  no    MSENT COORD starter:4 coordinator:4  to 3@192.168.1.29:40045
-[Node] 23:42:33 INFO  no    MSENT COORD starter:4 coordinator:4  to 2@192.168.1.29:40044
-[Node] 23:42:34 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:34 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:34 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:35 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:35 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:35 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:36 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:36 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:36 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:37 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:37 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:37 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:38 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:38 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:38 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:39 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:39 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:39 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:40 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:40 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:40 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:41 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:41 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:41 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:42 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:42 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:42 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:43 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:43 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:43 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:44 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:44 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:44 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:45 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:45 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:45 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:46 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:46 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:46 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:47 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:47 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:47 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:48 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:48 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:48 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:49 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:49 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:49 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:50 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:50 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:50 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:51 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:51 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:51 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:52 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:52 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:52 INFO  no    MSENT HB to 1@192.168.1.29:40043
-[Node] 23:42:53 INFO  no    MSENT HB to 2@192.168.1.29:40044
-[Node] 23:42:53 INFO  no    MSENT HB to 3@192.168.1.29:40045
-[Node] 23:42:53 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] -------- ----- ----- ------ ---------------
+[Node] 16:44:06 INFO  no    N/D   Starting...
+[Node] 16:44:06 INFO  no    N/D   Type CTRL+C to terminate
+[Node] 16:44:06 INFO  no    N/D   ------------------------
+[Node] 16:44:06 INFO  no    NETWK Listening at 192.168.1.29:40046
+[Node] 16:44:06 INFO  no    SVREG asking for joining the ring...
+[Node] 16:44:06 INFO  no    N/D   Assigned ID = 4 from the Service Registry
+[Node] 16:44:06 INFO  yes   MRECV COORD starter:1 coordinator:1 
+[Node] 16:44:06 INFO  yes   ELECT New coordinator: 1
+[Node] 16:44:06 INFO  no    MRECV COORD starter:2 coordinator:2 
+[Node] 16:44:06 INFO  no    ELECT New coordinator: 2
+[Node] 16:44:07 INFO  no    MRECV COORD starter:3 coordinator:3 
+[Node] 16:44:07 INFO  no    ELECT New coordinator: 3
+[Node] 16:44:07 INFO  no    ELECT *** I declare myself as the new coordinator ***
+[Node] 16:44:07 INFO  no    MSENT COORD starter:4 coordinator:4  to 1@192.168.1.29:40043
+[Node] 16:44:07 INFO  no    MSENT COORD starter:4 coordinator:4  to 3@192.168.1.29:40045
+[Node] 16:44:07 INFO  no    MSENT COORD starter:4 coordinator:4  to 2@192.168.1.29:40044
+[Node] 16:44:08 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:08 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:08 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:08 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:09 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:09 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:09 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:09 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:10 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:10 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:10 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:10 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:11 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:11 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:11 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:11 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:12 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:12 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:12 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:12 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:13 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:13 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:13 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:13 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:14 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:14 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:14 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:14 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:15 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:15 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:15 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:15 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:16 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:16 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:16 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:16 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:17 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:17 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:17 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:17 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:18 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:18 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:18 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:18 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:19 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:19 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:19 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:19 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:20 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:20 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:20 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:20 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:21 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:21 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:21 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:21 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:22 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:22 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:22 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:22 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:23 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:23 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:23 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:23 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:24 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:24 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:24 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:24 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:25 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:25 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:25 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:25 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:26 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:26 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:26 INFO  no    MSENT HB to 3@192.168.1.29:40045
+[Node] 16:44:26 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:27 INFO  no    MONIT * Sending HB simultaneoutsly to all nodes...
+[Node] 16:44:27 INFO  no    MSENT HB to 2@192.168.1.29:40044
+[Node] 16:44:27 INFO  no    MSENT HB to 1@192.168.1.29:40043
+[Node] 16:44:27 INFO  no    MSENT HB to 3@192.168.1.29:40045
