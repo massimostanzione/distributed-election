@@ -1,4 +1,4 @@
-// faultTolerance.glob.go
+// Outbound RMI management, towards other nodes.
 package net
 
 import (
@@ -64,7 +64,6 @@ func SafeRMI_Ring(msgType MsgType, dest *SMNode, electionMsg *MsgElectionFL, coo
 		// if I am the next node, I am the only node into the ring
 		if nextAddr == CurState.NodeInfo.GetFullAddr() {
 			smlog.InfoU("No other nodes found in the ring.")
-			break
 		}
 
 		// connect to the next node

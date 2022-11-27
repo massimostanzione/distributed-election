@@ -1,3 +1,4 @@
+// Adapter functions for node structures.
 package api
 
 import (

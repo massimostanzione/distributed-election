@@ -35,9 +35,6 @@ var timer *time.Ticker
 var stateChan chan (monitoringState)
 var curMonitoringState monitoringState
 
-// Receive booleans into this channel when the monitoring ticker has expired
-var MonitoringChannel chan (bool)
-
 func initialize() {
 	MonitoringChannel = make(chan bool)
 	Heartbeat = make(chan *MsgHeartbeat)
@@ -47,6 +44,11 @@ func initialize() {
 	go monitoring()
 }
 
+// Exposed API -----------------------------------------------------------------
+
+// Receive booleans into this channel when the monitoring ticker has expired
+var MonitoringChannel chan (bool)
+
 // Set monitoring state to newState
 func SetMonitoringState(newState monitoringState) {
 	if MonitoringChannel == nil {
@@ -54,6 +56,8 @@ func SetMonitoringState(newState monitoringState) {
 	}
 	stateChan <- newState
 }
+
+// Internal behavior -----------------------------------------------------------
 
 func monitoring() {
 	for {
@@ -113,7 +117,7 @@ func acknowledgeHb() {
 
 func sendHb() {
 	timer.Reset(time.Duration(Cfg.MONITORING_TIMEOUT) * time.Millisecond)
-	allNodesList := net.AskForAllNodesList()
+	allNodesList := net.AskForAllNodes()
 	hbMsg := &MsgHeartbeat{Id: CurState.NodeInfo.GetId()}
 	smlog.Info(LOG_MONITORING, "* Sending HB simultaneoutsly to all nodes...")
 	for _, node := range allNodesList {

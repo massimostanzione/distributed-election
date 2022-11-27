@@ -1,4 +1,4 @@
-// netMiddleware
+// Outbound RMI management, towards service registry.
 package net
 
 import (
@@ -19,7 +19,7 @@ func AskForJoining() *SMNode {
 	CurState.DirtyNetCache = true
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	defer cancel()
-	smlog.Info(LOG_SERVREG, "asking for joining the ring...")
+	smlog.Info(LOG_SERVREG, "Asking for joining the ring...")
 	node, err := cs.JoinNetwork(ctx, &pbsr.NodeAddr{Host: CurState.NodeInfo.GetHost(), Port: CurState.NodeInfo.GetPort()})
 	if err != nil {
 		smlog.Fatal(LOG_NETWORK, "Error while executing fredricksonlynch:\n%v", err)
@@ -51,7 +51,7 @@ func AskForNodeInfo(id int32) *SMNode {
 }
 
 // For monitoring use only
-func AskForAllNodesList() []*SMNode {
+func AskForAllNodes() []*SMNode {
 	var ret []*SMNode
 	smlog.Debug(LOG_SERVREG, "Asking for info about all nodes")
 	if CurState.DirtyNetCache {
@@ -65,30 +65,14 @@ func AskForAllNodesList() []*SMNode {
 }
 
 func AskForNodesWithGreaterIds(baseId int32) []*SMNode {
-	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni sui nodi con id > %d", baseId)
+	smlog.Trace(LOG_SERVREG, "Asking for info about nodes s.t. id > %d", baseId)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
 	//	locCtx = ctx
 	defer cancel()
 
 	ret, err := cs.GetAllNodesWithIdGreaterThan(ctx, &pbsr.NodeId{Id: int32(baseId)})
 	if err != nil {
-		smlog.Fatal(LOG_NETWORK, "errore in GETNODOa:\n%v", err)
-		return nil
-	}
-	var array []*SMNode
-	for _, node := range ret.GetList() {
-		array = append(array, ToSMNode(node))
-	}
-	return array
-}
-
-func AskForAllNodes() []*SMNode {
-	smlog.Trace(LOG_SERVREG, "Chiedo al centrale informazioni su TUTTI i nodi")
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Cfg.RESPONSE_TIME_LIMIT)*time.Second)
-	defer cancel()
-	ret, err := cs.GetAllNodes(ctx, new(pbsr.EMPTY_SR))
-	if err != nil {
-		smlog.Fatal(LOG_NETWORK, "errore in GETNODO:\n%v", err)
+		smlog.Fatal(LOG_NETWORK, "Error while calling GetAllNodesWithIdGreaterThan:\n%v", err)
 		return nil
 	}
 	var array []*SMNode

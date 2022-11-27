@@ -1,3 +1,4 @@
+// Entry point for service registry application.
 package main
 
 import (
@@ -23,7 +24,6 @@ func main() {
 
 	smlog.Initialize(true, "INFO")
 
-	//InitializeNetMW()
 	Listen("localhost", strconv.FormatInt(int64(Port), 10))
 }
 

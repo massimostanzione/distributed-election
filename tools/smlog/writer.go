@@ -1,3 +1,4 @@
+// Writer definition for SMLog.
 package smlog
 
 import (
@@ -46,8 +47,6 @@ func NewSMColorWriter(writer io.Writer) loggo.Writer {
 // Write implements Writer.
 func (w *colorWriter) Write(entry loggo.Entry) {
 	ts := entry.Timestamp.Format(loggo.TimeFormat)
-	// Just get the basename from the filename
-	//	filename := filepath.Base(entry.Filename)
 	if IsServReg {
 		fmt.Fprintf(w.writer, "[ServReg] ")
 		fmt.Fprintf(w.writer, "%s ", ts)
@@ -57,7 +56,5 @@ func (w *colorWriter) Write(entry loggo.Entry) {
 		fmt.Fprintf(w.writer, "%s ", ts)
 	}
 	SeverityColor[entry.Level].Fprintf(w.writer, entry.Level.Short())
-	//fmt.Fprintf(w.writer, "%s ", entry.Module)
-	//LocationColor.Fprintf(w.writer, "%s:%d ", filename, entry.Line)
 	fmt.Fprintln(w.writer, entry.Message)
 }

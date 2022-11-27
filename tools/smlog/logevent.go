@@ -1,4 +1,4 @@
-// logevent.go
+// Log Events definitions.
 package smlog
 
 type LogEvent uint8
@@ -10,7 +10,6 @@ const (
 	LOG_MONITORING
 	LOG_NETWORK
 	LOG_SERVREG
-	LOG_STATEMACHINE
 	LOG_ELECTION
 )
 
@@ -29,8 +28,6 @@ func (event LogEvent) String() string {
 		return "LOG_NETWORK"
 	case LOG_SERVREG:
 		return "LOG_SERVREG"
-	case LOG_STATEMACHINE:
-		return "LOG_STATEMACHINE"
 	case LOG_ELECTION:
 		return "LOG_ELECTION"
 	default:
@@ -54,11 +51,9 @@ func (event LogEvent) Short() string {
 		return "NETWK"
 	case LOG_SERVREG:
 		return "SVREG"
-	case LOG_STATEMACHINE:
-		return "STMAC"
 	case LOG_ELECTION:
 		return "ELECT"
 	default:
-		return "<unknown>"
+		return "<???>"
 	}
 }

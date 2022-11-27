@@ -1,3 +1,4 @@
+// Handlers for gRPC remote method invocations (RMI).
 package net
 
 import (

@@ -1,3 +1,4 @@
+// Net API high-level calls for Fredrickson-Lynch algorithm.
 package fredricksonlynch
 
 import (

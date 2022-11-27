@@ -1,3 +1,4 @@
+// Entry point for node application.
 package main
 
 import (

@@ -1,3 +1,5 @@
+// Logging tool.
+// Forked from github.com/juju/loggo
 package smlog
 
 import (

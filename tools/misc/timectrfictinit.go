@@ -1,3 +1,4 @@
+// Fictitious time.Timer initialization.
 // ref.: https://github.com/golang/go/issues/12721
 package misc
 

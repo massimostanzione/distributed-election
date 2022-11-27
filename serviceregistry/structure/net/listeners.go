@@ -1,5 +1,4 @@
-// Handlers for gRPC service calls
-// Processing is performed in netMiddleware.go
+// Handlers for gRPC remote method invocations (RMI).
 package net
 
 import (
@@ -26,24 +25,20 @@ type DEAServer struct {
 
 func (s *DEAServer) JoinNetwork(ctx context.Context, in *pb.NodeAddr) (*pb.Node, error) {
 	smlog.Info(LOG_MSG_RECV, "JoinNetwork [%v]", in)
-	//return ManageJoining(in.GetHost(), in.GetPort()), status.New(codes.OK, "").Err()
 	return api.ToNetNode(reg.RegisterNewNode(in.GetHost(), in.GetPort())), status.New(codes.OK, "").Err()
 }
 
 func (s *DEAServer) GetNode(ctx context.Context, in *pb.NodeId) (*pb.Node, error) {
 	smlog.Info(LOG_MSG_RECV, "GetAllNodesWithIdGreaterThan [%v]", in)
-	//return FetchRecordById(in.GetId()), status.New(codes.OK, "").Err()
 	return api.ToNetNode(reg.FetchRecordById(int(in.GetId()))), status.New(codes.OK, "").Err()
 }
 
 func (s *DEAServer) GetAllNodes(ctx context.Context, in *pb.EMPTY_SR) (*pb.NodeList, error) {
 	smlog.Info(LOG_MSG_RECV, "GetAllNodes")
-	//return GetAllNodesExecutive(0), status.New(codes.OK, "").Err()
 	return api.ToNetNodeList(reg.GetNodesWithBaseId(0)), status.New(codes.OK, "").Err()
 }
 
 func (s *DEAServer) GetAllNodesWithIdGreaterThan(ctx context.Context, in *pb.NodeId) (*pb.NodeList, error) {
 	smlog.Info(LOG_MSG_RECV, "GetAllNodesWithIdGreaterThan [%v]", in)
-	//return GetAllNodesExecutive(in.GetId()), status.New(codes.OK, "").Err()
 	return api.ToNetNodeList(reg.GetNodesWithBaseId(int32(in.GetId()))), status.New(codes.OK, "").Err()
 }

@@ -1,4 +1,4 @@
-// runner.go
+// Runner for switching algorithm execution launching.
 package behavior
 
 import (

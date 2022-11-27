@@ -1,5 +1,5 @@
 // Internal message structures and related functions.
-// Conversion from/to gRPC structures are done in netMW.
+// Conversion from/to gRPC structures are done in netsmadapter.
 package env
 
 type MsgType uint8

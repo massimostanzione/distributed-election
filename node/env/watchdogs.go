@@ -1,4 +1,4 @@
-// watchdogs.go
+// Watchdogs definition.
 package env
 
 import "time"

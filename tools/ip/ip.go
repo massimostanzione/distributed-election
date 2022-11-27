@@ -1,3 +1,4 @@
+// Utility function for IP retrieving.
 package ip
 
 import (

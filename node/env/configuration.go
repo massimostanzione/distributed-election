@@ -1,3 +1,4 @@
+// Node configuration.
 package env
 
 // Environment variables specifying all the parameters that define

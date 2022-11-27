@@ -1,3 +1,4 @@
+// Internal node structure definition.
 package api
 
 import (

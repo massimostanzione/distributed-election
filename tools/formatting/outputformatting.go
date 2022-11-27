@@ -1,3 +1,4 @@
+// Formatting tools.
 package tools
 
 var ColorReset = "\033[0m"

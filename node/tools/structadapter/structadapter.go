@@ -6,8 +6,7 @@ import (
 	pb "distributedelection/node/pb"
 )
 
-// ---------------------------------------------------------------------------
-// From internal to gRPC
+// From internal to gRPC -------------------------------------------------------
 
 func ToNetElectionBullyMsg(sm *MsgElectionBully) *pb.ElectionBully {
 	return &pb.ElectionBully{Starter: sm.GetStarter()}
@@ -29,8 +28,7 @@ func ToNetHeartbeatMsg(sm *MsgHeartbeat) *pb.Heartbeat {
 	return &pb.Heartbeat{Id: sm.GetId()}
 }
 
-// ---------------------------------------------------------------------------
-// From gRPC to internal
+// From gRPC to internal -------------------------------------------------------
 
 func ToSMElectionBullyMsg(net *pb.ElectionBully) *MsgElectionBully {
 	return &MsgElectionBully{Starter: net.GetStarter()}

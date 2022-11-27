@@ -1,4 +1,4 @@
-// netcongestion
+// Network Congestion Level: simulate network delays.
 package ncl
 
 import (

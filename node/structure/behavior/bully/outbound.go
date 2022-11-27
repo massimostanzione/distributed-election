@@ -1,5 +1,4 @@
-// smcommunication.go
-// sm behavior is in statemachine.go
+// Net API high-level calls for bully algorithm.
 package bully
 
 import (

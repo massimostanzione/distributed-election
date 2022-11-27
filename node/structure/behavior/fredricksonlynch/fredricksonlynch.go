@@ -1,3 +1,4 @@
+// Behavior specification for the Fredrickson-Lynch ring-based algorithm.
 package fredricksonlynch
 
 import (

@@ -1,4 +1,4 @@
-// net.go
+// Low-level network management.
 package net
 
 import (

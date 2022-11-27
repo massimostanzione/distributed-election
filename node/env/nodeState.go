@@ -1,4 +1,4 @@
-// state.go
+// Node State.
 package env
 
 import . "distributedelection/tools/api"
