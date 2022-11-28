@@ -92,7 +92,7 @@ func handleInboundMsg(in MsgType) {
 		break
 	case MSG_COORDINATOR:
 		in := <-CoordChIn
-		smlog.Debug(LOG_STATEMACHINE, "Handling COORDINATOR message")
+		smlog.Debug(LOG_ELECTION, "Handling COORDINATOR message")
 		CurState.DirtyNetCache = true
 		CurState.Coordinator = in.GetCoordinator()
 		CurState.Participant = false
