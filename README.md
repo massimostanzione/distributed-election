@@ -26,9 +26,10 @@ unzip protoc-3.15.8-linux-x86_64.zip -d $HOME/.local
 export PATH="$PATH:$HOME/.local/bin"
 ```
 
-1. Download the repository:
+1. Download the repository and apply privileges:
 ```
 git clone https://github.com/massimostanzione/distributed-election
+sudo chmod 770 distributed-election
 cd distributed-election
 ```
 2. Build the binaries for *nodes* and *service registry*:
