@@ -29,7 +29,7 @@ export PATH="$PATH:$HOME/.local/bin"
 1. Download the repository and apply privileges:
 ```
 git clone https://github.com/massimostanzione/distributed-election
-sudo chmod 770 distributed-election
+sudo chmod -R 770 distributed-election
 cd distributed-election
 ```
 2. Build the binaries for *nodes* and *service registry*:
